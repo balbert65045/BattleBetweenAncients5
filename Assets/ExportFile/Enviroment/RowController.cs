@@ -34,6 +34,7 @@ public class RowController : MonoBehaviour {
                 }
             }
             OrderdTiles[index] = Tiles[i];
+            
         }
     }
 	

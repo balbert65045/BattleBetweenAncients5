@@ -12,6 +12,7 @@ public class CardObject : MonoBehaviour {
     AICharacterControl aiCharacterControl;
     ObjectController objectController;
     CameraRaycaster cameraRaycaster;
+    PathBuilder pathBuilder;
 
     RaycastHit m_hit;
     PlayerObjectCreator CurrentTile;
@@ -39,6 +40,7 @@ public class CardObject : MonoBehaviour {
         aiCharacterControl = GetComponent<AICharacterControl>();
         objectController = FindObjectOfType<ObjectController>();
         cameraRaycaster = FindObjectOfType<CameraRaycaster>();
+        pathBuilder = FindObjectOfType<PathBuilder>();
 
     }
 	
@@ -54,6 +56,7 @@ public class CardObject : MonoBehaviour {
                 // Check if their is another object on the tile/ if the tile is open
                 if (m_hit.transform.GetComponent<PlayerObjectCreator>().cardType == CardType.Open)
                 {
+                    pathBuilder.DeselectPath();
                     MoveToPosition(m_hit.transform);
                 }
             }

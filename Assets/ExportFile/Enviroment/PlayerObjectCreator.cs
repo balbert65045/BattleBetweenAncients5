@@ -5,6 +5,9 @@ using UnityStandardAssets.CrossPlatformInput;
 
 public class PlayerObjectCreator : MonoBehaviour {
 
+    [SerializeField]
+    float SnapDistance = 5f;
+
     private PlayerObjectHolder PlayerObjectHolder;
     public GameObject ParentforObjects;
 
@@ -17,10 +20,13 @@ public class PlayerObjectCreator : MonoBehaviour {
 
     public bool TileSelected = false;
 
+    public int X;
+    public int Z;
+
     private Camera cam;
     private CameraRaycaster cameraRaycaster;
 
-    private Color MatColorOriginal;
+    public Color MatColorOriginal;
 
 
 	// Use this for initialization
@@ -30,12 +36,18 @@ public class PlayerObjectCreator : MonoBehaviour {
         cameraRaycaster = FindObjectOfType<CameraRaycaster>();
         cardType = CardType.Open;
         MatColorOriginal = GetComponent<MeshRenderer>().material.color;
-
+        X = Mathf.RoundToInt(transform.position.x / SnapDistance);
+        Z = Mathf.RoundToInt(transform.position.z / SnapDistance);
 
     }
-	
-	// Update is called once per frame
-	void Update () {
+
+    private void Start()
+    {
+       
+    }
+
+    // Update is called once per frame
+    void Update () {
 		
 	}
 
@@ -100,7 +112,7 @@ public class PlayerObjectCreator : MonoBehaviour {
     }
 
 
-    void ChangeColor(Color color)
+    public void ChangeColor(Color color)
     {
         Material mat = GetComponent<MeshRenderer>().material;
         mat.color = color;

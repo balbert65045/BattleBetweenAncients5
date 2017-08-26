@@ -10,13 +10,18 @@ public class SelectionTool : MonoBehaviour {
     PlayerObjectCreator playerObjectCreatorSelected;
     ItemCreator itemCreator;
     RaycastHit m_hit;
+    PathBuilder pathBuilder;
+
+    bool ObjectSelected;
     
 
 
 
     void Start () {
         cameraRaycaster = FindObjectOfType<CameraRaycaster>();
+        cameraRaycaster.layerChangeObservers += OnPathChange;
         itemCreator = GetComponent<ItemCreator>();
+        pathBuilder = FindObjectOfType<PathBuilder>();
     }
 
     // Update is called once per frame
@@ -36,6 +41,22 @@ public class SelectionTool : MonoBehaviour {
                 if (playerObjectCreatorSelected != null)
                 {
                     playerObjectCreatorSelected.ObjectHeldDeselected();
+                    pathBuilder.DeselectPath();
+                    ObjectSelected = false;
+                }
+            }
+        }
+    }
+
+    void OnPathChange(Transform newTransform)
+    {
+        if (newTransform.GetComponent<PlayerObjectCreator>() != null)
+        {
+            if (playerObjectCreatorSelected != null)
+            {
+                if (playerObjectCreatorSelected.ObjectHeld != null)
+                {
+                    pathBuilder.FindTilesBetween(playerObjectCreatorSelected, newTransform.GetComponent<PlayerObjectCreator>());
                 }
             }
         }
@@ -46,6 +67,8 @@ public class SelectionTool : MonoBehaviour {
         if (playerObjectCreatorSelected != null)
         {
             playerObjectCreatorSelected.ObjectHeldDeselected();
+            pathBuilder.DeselectPath();
+            ObjectSelected = false;
         }
         //TODO fix null exception with the raycaster 
         if (cameraRaycaster.transormHit != null)
@@ -54,6 +77,7 @@ public class SelectionTool : MonoBehaviour {
             {
                 playerObjectCreatorSelected = cameraRaycaster.transormHit.GetComponent<PlayerObjectCreator>();
                 playerObjectCreatorSelected.ObjectHeldSelected();
+                ObjectSelected = true;
             }
         }
     }
