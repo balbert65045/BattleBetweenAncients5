@@ -8,7 +8,11 @@ public class CardObject : MonoBehaviour {
 
     public CardType cardType;
 
-    bool Selected = false;
+    //float StoppingDistance = .1f;
+    public float RemainingDistance;
+
+    public bool Selected = false;
+    public bool Moving = false;
     AICharacterControl aiCharacterControl;
     ObjectController objectController;
     CameraRaycaster cameraRaycaster;
@@ -16,6 +20,8 @@ public class CardObject : MonoBehaviour {
 
     RaycastHit m_hit;
     PlayerObjectCreator CurrentTile;
+    public PlayerObjectCreator GetCurrentTile { get { return CurrentTile; } }
+
 
     public void OnCurrentTile(PlayerObjectCreator tileTransform)
     {
@@ -57,10 +63,41 @@ public class CardObject : MonoBehaviour {
                 if (m_hit.transform.GetComponent<PlayerObjectCreator>().cardType == CardType.Open)
                 {
                     pathBuilder.DeselectPath();
-                    MoveToPosition(m_hit.transform);
+                    DeselectObject();
+                    Moving = true;
                 }
             }
         }
+
+        if (Moving)
+        {
+            // Move Character to next tile in Tile Path once reaching destination
+            RemainingDistance = (transform.position - CurrentTile.transform.position).magnitude;
+        //    float RemainingDistance = (transform.position - CurrentTile.transform.position).magnitude;
+            if (RemainingDistance < aiCharacterControl.agent.stoppingDistance)
+            {
+
+                int CurrentPathLength = pathBuilder.PathLength - 1;
+                int CurrentTileIndex = pathBuilder.CheckPathPosition(CurrentTile);
+                if (CurrentTileIndex == -1) { Debug.LogError("CurrentPathIndex not in Path of pathBuilder"); }
+
+                if (CurrentTileIndex != CurrentPathLength)
+                {
+                    Transform NextTileInPath = pathBuilder.FindNextTileInPath(CurrentTile);
+                    if (NextTileInPath == null) { Debug.LogError("NextTileInPath not in Path of pathBuilder"); }
+                    MoveToPosition(NextTileInPath);
+                }
+                else
+                {
+                    Moving = false;
+                }
+            }
+           
+
+        }
+
+       
+
     }
 
 
@@ -69,6 +106,10 @@ public class CardObject : MonoBehaviour {
         // Move Off the current tile 
         CurrentTile.ObjectMovedOffTile();
         Debug.Log("Attempting to move to position" + newTansform);
+
+
+       
+
         aiCharacterControl.SetTarget(newTansform);
 
         // Tile Change
@@ -76,7 +117,7 @@ public class CardObject : MonoBehaviour {
         CurrentTile.ObjectMovecOnTile(this.gameObject);
 
         // Make it so the Object has to be reselected to move again
-        DeselectObject();
+        //DeselectObject();
 
     }
 }

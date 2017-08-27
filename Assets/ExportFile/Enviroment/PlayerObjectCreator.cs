@@ -77,39 +77,42 @@ public class PlayerObjectCreator : MonoBehaviour {
         cardType = CardType.Open;
     }
    
-    public void ObjectHeldDeselected()
-    {
-        if (ObjectHeld != null)
-        {
-            if (ObjectHeld.GetComponent<CardObject>() == null)
-            {
-                Debug.LogError("No CardObject attached to ObjectHeld");
-            }
-            ObjectHeld.GetComponent<CardObject>().DeselectObject();
-            ChangeColor(MatColorOriginal);
-            TileSelected = false;
-        }
-    }
+    //public void ObjectHeldDeselected()
+    //{
+    //    if (ObjectHeld != null)
+    //    {
+    //        if (ObjectHeld.GetComponent<CardObject>() == null)
+    //        {
+    //            Debug.LogError("No CardObject attached to ObjectHeld");
+    //        }
+    //        ObjectHeld.GetComponent<CardObject>().DeselectObject();
+    //        ChangeColor(MatColorOriginal);
+    //        TileSelected = false;
+    //    }
+    //}
 
-    public void ObjectHeldSelected()
-    {
-        if (ObjectHeld != null)
-        {
-            if (ObjectHeld.GetComponent<CardObject>() == null)
-            {
-                Debug.LogError("No CardObject attached to ObjectHeld");
-            }
-            Debug.Log("TileSelected");
-            ObjectHeld.GetComponent<CardObject>().SelectedObject();
-            TileSelected = true;
-            ChangeColor(Color.blue);
+    //public void ObjectHeldSelected()
+    //{
+    //    if (ObjectHeld != null)
+    //    {
+    //        if (ObjectHeld.GetComponent<CardObject>() == null)
+    //        {
+    //            Debug.LogError("No CardObject attached to ObjectHeld");
+    //        }
+    //        else
+    //        {
+    //            Debug.Log("TileSelected");
+    //            ObjectHeld.GetComponent<CardObject>().SelectedObject();
+    //            TileSelected = true;
+    //            ChangeColor(Color.blue);
+    //        }
 
-        }
-        else
-        {
-            Debug.Log("No Object to Select");
-        }
-    }
+    //    }
+    //    else
+    //    {
+    //        Debug.Log("No Object to Select");
+    //    }
+    //}
 
 
     public void ChangeColor(Color color)

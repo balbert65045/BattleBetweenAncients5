@@ -13,8 +13,9 @@ public class PathBuilder : MonoBehaviour {
     // Use this for initialization
     private PlayerObjectCreator[] TilesTotal;
     public PlayerObjectCreator[,] GridTiles;
-    private PlayerObjectCreator[] PathTiles;
+    public PlayerObjectCreator[] PathTiles;
 
+    public int PathLength { get { return PathTiles.Length; } }
 
     public void DeselectPath()
     {
@@ -26,6 +27,34 @@ public class PathBuilder : MonoBehaviour {
             }
         }
     }
+
+
+
+    public int CheckPathPosition(PlayerObjectCreator CurrentTile)
+    {
+        for (int i = 0; i< PathTiles.Length; i++)
+        {
+            if (PathTiles[i] == CurrentTile)
+            {
+                return i;
+            }
+        }
+        return -1;
+    }
+
+    public Transform FindNextTileInPath(PlayerObjectCreator CurrentTile)
+    {
+        for (int i = 0; i < PathTiles.Length; i++)
+        {
+            if (PathTiles[i] == CurrentTile)
+            {
+                return PathTiles[i + 1].transform;
+            }
+        }
+        return null;
+    }
+
+
 
     public void FindTilesBetween(PlayerObjectCreator TileStart, PlayerObjectCreator TileEnd)
     {
@@ -41,7 +70,7 @@ public class PathBuilder : MonoBehaviour {
         }
 
 
-        PathTiles = new PlayerObjectCreator[Mathf.Abs(Xdelta) + Mathf.Abs(Zdelta) + 2];
+        PathTiles = new PlayerObjectCreator[Mathf.Abs(Xdelta) + Mathf.Abs(Zdelta) + 1];
        // PathTiles = new PlayerObjectCreator[Mathf.Abs(Xdelta) + 1];
 
         int TilesinPath = 0;
@@ -58,7 +87,7 @@ public class PathBuilder : MonoBehaviour {
         }
         else
         {
-            for (int z = TileEnd.Z; z <= TileStart.Z; z++)
+            for (int z = TileStart.Z; z >= TileEnd.Z; z--)
             {
                 GridTiles[TileStart.X, z].ChangeColor(Color.blue);
                 PathTiles[TilesinPath] = GridTiles[TileStart.X, z];
@@ -69,7 +98,7 @@ public class PathBuilder : MonoBehaviour {
 
         if (Xdelta > 0)
         {
-            for (int x = TileStart.X; x <= TileEnd.X; x++)
+            for (int x = TileStart.X + 1; x <= TileEnd.X; x++)
             {
                 GridTiles[x, TileEnd.Z].ChangeColor(Color.blue);
                 PathTiles[TilesinPath] = GridTiles[x, TileEnd.Z];
@@ -77,9 +106,9 @@ public class PathBuilder : MonoBehaviour {
 
             }
         }
-        else
+        else if (Xdelta < 0)
         {
-            for (int x = TileEnd.X; x <= TileStart.X; x++)
+            for (int x = TileStart.X - 1; x >= TileEnd.X; x--)
             {
                 GridTiles[x, TileEnd.Z].ChangeColor(Color.blue);
                 PathTiles[TilesinPath] = GridTiles[x, TileEnd.Z];

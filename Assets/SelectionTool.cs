@@ -8,11 +8,11 @@ public class SelectionTool : MonoBehaviour {
     // Use this for initialization
     CameraRaycaster cameraRaycaster;
     PlayerObjectCreator playerObjectCreatorSelected;
+    public CardObject cardObjectSelected;
     ItemCreator itemCreator;
     RaycastHit m_hit;
     PathBuilder pathBuilder;
 
-    bool ObjectSelected;
     
 
 
@@ -40,44 +40,57 @@ public class SelectionTool : MonoBehaviour {
             {
                 if (playerObjectCreatorSelected != null)
                 {
-                    playerObjectCreatorSelected.ObjectHeldDeselected();
+                    cardObjectSelected.DeselectObject();
+                    cardObjectSelected = null;
                     pathBuilder.DeselectPath();
-                    ObjectSelected = false;
+                    
                 }
             }
         }
     }
 
+    // TODO Clean this up and disable when object is moving 
     void OnPathChange(Transform newTransform)
     {
-        if (newTransform.GetComponent<PlayerObjectCreator>() != null)
+        if (cardObjectSelected != null)
         {
-            if (playerObjectCreatorSelected != null)
+            if (newTransform.GetComponent<PlayerObjectCreator>() != null)
             {
-                if (playerObjectCreatorSelected.ObjectHeld != null)
-                {
-                    pathBuilder.FindTilesBetween(playerObjectCreatorSelected, newTransform.GetComponent<PlayerObjectCreator>());
-                }
+                pathBuilder.FindTilesBetween(cardObjectSelected.GetCurrentTile, newTransform.GetComponent<PlayerObjectCreator>());
             }
         }
+        //if (newTransform.GetComponent<PlayerObjectCreator>() != null)
+        //{
+        //    if (playerObjectCreatorSelected != null)
+        //    {
+        //        if (playerObjectCreatorSelected.ObjectHeld != null)
+        //        {
+        //            pathBuilder.FindTilesBetween(playerObjectCreatorSelected, newTransform.GetComponent<PlayerObjectCreator>());
+        //        }
+        //    }
+        //}
     }
 
     void OnItemSelect(Transform transform)
     {
-        if (playerObjectCreatorSelected != null)
+        if (cardObjectSelected != null)
         {
-            playerObjectCreatorSelected.ObjectHeldDeselected();
+            cardObjectSelected.DeselectObject();
+            cardObjectSelected = null;
             pathBuilder.DeselectPath();
-            ObjectSelected = false;
+            
         }
         //TODO fix null exception with the raycaster 
         if (cameraRaycaster.transormHit != null)
         {
             if (cameraRaycaster.transormHit.GetComponent<PlayerObjectCreator>() != null)
             {
-                playerObjectCreatorSelected = cameraRaycaster.transormHit.GetComponent<PlayerObjectCreator>();
-                playerObjectCreatorSelected.ObjectHeldSelected();
-                ObjectSelected = true;
+                if (cameraRaycaster.transormHit.GetComponent<PlayerObjectCreator>().ObjectHeld != null)
+                {
+                    cardObjectSelected = cameraRaycaster.transormHit.GetComponent<PlayerObjectCreator>().ObjectHeld.GetComponent<CardObject>();
+                    cardObjectSelected.SelectedObject();
+                    cardObjectSelected.GetCurrentTile.ChangeColor(Color.blue);
+                }
             }
         }
     }
