@@ -5,8 +5,8 @@ using UnityEngine;
 public class RowController : MonoBehaviour {
 
 
-    PlayerObjectCreator[] Tiles;
-    public PlayerObjectCreator[] OrderdTiles;
+    EnviromentTile[] Tiles;
+    public EnviromentTile[] OrderdTiles;
 
     private GameObject ReadyObject;
     int length;
@@ -15,8 +15,8 @@ public class RowController : MonoBehaviour {
     
     // Use this for initialization
     void Start () {
-        Tiles = GetComponentsInChildren<PlayerObjectCreator>();
-        OrderdTiles = GetComponentsInChildren<PlayerObjectCreator>();
+        Tiles = GetComponentsInChildren<EnviromentTile>();
+        OrderdTiles = GetComponentsInChildren<EnviromentTile>();
         length = Tiles.Length - 1;
 
         for (int i =0; i < Tiles.Length; i++)

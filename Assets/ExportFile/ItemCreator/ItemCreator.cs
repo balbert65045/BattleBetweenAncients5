@@ -7,11 +7,11 @@ public class ItemCreator : MonoBehaviour {
 
     // Use this for initialization
     CameraRaycaster cameraRaycaster;
-    PlayerObjectCreator playerObjectCreator;
+    EnviromentTile playerObjectCreator;
     RowController rowController;
     PlayerObjectHolder playerObjectHolder;
     CreatorButton[] creatorButtons;
-    PlayerObjectCreator OldTileImage;
+    EnviromentTile OldTileImage;
 
     public bool ActiveImage = false;
 
@@ -53,11 +53,11 @@ public class ItemCreator : MonoBehaviour {
     // TODO find why first tile hover over does not show image
     void OnItemCreateImage(Transform newTransform)
     {
-        if (newTransform.GetComponent<PlayerObjectCreator>() != null)
+        if (newTransform.GetComponent<EnviromentTile>() != null)
         {
             if (ActiveImage)
             {
-                playerObjectCreator = newTransform.GetComponent<PlayerObjectCreator>();
+                playerObjectCreator = newTransform.GetComponent<EnviromentTile>();
                 rowController = playerObjectCreator.GetComponentInParent<RowController>();
 
                 GameObject newItem = playerObjectHolder.ReadyImage;

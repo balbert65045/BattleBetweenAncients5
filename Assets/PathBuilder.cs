@@ -5,23 +5,22 @@ using UnityEngine;
 public class PathBuilder : MonoBehaviour {
 
 
-    
+    //Grid size (Note: may want to change to automatically update with new map)
     public static int xGridLength = 7;
-   
     public static int zGridLength = 7;
 
-    // Use this for initialization
-    private PlayerObjectCreator[] TilesTotal;
-    public PlayerObjectCreator[,] GridTiles;
-    public PlayerObjectCreator[] PathTiles;
+    private EnviromentTile[] TilesTotal;
+    public EnviromentTile[,] GridTiles;
+    public EnviromentTile[] PathTiles;
 
     public int PathLength { get { return PathTiles.Length; } }
 
+    //Simply Turns off selection (Note: may want to take tiles out of path)
     public void DeselectPath()
     {
         if (PathTiles != null)
         {
-            foreach (PlayerObjectCreator Tile in PathTiles)
+            foreach (EnviromentTile Tile in PathTiles)
             {
                 Tile.ChangeColor(Tile.MatColorOriginal);
             }
@@ -29,8 +28,9 @@ public class PathBuilder : MonoBehaviour {
     }
 
 
-
-    public int CheckPathPosition(PlayerObjectCreator CurrentTile)
+    //Returns the position of the Tile in the path 
+    //If not in path returns -1
+    public int CheckPathPosition(EnviromentTile CurrentTile)
     {
         for (int i = 0; i< PathTiles.Length; i++)
         {
@@ -42,7 +42,8 @@ public class PathBuilder : MonoBehaviour {
         return -1;
     }
 
-    public Transform FindNextTileInPath(PlayerObjectCreator CurrentTile)
+    //Returns the tile next in path
+    public Transform FindNextTileInPath(EnviromentTile CurrentTile)
     {
         for (int i = 0; i < PathTiles.Length; i++)
         {
@@ -55,33 +56,37 @@ public class PathBuilder : MonoBehaviour {
     }
 
 
-
-    public void FindTilesBetween(PlayerObjectCreator TileStart, PlayerObjectCreator TileEnd)
+    // Creates a path depending on a Start and end tile 
+    //TODO needs to be modified for avoidance objects like terrain and other cards
+    public void FindTilesBetween(EnviromentTile TileStart, EnviromentTile TileEnd)
     {
         int Xdelta = TileEnd.X - TileStart.X;
         int Zdelta = TileEnd.Z - TileStart.Z;
 
+        // At each new path created unhighlight previous path made
         if (PathTiles != null)
         {
-            foreach (PlayerObjectCreator Tile in PathTiles)
+            foreach (EnviromentTile Tile in PathTiles)
             {
                 Tile.ChangeColor(Tile.MatColorOriginal);
             }
         }
 
+        // Create new empty path
+        PathTiles = new EnviromentTile[Mathf.Abs(Xdelta) + Mathf.Abs(Zdelta) + 1];
+        int TilePathIndex = 0;
 
-        PathTiles = new PlayerObjectCreator[Mathf.Abs(Xdelta) + Mathf.Abs(Zdelta) + 1];
-       // PathTiles = new PlayerObjectCreator[Mathf.Abs(Xdelta) + 1];
 
-        int TilesinPath = 0;
-
+        // Depending on delta positions, add Tiles into tile path
+        // (Note: Currently adds z tiles first then x tiles)
+        // TODO refactor this into cleaner code
         if (Zdelta > 0)
         {
             for (int z = TileStart.Z; z <= TileEnd.Z; z++)
             {
                 GridTiles[TileStart.X, z].ChangeColor(Color.blue);
-                PathTiles[TilesinPath] = GridTiles[TileStart.X, z];
-                TilesinPath++;
+                PathTiles[TilePathIndex] = GridTiles[TileStart.X, z];
+                TilePathIndex++;
 
             }
         }
@@ -90,8 +95,8 @@ public class PathBuilder : MonoBehaviour {
             for (int z = TileStart.Z; z >= TileEnd.Z; z--)
             {
                 GridTiles[TileStart.X, z].ChangeColor(Color.blue);
-                PathTiles[TilesinPath] = GridTiles[TileStart.X, z];
-                TilesinPath++;
+                PathTiles[TilePathIndex] = GridTiles[TileStart.X, z];
+                TilePathIndex++;
 
             }
         }
@@ -101,8 +106,8 @@ public class PathBuilder : MonoBehaviour {
             for (int x = TileStart.X + 1; x <= TileEnd.X; x++)
             {
                 GridTiles[x, TileEnd.Z].ChangeColor(Color.blue);
-                PathTiles[TilesinPath] = GridTiles[x, TileEnd.Z];
-                TilesinPath++;
+                PathTiles[TilePathIndex] = GridTiles[x, TileEnd.Z];
+                TilePathIndex++;
 
             }
         }
@@ -111,8 +116,8 @@ public class PathBuilder : MonoBehaviour {
             for (int x = TileStart.X - 1; x >= TileEnd.X; x--)
             {
                 GridTiles[x, TileEnd.Z].ChangeColor(Color.blue);
-                PathTiles[TilesinPath] = GridTiles[x, TileEnd.Z];
-                TilesinPath++;
+                PathTiles[TilePathIndex] = GridTiles[x, TileEnd.Z];
+                TilePathIndex++;
 
             }
         }
@@ -123,20 +128,16 @@ public class PathBuilder : MonoBehaviour {
     }
 
     void Start () {
-        TilesTotal = FindObjectsOfType<PlayerObjectCreator>();
-        GridTiles = new PlayerObjectCreator[xGridLength, zGridLength];
-            foreach (PlayerObjectCreator Tile in TilesTotal)
+
+        // Creates a Grid out of all the Tiles 
+        TilesTotal = FindObjectsOfType<EnviromentTile>();
+        GridTiles = new EnviromentTile[xGridLength, zGridLength];
+            foreach (EnviromentTile Tile in TilesTotal)
             {
                 GridTiles[Tile.X, Tile.Z] = Tile;
             }
-
-        //Debug.Log(GridTiles[1, 1]);
         }
 
     
 	
-	// Update is called once per frame
-	void Update () {
-		
-	}
 }

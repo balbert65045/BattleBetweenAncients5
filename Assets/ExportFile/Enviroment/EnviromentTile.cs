@@ -3,30 +3,25 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityStandardAssets.CrossPlatformInput;
 
-public class PlayerObjectCreator : MonoBehaviour {
+public class EnviromentTile : MonoBehaviour {
 
     [SerializeField]
     float SnapDistance = 5f;
 
-    private PlayerObjectHolder PlayerObjectHolder;
+    public CardType cardType { get; private set; }
+    public GameObject ObjectHeld { get; private set; }
+    public Color MatColorOriginal { get; private set; }
+    public int X { get; private set; }
+    public int Z { get; private set; }
+
     public GameObject ParentforObjects;
 
-    public bool PlayerOnTile = false;
-    public bool ObjectValid = true;
 
-
-    public GameObject ObjectHeld;
-    public CardType cardType;
-
-    public bool TileSelected = false;
-
-    public int X;
-    public int Z;
-
+    private PlayerObjectHolder PlayerObjectHolder;
     private Camera cam;
     private CameraRaycaster cameraRaycaster;
 
-    public Color MatColorOriginal;
+   
 
 
 	// Use this for initialization
@@ -34,22 +29,16 @@ public class PlayerObjectCreator : MonoBehaviour {
         PlayerObjectHolder = FindObjectOfType<PlayerObjectHolder>();
         cam = FindObjectOfType<CameraControl>().GetComponent<Camera>();
         cameraRaycaster = FindObjectOfType<CameraRaycaster>();
+
         cardType = CardType.Open;
         MatColorOriginal = GetComponent<MeshRenderer>().material.color;
+
+        // Find Position in Grid
         X = Mathf.RoundToInt(transform.position.x / SnapDistance);
         Z = Mathf.RoundToInt(transform.position.z / SnapDistance);
 
     }
 
-    private void Start()
-    {
-       
-    }
-
-    // Update is called once per frame
-    void Update () {
-		
-	}
 
     public void OnItemMake(GameObject newItem)
     {
@@ -76,43 +65,6 @@ public class PlayerObjectCreator : MonoBehaviour {
         ChangeColor(MatColorOriginal);
         cardType = CardType.Open;
     }
-   
-    //public void ObjectHeldDeselected()
-    //{
-    //    if (ObjectHeld != null)
-    //    {
-    //        if (ObjectHeld.GetComponent<CardObject>() == null)
-    //        {
-    //            Debug.LogError("No CardObject attached to ObjectHeld");
-    //        }
-    //        ObjectHeld.GetComponent<CardObject>().DeselectObject();
-    //        ChangeColor(MatColorOriginal);
-    //        TileSelected = false;
-    //    }
-    //}
-
-    //public void ObjectHeldSelected()
-    //{
-    //    if (ObjectHeld != null)
-    //    {
-    //        if (ObjectHeld.GetComponent<CardObject>() == null)
-    //        {
-    //            Debug.LogError("No CardObject attached to ObjectHeld");
-    //        }
-    //        else
-    //        {
-    //            Debug.Log("TileSelected");
-    //            ObjectHeld.GetComponent<CardObject>().SelectedObject();
-    //            TileSelected = true;
-    //            ChangeColor(Color.blue);
-    //        }
-
-    //    }
-    //    else
-    //    {
-    //        Debug.Log("No Object to Select");
-    //    }
-    //}
 
 
     public void ChangeColor(Color color)
@@ -125,12 +77,6 @@ public class PlayerObjectCreator : MonoBehaviour {
     {
         cardType = CardType.Open;
         Destroy(ObjectHeld);
-    }
-
-
-    public void TogglePlacement(bool value)
-    {
-        ObjectValid = value;
     }
 
 }

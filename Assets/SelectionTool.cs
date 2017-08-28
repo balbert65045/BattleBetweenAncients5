@@ -7,11 +7,12 @@ public class SelectionTool : MonoBehaviour {
 
     // Use this for initialization
     CameraRaycaster cameraRaycaster;
-    PlayerObjectCreator playerObjectCreatorSelected;
+    EnviromentTile playerObjectCreatorSelected;
     public CardObject cardObjectSelected;
     ItemCreator itemCreator;
     RaycastHit m_hit;
     PathBuilder pathBuilder;
+    GameController gameController;
 
     
 
@@ -19,12 +20,14 @@ public class SelectionTool : MonoBehaviour {
 
     void Start () {
         cameraRaycaster = FindObjectOfType<CameraRaycaster>();
-        cameraRaycaster.layerChangeObservers += OnPathChange;
         itemCreator = GetComponent<ItemCreator>();
         pathBuilder = FindObjectOfType<PathBuilder>();
+        gameController = FindObjectOfType<GameController>();
     }
 
-    // Update is called once per frame
+
+
+   // Waits for left click mouse on a Terrain Object to try to select a target
     void Update()
     {
         if (CrossPlatformInputManager.GetButtonDown("pointer1"))
@@ -40,56 +43,32 @@ public class SelectionTool : MonoBehaviour {
             {
                 if (playerObjectCreatorSelected != null)
                 {
-                    cardObjectSelected.DeselectObject();
                     cardObjectSelected = null;
-                    pathBuilder.DeselectPath();
-                    
+                    gameController.SelectObject(null);
                 }
             }
         }
     }
 
-    // TODO Clean this up and disable when object is moving 
-    void OnPathChange(Transform newTransform)
-    {
-        if (cardObjectSelected != null)
-        {
-            if (newTransform.GetComponent<PlayerObjectCreator>() != null)
-            {
-                pathBuilder.FindTilesBetween(cardObjectSelected.GetCurrentTile, newTransform.GetComponent<PlayerObjectCreator>());
-            }
-        }
-        //if (newTransform.GetComponent<PlayerObjectCreator>() != null)
-        //{
-        //    if (playerObjectCreatorSelected != null)
-        //    {
-        //        if (playerObjectCreatorSelected.ObjectHeld != null)
-        //        {
-        //            pathBuilder.FindTilesBetween(playerObjectCreatorSelected, newTransform.GetComponent<PlayerObjectCreator>());
-        //        }
-        //    }
-        //}
-    }
 
+    // Selects the target for GameController 
+    // returns null if does not hold a card object
     void OnItemSelect(Transform transform)
     {
         if (cardObjectSelected != null)
         {
-            cardObjectSelected.DeselectObject();
             cardObjectSelected = null;
-            pathBuilder.DeselectPath();
-            
+            gameController.SelectObject(null);
+
         }
-        //TODO fix null exception with the raycaster 
         if (cameraRaycaster.transormHit != null)
         {
-            if (cameraRaycaster.transormHit.GetComponent<PlayerObjectCreator>() != null)
+            if (cameraRaycaster.transormHit.GetComponent<EnviromentTile>() != null)
             {
-                if (cameraRaycaster.transormHit.GetComponent<PlayerObjectCreator>().ObjectHeld != null)
+                if (cameraRaycaster.transormHit.GetComponent<EnviromentTile>().ObjectHeld != null)
                 {
-                    cardObjectSelected = cameraRaycaster.transormHit.GetComponent<PlayerObjectCreator>().ObjectHeld.GetComponent<CardObject>();
-                    cardObjectSelected.SelectedObject();
-                    cardObjectSelected.GetCurrentTile.ChangeColor(Color.blue);
+                    cardObjectSelected = cameraRaycaster.transormHit.GetComponent<EnviromentTile>().ObjectHeld.GetComponent<CardObject>();
+                    gameController.SelectObject(cardObjectSelected);
                 }
             }
         }

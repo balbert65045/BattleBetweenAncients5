@@ -18,12 +18,15 @@ public class CardObject : MonoBehaviour {
     CameraRaycaster cameraRaycaster;
     PathBuilder pathBuilder;
 
+    public delegate void OnMoveChange(bool inMoveState); // declare delegate type
+    public event OnMoveChange MoveChangeObservers; //instantiate an observer set
+
     RaycastHit m_hit;
-    PlayerObjectCreator CurrentTile;
-    public PlayerObjectCreator GetCurrentTile { get { return CurrentTile; } }
+    EnviromentTile CurrentTile;
+    public EnviromentTile GetCurrentTile { get { return CurrentTile; } }
 
 
-    public void OnCurrentTile(PlayerObjectCreator tileTransform)
+    public void OnCurrentTile(EnviromentTile tileTransform)
     {
         CurrentTile = tileTransform;
     }
@@ -52,20 +55,23 @@ public class CardObject : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
+        // Move on right cloick
         if (CrossPlatformInputManager.GetButtonDown("pointer2") && Selected)
         {
-            Debug.Log("Button Noticed");
+           
             var hit = cameraRaycaster.RaycastForLayer(Layer.LevelTerrain);
             if (hit.HasValue)
             {
                 m_hit = hit.Value;
                 // Check if their is another object on the tile/ if the tile is open
-                if (m_hit.transform.GetComponent<PlayerObjectCreator>().cardType == CardType.Open)
+                if (m_hit.transform.GetComponent<EnviromentTile>().cardType == CardType.Open)
                 {
-                    pathBuilder.DeselectPath();
-                    DeselectObject();
+                    //Tell Observers object moving
                     Moving = true;
+                    if (MoveChangeObservers != null) MoveChangeObservers(Moving);
                 }
+                // elseif (m_hit.transform.GetComponent<PlayerObjectCreator>().cardType == CardType.Enemy)
+                //This will be how to handle attacking
             }
         }
 
@@ -73,7 +79,6 @@ public class CardObject : MonoBehaviour {
         {
             // Move Character to next tile in Tile Path once reaching destination
             RemainingDistance = (transform.position - CurrentTile.transform.position).magnitude;
-        //    float RemainingDistance = (transform.position - CurrentTile.transform.position).magnitude;
             if (RemainingDistance < aiCharacterControl.agent.stoppingDistance)
             {
 
@@ -89,7 +94,10 @@ public class CardObject : MonoBehaviour {
                 }
                 else
                 {
+                    //Once reaching destination Stop moving and send message to observers 
+                    Debug.Log("Stop Moving");
                     Moving = false;
+                    if (MoveChangeObservers != null) MoveChangeObservers(Moving);
                 }
             }
            
@@ -105,7 +113,6 @@ public class CardObject : MonoBehaviour {
     {
         // Move Off the current tile 
         CurrentTile.ObjectMovedOffTile();
-        Debug.Log("Attempting to move to position" + newTansform);
 
 
        
@@ -113,7 +120,7 @@ public class CardObject : MonoBehaviour {
         aiCharacterControl.SetTarget(newTansform);
 
         // Tile Change
-        OnCurrentTile(newTansform.GetComponent<PlayerObjectCreator>());
+        OnCurrentTile(newTansform.GetComponent<EnviromentTile>());
         CurrentTile.ObjectMovecOnTile(this.gameObject);
 
         // Make it so the Object has to be reselected to move again
