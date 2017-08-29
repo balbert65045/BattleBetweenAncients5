@@ -8,7 +8,6 @@ public class ItemCreator : MonoBehaviour {
     // Use this for initialization
     CameraRaycaster cameraRaycaster;
     EnviromentTile playerObjectCreator;
-    RowController rowController;
     PlayerObjectHolder playerObjectHolder;
     CreatorButton[] creatorButtons;
     EnviromentTile OldTileImage;
@@ -24,9 +23,6 @@ public class ItemCreator : MonoBehaviour {
         cameraRaycaster.layerChangeObservers += OnItemCreateImage;
         playerObjectHolder = FindObjectOfType<PlayerObjectHolder>();
         creatorButtons = FindObjectsOfType<CreatorButton>();
-
-
-
     }
 
     // Update is called once per frame
@@ -46,7 +42,6 @@ public class ItemCreator : MonoBehaviour {
             OnItemCreate();
             OldTileImage = null;
         }
-    //   if (cameraRaycaster.transormHit != null) OnItemCreate(cameraRaycaster.transormHit);
     }
 
 
@@ -58,22 +53,18 @@ public class ItemCreator : MonoBehaviour {
             if (ActiveImage)
             {
                 playerObjectCreator = newTransform.GetComponent<EnviromentTile>();
-                rowController = playerObjectCreator.GetComponentInParent<RowController>();
-
                 GameObject newItem = playerObjectHolder.ReadyImage;
-                if (rowController.CheckItemAvailability(newTransform, newItem))
+
+                if (OldTileImage != null)
                 {
-                    if (OldTileImage != null)
-                    {
-                        OldTileImage.DestroyImage();
-                    }
-                    if (playerObjectCreator.cardType == CardType.Open)
-                    {
-                        playerObjectCreator.OnItemMake(newItem);
-                        OldTileImage = playerObjectCreator;
-                    }
-                    
+                    OldTileImage.DestroyImage();
                 }
+                if (playerObjectCreator.cardType == CardType.Open)
+                {
+                    playerObjectCreator.OnItemMake(newItem);
+                    OldTileImage = playerObjectCreator;
+                } 
+                
             }
         }
       }

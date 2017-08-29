@@ -8,11 +8,9 @@ public class CardObject : MonoBehaviour {
 
     public CardType cardType;
 
-    //float StoppingDistance = .1f;
-    public float RemainingDistance;
-
-    public bool Selected = false;
-    public bool Moving = false;
+    public float RemainingDistance { get; private set; }
+    public bool Selected { get; private set; }
+    public bool Moving { get; private set; }
     AICharacterControl aiCharacterControl;
     ObjectController objectController;
     CameraRaycaster cameraRaycaster;
@@ -34,20 +32,17 @@ public class CardObject : MonoBehaviour {
     public void SelectedObject()
     {
         Selected = true;
-        objectController.SelectedObjectinPlay(this);
     }
     
     public void DeselectObject()
     {
         Selected = false;
-        objectController.SelectedObjectinPlay(null);
     }
 
 
     // Use this for initialization
     void Start () {
         aiCharacterControl = GetComponent<AICharacterControl>();
-        objectController = FindObjectOfType<ObjectController>();
         cameraRaycaster = FindObjectOfType<CameraRaycaster>();
         pathBuilder = FindObjectOfType<PathBuilder>();
 
@@ -99,13 +94,8 @@ public class CardObject : MonoBehaviour {
                     Moving = false;
                     if (MoveChangeObservers != null) MoveChangeObservers(Moving);
                 }
-            }
-           
-
+            }  
         }
-
-       
-
     }
 
 
@@ -113,9 +103,6 @@ public class CardObject : MonoBehaviour {
     {
         // Move Off the current tile 
         CurrentTile.ObjectMovedOffTile();
-
-
-       
 
         aiCharacterControl.SetTarget(newTansform);
 

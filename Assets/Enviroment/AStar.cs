@@ -4,8 +4,12 @@ using UnityEngine;
 
 public class AStar : MonoBehaviour {
 
+    // For more detail on the A* algorithm follow this link http://blog.two-cats.com/2014/06/a-star-example/ 
+
+    //TODO adjust these automatically for TerrainMap
     public int MaxWidth = 7;
     public int MaxHeight = 7;
+
     private Node[,] nodes;
     private Node startNode;
     private Node endNode;
@@ -13,9 +17,10 @@ public class AStar : MonoBehaviour {
     private List<Node> ClosedNodes;
 
 
-
+    // Finds a path between Tile A and B using the A* algorithm
     public List<Node> FindPath(Node Begin, Node End, Node[,] Map)
     {
+        // Initialize values and nodes
         startNode = Begin;
         endNode = End;
         nodes = Map;
@@ -38,11 +43,15 @@ public class AStar : MonoBehaviour {
         OpenNodes = new List<Node>();
         ClosedNodes = new List<Node>();
         List<Node> path = new List<Node>();
+
+        // Add Starting point into list to become closed
         OpenNodes.Add(startNode);
+        // Search for a path between start point and end point and return true if possible 
         bool success = Search(startNode);
         Debug.Log(success);
         if (success)
         {
+            // Reverse the path list for path from start to end
             Node node = this.endNode;
             while (node.ParentNode != null)
             {
@@ -58,14 +67,18 @@ public class AStar : MonoBehaviour {
 
     private bool Search(Node currentNode)
     {
+        //Make the current node closed since its being evaluated
         currentNode.State = NodeState.Closed;
         OpenNodes.Remove(currentNode);
         ClosedNodes.Add(currentNode);
 
+        // Add the viable nodes that are adjacent to the current one to the Open list
         OpenNodes.AddRange(GetAdjacentWalkableNodes(currentNode));
 
+        // Check if any open nodes available, if not then no path possible 
         if (OpenNodes.Count > 0)
         {
+            // Find the next node with the lowest F value
             Node minFNode = OpenNodes[0];
             foreach (var nextNode in OpenNodes)
             {
@@ -75,11 +88,13 @@ public class AStar : MonoBehaviour {
                 }
             }
 
-
+            // If its the end then your done 
             if (minFNode.Location == this.endNode.Location)
             {
                 return true;
             }
+
+            // If not repeat the process
             else
             {
                 if (Search(minFNode)) // Note: Recurses back into Search(Node)
@@ -90,33 +105,9 @@ public class AStar : MonoBehaviour {
     }
 
 
-
-
-    //private bool Search(Node currentNode)
-    //{
-    //    currentNode.State = NodeState.Closed;
-    //    List<Node> nextNodes = GetAdjacentWalkableNodes(currentNode);
-        
-    //    nextNodes.Sort((node1, node2) => node1.F.CompareTo(node2.F));
-    //    foreach (var nextNode in nextNodes)
-    //    {
-
-    //        if (nextNode.Location == this.endNode.Location)
-    //        {
-    //            return true;
-    //        }
-    //        else
-    //        {
-    //            if (Search(nextNode)) // Note: Recurses back into Search(Node)
-    //                return true;
-    //        }
-    //    }
-    //    return false;
-    //}
-
-
     private Point[] GetAdjacentLocations(Point location)
     {
+        // Find the four adjacent nodes UP Down Left Right
         Point[] AdjacentPoints = new Point[4];
         AdjacentPoints[0] = new Point(location.X, location.Y + 1);
         AdjacentPoints[1] = new Point(location.X, location.Y - 1);

@@ -11,10 +11,7 @@ public class GameController : MonoBehaviour {
     CameraRaycaster cameraRaycaster;
     EnviromentTile currentTileSelected;
 
-    
-
     bool allowPathChange = true;
-    bool allowObjectSelection;
 
 
     public void SelectObject(CardObject cardObject)

@@ -6,32 +6,22 @@ using UnityStandardAssets.CrossPlatformInput;
 public class Node : MonoBehaviour
 {
 
-    public Point Location;
-    public bool IsWalkable;
-    public float G;
-    public float H;
+    public Point Location { get; set; }
+    public bool IsWalkable { get; set; }
+    public float G { get; private set; }
+    public float H { get; private set; }
     public float F { get { return this.G + this.H; } }
-    public NodeState State;
-    public Node ParentNode;
-
-
-    //public Point Location { get; set; }
-    //public bool IsWalkable { get; set; }
-    //public float G { get; private set; }
-    //public float H { get; private set; }
-    //public float F { get { return this.G + this.H; } }
-    //public NodeState State { get; set; }
-    //public Node ParentNode { get; set; }
+    public NodeState State { get; set; }
+    public Node ParentNode { get; set; }
 
 
     EnviromentTile Tile;
 
+    // TODO change this to actual distance 
     public static float GetTraversalCost(Point startLocation, Point endLocation)
     {
         return 1;
     }
-
-
 
     public void CalculateG(Point StartPoint)
     {
