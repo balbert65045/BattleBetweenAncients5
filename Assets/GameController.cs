@@ -70,6 +70,7 @@ public class GameController : MonoBehaviour {
     void deSelectObject()
     {
         selectedCardObject.MoveChangeObservers -= SelectedObjectMoveStateChange;
+        selectedCardObject.GetCurrentTile.ChangeColor(selectedCardObject.GetCurrentTile.MatColorOriginal);
         selectedCardObject.DeselectObject();
         selectedCardObject = null;
         currentTileSelected = null;
@@ -85,6 +86,7 @@ public class GameController : MonoBehaviour {
         {
             //Deselect path made (NOTE: comment this if you want to see tiles diapear one at a time)
             pathBuilder.DeselectPath();
+
             //Disable ability to change path mid move and select different target
             allowPathChange = false;
             selectionTool.enabled = false;

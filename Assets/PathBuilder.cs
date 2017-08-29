@@ -11,7 +11,11 @@ public class PathBuilder : MonoBehaviour {
 
     private EnviromentTile[] TilesTotal;
     public EnviromentTile[,] GridTiles;
+    private Node[,] GridNodes;
     public EnviromentTile[] PathTiles;
+    public List<Node> PathNodes;
+
+    private AStar astar;
 
     public int PathLength { get { return PathTiles.Length; } }
 
@@ -73,54 +77,79 @@ public class PathBuilder : MonoBehaviour {
         }
 
         // Create new empty path
-        PathTiles = new EnviromentTile[Mathf.Abs(Xdelta) + Mathf.Abs(Zdelta) + 1];
-        int TilePathIndex = 0;
+        //PathTiles = new EnviromentTile[Mathf.Abs(Xdelta) + Mathf.Abs(Zdelta) + 1];
+        //int TilePathIndex = 0;
 
 
         // Depending on delta positions, add Tiles into tile path
         // (Note: Currently adds z tiles first then x tiles)
         // TODO refactor this into cleaner code
-        if (Zdelta > 0)
-        {
-            for (int z = TileStart.Z; z <= TileEnd.Z; z++)
-            {
-                GridTiles[TileStart.X, z].ChangeColor(Color.blue);
-                PathTiles[TilePathIndex] = GridTiles[TileStart.X, z];
-                TilePathIndex++;
 
+
+        // TODO After 1 run breaks
+        Debug.Log("Looking for path");
+        PathNodes.Clear();
+        PathNodes = astar.FindPath(TileStart.GetComponent<Node>(), TileEnd.GetComponent<Node>(), GridNodes);
+        //Debug.Log(PathNodes.Count );
+
+        //// Add Tile currently standing on
+        if (PathNodes.Count > 0)
+        {
+            PathTiles = new EnviromentTile[PathNodes.Count + 1];
+            PathTiles[0] = TileStart;
+            PathTiles[0].ChangeColor(Color.blue);
+            for (int i = 1; i <= PathNodes.Count; i++)
+            {
+                PathTiles[i] = PathNodes[i - 1].GetComponent<EnviromentTile>();
+                PathTiles[i].ChangeColor(Color.blue);
             }
         }
-        else
-        {
-            for (int z = TileStart.Z; z >= TileEnd.Z; z--)
-            {
-                GridTiles[TileStart.X, z].ChangeColor(Color.blue);
-                PathTiles[TilePathIndex] = GridTiles[TileStart.X, z];
-                TilePathIndex++;
 
-            }
-        }
 
-        if (Xdelta > 0)
-        {
-            for (int x = TileStart.X + 1; x <= TileEnd.X; x++)
-            {
-                GridTiles[x, TileEnd.Z].ChangeColor(Color.blue);
-                PathTiles[TilePathIndex] = GridTiles[x, TileEnd.Z];
-                TilePathIndex++;
 
-            }
-        }
-        else if (Xdelta < 0)
-        {
-            for (int x = TileStart.X - 1; x >= TileEnd.X; x--)
-            {
-                GridTiles[x, TileEnd.Z].ChangeColor(Color.blue);
-                PathTiles[TilePathIndex] = GridTiles[x, TileEnd.Z];
-                TilePathIndex++;
 
-            }
-        }
+
+        //if (Zdelta > 0)
+        //{
+        //    for (int z = TileStart.Z; z <= TileEnd.Z; z++)
+        //    {
+        //        GridTiles[TileStart.X, z].ChangeColor(Color.blue);
+        //        PathTiles[TilePathIndex] = GridTiles[TileStart.X, z];
+        //        TilePathIndex++;
+
+        //    }
+        //}
+        //else
+        //{
+        //    for (int z = TileStart.Z; z >= TileEnd.Z; z--)
+        //    {
+        //        GridTiles[TileStart.X, z].ChangeColor(Color.blue);
+        //        PathTiles[TilePathIndex] = GridTiles[TileStart.X, z];
+        //        TilePathIndex++;
+
+        //    }
+        //}
+
+        //if (Xdelta > 0)
+        //{
+        //    for (int x = TileStart.X + 1; x <= TileEnd.X; x++)
+        //    {
+        //        GridTiles[x, TileEnd.Z].ChangeColor(Color.blue);
+        //        PathTiles[TilePathIndex] = GridTiles[x, TileEnd.Z];
+        //        TilePathIndex++;
+
+        //    }
+        //}
+        //else if (Xdelta < 0)
+        //{
+        //    for (int x = TileStart.X - 1; x >= TileEnd.X; x--)
+        //    {
+        //        GridTiles[x, TileEnd.Z].ChangeColor(Color.blue);
+        //        PathTiles[TilePathIndex] = GridTiles[x, TileEnd.Z];
+        //        TilePathIndex++;
+
+        //    }
+        //}
 
 
 
@@ -132,10 +161,15 @@ public class PathBuilder : MonoBehaviour {
         // Creates a Grid out of all the Tiles 
         TilesTotal = FindObjectsOfType<EnviromentTile>();
         GridTiles = new EnviromentTile[xGridLength, zGridLength];
+        GridNodes = new Node[xGridLength, zGridLength];
             foreach (EnviromentTile Tile in TilesTotal)
             {
                 GridTiles[Tile.X, Tile.Z] = Tile;
+            GridNodes[Tile.X, Tile.Z] = Tile.GetComponent<Node>();
             }
+        
+
+        astar = GetComponent<AStar>();
         }
 
     
