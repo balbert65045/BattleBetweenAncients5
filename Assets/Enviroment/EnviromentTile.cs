@@ -50,9 +50,13 @@ public class EnviromentTile : MonoBehaviour {
             Debug.LogError("Item Passed does not have item script attached");
         }
         Vector3 location = new Vector3(transform.position.x, transform.position.y, transform.position.z);
-        ObjectHeld = Instantiate(newItem, location, Quaternion.identity, ParentforObjects.transform);
-        ObjectHeld.GetComponent<CardObject>().OnCurrentTile(this);
         cardType = newItem.GetComponent<CardObject>().cardType;
+        Quaternion StartRot = Quaternion.identity;
+        if (cardType == CardType.Enemy) { StartRot = Quaternion.Euler(0, 180, 0); }
+
+        ObjectHeld = Instantiate(newItem, location, StartRot, ParentforObjects.transform);
+        ObjectHeld.GetComponent<CardObject>().OnCurrentTile(this);
+       
 
     }
 
