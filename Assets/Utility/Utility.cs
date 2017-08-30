@@ -6,7 +6,8 @@
 public enum CardType
 {
     Open = 1,
-    Soldier = 2,
+    Player = 2,
+    Enemy = 3,
 }
 
 

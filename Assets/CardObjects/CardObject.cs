@@ -54,24 +54,14 @@ public class CardObject : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
-        // Move on right cloick
-        if (CrossPlatformInputManager.GetButtonDown("pointer2") && Selected)
+        // Move on right click
+        if (Selected)
         {
-           
-            var hit = cameraRaycaster.RaycastForLayer(Layer.LevelTerrain);
-            if (hit.HasValue)
+            if (cardType == CardType.Player)
             {
-                m_hit = hit.Value;
-                // Check if their is another object on the tile/ if the tile is open
-                if (m_hit.transform.GetComponent<EnviromentTile>().cardType == CardType.Open)
-                {
-                    //Tell Observers object moving
-                    Moving = true;
-                    if (MoveChangeObservers != null) MoveChangeObservers(Moving);
-                }
-                // elseif (m_hit.transform.GetComponent<PlayerObjectCreator>().cardType == CardType.Enemy)
-                //This will be how to handle attacking
+                LookForMoveInput();
             }
+
         }
 
         if (Moving)
@@ -102,6 +92,26 @@ public class CardObject : MonoBehaviour {
         }
     }
 
+    private void LookForMoveInput()
+    {
+        if (CrossPlatformInputManager.GetButtonDown("pointer2"))
+        {
+            var hit = cameraRaycaster.RaycastForLayer(Layer.LevelTerrain);
+            if (hit.HasValue)
+            {
+                m_hit = hit.Value;
+                // Check if their is another object on the tile/ if the tile is open
+                if (m_hit.transform.GetComponent<EnviromentTile>().cardType == CardType.Open)
+                {
+                    //Tell Observers object moving
+                    Moving = true;
+                    if (MoveChangeObservers != null) MoveChangeObservers(Moving);
+                }
+                // elseif (m_hit.transform.GetComponent<PlayerObjectCreator>().cardType == CardType.Enemy)
+                //This will be how to handle attacking
+            }
+        }
+    }
 
     void MoveToPosition(Transform newTansform)
     {

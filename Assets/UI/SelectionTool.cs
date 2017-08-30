@@ -25,7 +25,7 @@ public class SelectionTool : MonoBehaviour {
         gameController = FindObjectOfType<GameController>();
     }
 
-
+    //TODO Create a User Control Script that delegates button/mouseclick/key presses
 
    // Waits for left click mouse on a Terrain Object to try to select a target
     void Update()

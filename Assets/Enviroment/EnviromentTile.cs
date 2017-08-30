@@ -10,6 +10,8 @@ public class EnviromentTile : MonoBehaviour {
 
     public GameObject ParentforObjects;
 
+    //public CardType cardType;
+
     public CardType cardType { get; private set; }
     public GameObject ObjectHeld { get; private set; }
     public Color MatColorOriginal { get; private set; }

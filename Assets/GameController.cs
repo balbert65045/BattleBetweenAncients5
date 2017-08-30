@@ -27,6 +27,7 @@ public class GameController : MonoBehaviour {
 
         if (cardObject != null)
         {
+
             //Select new object held
             selectedCardObject = cardObject;
             selectedCardObject.SelectedObject();
