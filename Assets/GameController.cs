@@ -57,7 +57,7 @@ public class GameController : MonoBehaviour {
         {
             if (allowPathChange)
             {
-                pathBuilder.FindTilesBetween(currentTileSelected, newTransform.GetComponent<EnviromentTile>());
+                pathBuilder.FindTilesBetween(currentTileSelected, newTransform.GetComponent<EnviromentTile>(), selectedCardObject.GetMaxMoveDistance);
             }
            
         }

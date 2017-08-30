@@ -7,10 +7,10 @@ public class ItemCreator : MonoBehaviour {
 
     // Use this for initialization
     CameraRaycaster cameraRaycaster;
-    EnviromentTile playerObjectCreator;
+    EnviromentTile Tile;
     PlayerObjectHolder playerObjectHolder;
     CreatorButton[] creatorButtons;
-    EnviromentTile OldTileImage;
+    EnviromentTile OldTileOver;
 
     public bool ActiveImage = false;
 
@@ -40,8 +40,20 @@ public class ItemCreator : MonoBehaviour {
         {
             ActiveImage = false;
             OnItemCreate();
-            OldTileImage = null;
+            OldTileOver = null;
         }
+
+        //Cancel Object to spawn
+        if (CrossPlatformInputManager.GetButtonDown("Cancel"))
+        {
+               if (OldTileOver != null)
+                {
+                ActiveImage = false;
+                OldTileOver.DestroyImage();
+                OldTileOver = null;
+            }
+        }
+
     }
 
 
@@ -52,17 +64,17 @@ public class ItemCreator : MonoBehaviour {
         {
             if (ActiveImage)
             {
-                playerObjectCreator = newTransform.GetComponent<EnviromentTile>();
+                Tile = newTransform.GetComponent<EnviromentTile>();
                 GameObject newItem = playerObjectHolder.ReadyImage;
 
-                if (OldTileImage != null)
+                if (OldTileOver != null)
                 {
-                    OldTileImage.DestroyImage();
+                    OldTileOver.DestroyImage();
                 }
-                if (playerObjectCreator.cardType == CardType.Open)
+                if (Tile.cardType == CardType.Open)
                 {
-                    playerObjectCreator.OnItemMake(newItem);
-                    OldTileImage = playerObjectCreator;
+                    Tile.OnItemMake(newItem);
+                    OldTileOver = Tile;
                 } 
                 
             }
@@ -70,17 +82,16 @@ public class ItemCreator : MonoBehaviour {
       }
 
 
-    //TODO Make it so cant put multiple objects on one tile 
     void OnItemCreate()
         {
-            if (OldTileImage != null)
+            if (OldTileOver != null)
             {
-            OldTileImage.DestroyImage();
-            if (playerObjectCreator.cardType == CardType.Open)
+            OldTileOver.DestroyImage();
+            if (Tile.cardType == CardType.Open)
                 {
                   
                     GameObject newItem = playerObjectHolder.ReadyObject;
-                    OldTileImage.OnItemMake(newItem);
+                    OldTileOver.OnItemMake(newItem);
                 }
             }
         }

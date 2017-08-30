@@ -6,6 +6,10 @@ using UnityStandardAssets.CrossPlatformInput;
 
 public class CardObject : MonoBehaviour {
 
+    [SerializeField]
+    int MaxMoveDistance = 4;
+    public int GetMaxMoveDistance { get { return MaxMoveDistance; } }
+
     public CardType cardType;
 
     public float RemainingDistance { get; private set; }

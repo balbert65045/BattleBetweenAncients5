@@ -62,7 +62,7 @@ public class PathBuilder : MonoBehaviour {
 
     // Creates a path depending on a Start and end tile 
     //TODO needs to be modified for avoidance objects like terrain and other cards
-    public void FindTilesBetween(EnviromentTile TileStart, EnviromentTile TileEnd)
+    public void FindTilesBetween(EnviromentTile TileStart, EnviromentTile TileEnd, int MaxDistance)
     {
         int Xdelta = TileEnd.X - TileStart.X;
         int Zdelta = TileEnd.Z - TileStart.Z;
@@ -95,14 +95,30 @@ public class PathBuilder : MonoBehaviour {
         //// Add Tile currently standing on
         if (PathNodes.Count > 0)
         {
-            PathTiles = new EnviromentTile[PathNodes.Count + 1];
-            PathTiles[0] = TileStart;
-            PathTiles[0].ChangeColor(Color.blue);
-            for (int i = 1; i <= PathNodes.Count; i++)
+            if (PathNodes.Count < MaxDistance)
             {
-                PathTiles[i] = PathNodes[i - 1].GetComponent<EnviromentTile>();
-                PathTiles[i].ChangeColor(Color.blue);
+                PathTiles = new EnviromentTile[PathNodes.Count + 1];
+                PathTiles[0] = TileStart;
+                PathTiles[0].ChangeColor(Color.blue);
+                for (int i = 1; i <= PathNodes.Count; i++)
+                {
+                    PathTiles[i] = PathNodes[i - 1].GetComponent<EnviromentTile>();
+                    PathTiles[i].ChangeColor(Color.blue);
+                }
             }
+            // Path excedes the max move distance
+            else
+            {
+                PathTiles = new EnviromentTile[MaxDistance + 1];
+                PathTiles[0] = TileStart;
+                PathTiles[0].ChangeColor(Color.blue);
+                for (int i = 1; i <= MaxDistance; i++)
+                {
+                    PathTiles[i] = PathNodes[i - 1].GetComponent<EnviromentTile>();
+                    PathTiles[i].ChangeColor(Color.blue);
+                }
+            }
+           
         }
 
 
