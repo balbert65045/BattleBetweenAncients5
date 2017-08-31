@@ -75,7 +75,6 @@ public class CameraRaycaster : MonoBehaviour
                         switch (m_layerHit)
                         {
                             case Layer.LevelTerrain:
-                            Debug.Log("LayerChange");
                                 m_layerHit = layer;
                                 m_Transform = m_hit.transform;
                                 if (layerChangeObservers != null) layerChangeObservers(m_Transform);

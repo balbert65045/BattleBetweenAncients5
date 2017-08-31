@@ -13,6 +13,7 @@ public class PathBuilder : MonoBehaviour {
     public EnviromentTile[,] GridTiles;
     private Node[,] GridNodes;
     public EnviromentTile[] PathTiles;
+    List<EnviromentTile> TileRange;
     public List<Node> PathNodes;
 
     private AStar astar;
@@ -22,11 +23,11 @@ public class PathBuilder : MonoBehaviour {
     //Simply Turns off selection (Note: may want to take tiles out of path)
     public void DeselectPath()
     {
-        if (PathTiles != null)
+        if (TileRange != null)
         {
-            foreach (EnviromentTile Tile in PathTiles)
+            foreach (EnviromentTile Tile in TileRange)
             {
-                Tile.ChangeColor(Tile.MatColorOriginal);
+                 { Tile.ChangeColor(Tile.MatColorOriginal); }
             }
         }
     }
@@ -59,6 +60,71 @@ public class PathBuilder : MonoBehaviour {
         return null;
     }
 
+    // Find the total range area that this object can move to and highlight it
+    public void HighlightRange(EnviromentTile TileStart, int MaxDistance)
+    {
+       
+        int layer = MaxDistance;
+        TileRange = new List<EnviromentTile>();
+        List<Node> RangePath = new List<Node>();
+        // Loop through layers (Where layers is essentially the radius of a circle shrinking in)
+        while (layer > 0)
+        {
+            // Start at the lowest Z Tile and move towards the highest Z Tile
+            for (int j = -layer; j <= layer; j++)
+            {
+                int i = Mathf.Abs(j) - layer;
+
+                // Dont allow to search for tiles outside of boundaries
+                int Y = Mathf.Clamp(TileStart.Z + j, 0, zGridLength-1);
+
+                // if there is no change in the X position then only one tile is found 
+                //   x
+                // _ _ _
+                // _ S _
+                // _ _ _
+                //   x
+                if ( i == 0)
+                {
+                    int X = Mathf.Clamp(TileStart.X, 0, xGridLength-1);
+                    // find the distance it would take 
+                    int range = Mathf.Abs(X - TileStart.X) + Mathf.Abs(Y - TileStart.Z);
+                    RangePath.Clear();
+                    // find how long Astar calculates a path 
+                    RangePath = astar.FindPath(TileStart.GetComponent<Node>(), GridTiles[X, Y].GetComponent<Node>(), GridNodes);
+                    // If it is equal then no obstacles decreasing range
+                    if (RangePath.Count == range) { TileRange.Add(GridTiles[X, Y]); }
+                   
+                }
+                // if there is a change in the X position then 2 tiles are found 
+                //   _
+                // _ _ _
+                // _ S _
+                // x _ x
+                //   _
+                else
+                {
+                    int X = Mathf.Clamp(TileStart.X + i, 0, xGridLength-1);
+                    int range = Mathf.Abs(X - TileStart.X) + Mathf.Abs(Y - TileStart.Z);
+                    RangePath.Clear();
+                    RangePath = astar.FindPath(TileStart.GetComponent<Node>(), GridTiles[X, Y].GetComponent<Node>(), GridNodes);
+                    if (RangePath.Count == range) { TileRange.Add(GridTiles[X, Y]); }
+
+                    X = Mathf.Clamp(TileStart.X - i, 0, xGridLength-1);
+                    range = Mathf.Abs(X - TileStart.X) + Mathf.Abs(Y - TileStart.Z);
+                    RangePath.Clear();
+                    RangePath = astar.FindPath(TileStart.GetComponent<Node>(), GridTiles[X, Y].GetComponent<Node>(), GridNodes);
+                    if (RangePath.Count == range) { TileRange.Add(GridTiles[X, Y]); }
+                }
+            }
+            layer--;
+        }
+        // Highlight all the tiles in the range 
+        foreach (EnviromentTile Tile in TileRange)
+        {
+            Tile.ChangeColor(Color.cyan);
+        }
+    }
 
     // Creates a path depending on a Start and end tile 
     //TODO needs to be modified for avoidance objects like terrain and other cards
@@ -72,7 +138,8 @@ public class PathBuilder : MonoBehaviour {
         {
             foreach (EnviromentTile Tile in PathTiles)
             {
-                Tile.ChangeColor(Tile.MatColorOriginal);
+                if (TileRange.Contains(Tile)) { Tile.ChangeColor(Color.cyan); }
+                else { Tile.ChangeColor(Tile.MatColorOriginal); }
             }
         }
 
@@ -86,8 +153,7 @@ public class PathBuilder : MonoBehaviour {
         // TODO refactor this into cleaner code
 
 
-        // TODO After 1 run breaks
-        Debug.Log("Looking for path");
+
         PathNodes.Clear();
         PathNodes = astar.FindPath(TileStart.GetComponent<Node>(), TileEnd.GetComponent<Node>(), GridNodes);
         //Debug.Log(PathNodes.Count );

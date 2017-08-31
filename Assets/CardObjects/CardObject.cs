@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityStandardAssets.Characters.ThirdPerson;
 using UnityStandardAssets.CrossPlatformInput;
+using UnityEngine.UI;
 
 public class CardObject : MonoBehaviour {
 
@@ -11,6 +12,9 @@ public class CardObject : MonoBehaviour {
     public int GetMaxMoveDistance { get { return MaxMoveDistance; } }
 
     public CardType cardType;
+    public CardState cardState = CardState.Move;
+
+    public Sprite CardImage;
 
     public float RemainingDistance { get; private set; }
     public bool Selected { get; private set; }
@@ -22,6 +26,10 @@ public class CardObject : MonoBehaviour {
 
     public delegate void OnMoveChange(bool inMoveState); // declare delegate type
     public event OnMoveChange MoveChangeObservers; //instantiate an observer set
+
+    public delegate void OnStateChange(CardState state);
+    public event OnStateChange StateChangeObservers;
+
 
     RaycastHit m_hit;
     EnviromentTile CurrentTile;
@@ -59,7 +67,18 @@ public class CardObject : MonoBehaviour {
         {
             if (cardType == CardType.Player)
             {
-                LookForMoveInput();
+                switch (cardState)
+                {
+                    case CardState.Move:
+                        LookForMoveInput();
+                        break;
+                    case CardState.Attack:
+                        break;
+                    default:
+                        return;
+                }
+               
+                LookForStateChange();
             }
 
         }
@@ -89,6 +108,21 @@ public class CardObject : MonoBehaviour {
                     if (MoveChangeObservers != null) MoveChangeObservers(Moving);
                 }
             }  
+        }
+    }
+
+    private void LookForStateChange()
+    {
+        if (CrossPlatformInputManager.GetButtonDown("MoveStateButton"))
+        {
+            cardState = CardState.Move;
+            if (StateChangeObservers != null) StateChangeObservers(cardState);
+           
+        }
+        else if (CrossPlatformInputManager.GetButtonDown("AttackStateButton"))
+        {
+            cardState = CardState.Attack;
+            if (StateChangeObservers != null) StateChangeObservers(cardState);
         }
     }
 

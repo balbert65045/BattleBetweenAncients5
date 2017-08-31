@@ -15,8 +15,11 @@ public class EnviromentTile : MonoBehaviour {
     public CardType cardType { get; private set; }
     public GameObject ObjectHeld { get; private set; }
     public Color MatColorOriginal { get; private set; }
-    public int X { get; private set; }
-    public int Z { get; private set; }
+
+    public int X;
+    public int Z;
+    //public int X { get; private set; }
+    //public int Z { get; private set; }
 
     private PlayerObjectHolder PlayerObjectHolder;
     private Camera cam;
@@ -55,6 +58,7 @@ public class EnviromentTile : MonoBehaviour {
         if (cardType == CardType.Enemy) { StartRot = Quaternion.Euler(0, 180, 0); }
 
         ObjectHeld = Instantiate(newItem, location, StartRot, ParentforObjects.transform);
+        ObjectHeld.name = newItem.name;
         ObjectHeld.GetComponent<CardObject>().OnCurrentTile(this);
        
 

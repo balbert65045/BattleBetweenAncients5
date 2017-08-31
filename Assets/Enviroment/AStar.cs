@@ -48,7 +48,6 @@ public class AStar : MonoBehaviour {
         OpenNodes.Add(startNode);
         // Search for a path between start point and end point and return true if possible 
         bool success = Search(startNode);
-        Debug.Log(success);
         if (success)
         {
             // Reverse the path list for path from start to end

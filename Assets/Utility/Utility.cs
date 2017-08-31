@@ -10,4 +10,10 @@ public enum CardType
     Enemy = 3,
 }
 
+public enum CardState
+{
+    Move = 1,
+    Attack = 2,
+}
+
 

@@ -10,6 +10,7 @@ public class GameController : MonoBehaviour {
     CardObject selectedCardObject;
     CameraRaycaster cameraRaycaster;
     EnviromentTile currentTileSelected;
+    SelectionPanel selectionPanel;
 
     bool allowPathChange = true;
 
@@ -27,14 +28,35 @@ public class GameController : MonoBehaviour {
 
         if (cardObject != null)
         {
-
-            //Select new object held
-            selectedCardObject = cardObject;
-            selectedCardObject.SelectedObject();
-            selectedCardObject.MoveChangeObservers += SelectedObjectMoveStateChange;
-            //Highlight Tile
-            currentTileSelected = selectedCardObject.GetCurrentTile;
-            currentTileSelected.ChangeColor(Color.blue);
+            switch (cardObject.cardType)
+            {
+                case CardType.Player:
+                {
+                        //Select new object held
+                        selectedCardObject = cardObject;
+                        selectedCardObject.SelectedObject();
+                        selectedCardObject.MoveChangeObservers += SelectedObjectMoveStateChange;
+                        selectedCardObject.StateChangeObservers += OnCurrentObjectStateChange;
+                        //Highlight Tile
+                        currentTileSelected = selectedCardObject.GetCurrentTile;
+                        currentTileSelected.ChangeColor(Color.blue);
+                        //HighlightRange
+                        pathBuilder.HighlightRange(selectedCardObject.GetCurrentTile, selectedCardObject.GetMaxMoveDistance);
+                        //EnableUI and show it
+                        selectionPanel.gameObject.SetActive(true);
+                        selectionPanel.SetObject(selectedCardObject);
+                        break;
+                }
+                case CardType.Enemy:
+                {
+                    break;
+                }
+                default:
+                {
+                    return;
+                }
+            }
+          
         }
         else
         {
@@ -43,8 +65,51 @@ public class GameController : MonoBehaviour {
         }
     }
 
-	void Start () {
+    //Method used to completely deslect the object (NOTE: may want to see if this can be refactored into fewer lines)
+    void deSelectObject()
+    {
+        selectionPanel.SetObject(null);
+        selectionPanel.gameObject.SetActive(false);
+        selectedCardObject.MoveChangeObservers -= SelectedObjectMoveStateChange;
+        selectedCardObject.StateChangeObservers -= OnCurrentObjectStateChange;
+        selectedCardObject.GetCurrentTile.ChangeColor(selectedCardObject.GetCurrentTile.MatColorOriginal);
+        selectedCardObject.DeselectObject();
+        selectedCardObject = null;
+        currentTileSelected = null;
+    }
+
+    void OnCurrentObjectStateChange(CardState state)
+    {
+        switch (selectedCardObject.cardState)
+        {
+            case CardState.Move:
+                pathBuilder.HighlightRange(selectedCardObject.GetCurrentTile, selectedCardObject.GetMaxMoveDistance);
+                var hit = cameraRaycaster.RaycastForLayer(Layer.LevelTerrain);
+                if (hit.HasValue)
+                {
+                    RaycastHit m_hit;
+                    m_hit = hit.Value;
+                    // Check if their is another object on the tile/ if the tile is open
+                    if (m_hit.transform.GetComponent<EnviromentTile>().cardType == CardType.Open)
+                    {
+                        pathBuilder.FindTilesBetween(currentTileSelected, m_hit.transform.GetComponent<EnviromentTile>(), 
+                            selectedCardObject.GetMaxMoveDistance);
+                    }
+                }
+                break;
+            case CardState.Attack:
+                pathBuilder.DeselectPath();
+                break;
+            default:
+                return;
+        }
+    }
+
+
+    void Start () {
         selectionTool = FindObjectOfType<SelectionTool>();
+        selectionPanel = FindObjectOfType<SelectionPanel>();
+        selectionPanel.gameObject.SetActive(false);
         pathBuilder = FindObjectOfType<PathBuilder>();
         cameraRaycaster = FindObjectOfType<CameraRaycaster>();
         cameraRaycaster.layerChangeObservers += OnPathChange;
@@ -58,21 +123,24 @@ public class GameController : MonoBehaviour {
         {
             if (allowPathChange)
             {
-                pathBuilder.FindTilesBetween(currentTileSelected, newTransform.GetComponent<EnviromentTile>(), selectedCardObject.GetMaxMoveDistance);
+                switch (selectedCardObject.cardState)
+                {
+                    case CardState.Move:
+                      
+                        pathBuilder.FindTilesBetween(currentTileSelected, newTransform.GetComponent<EnviromentTile>(), selectedCardObject.GetMaxMoveDistance);
+                        break;
+                    case CardState.Attack:
+
+                        break;
+                    default:
+                        return;
+                }
             }
            
         }
     }
 
-    //Method used to completely deslect the object (NOTE: may want to see if this can be refactored into fewer lines)
-    void deSelectObject()
-    {
-        selectedCardObject.MoveChangeObservers -= SelectedObjectMoveStateChange;
-        selectedCardObject.GetCurrentTile.ChangeColor(selectedCardObject.GetCurrentTile.MatColorOriginal);
-        selectedCardObject.DeselectObject();
-        selectedCardObject = null;
-        currentTileSelected = null;
-    }
+   
 
 
 
