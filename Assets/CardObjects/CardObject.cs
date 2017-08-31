@@ -5,7 +5,8 @@ using UnityStandardAssets.Characters.ThirdPerson;
 using UnityStandardAssets.CrossPlatformInput;
 using UnityEngine.UI;
 
-public class CardObject : MonoBehaviour {
+public class CardObject : MonoBehaviour, IDamageable
+{
 
     [SerializeField]
     int MaxMoveDistance = 4;
@@ -35,6 +36,19 @@ public class CardObject : MonoBehaviour {
     EnviromentTile CurrentTile;
     public EnviromentTile GetCurrentTile { get { return CurrentTile; } }
 
+    [SerializeField]
+    float maxHealthPoints = 100f;
+    float currentHealthPoints;
+
+    public float healthAsPercentage { get { return currentHealthPoints / maxHealthPoints; } }
+
+    public void TakeDamage(float Damage)
+    {
+        currentHealthPoints = Mathf.Clamp(currentHealthPoints - Damage, 0, maxHealthPoints);
+        if (currentHealthPoints <= 0) { Destroy(gameObject); }
+    }
+
+
 
     public void OnCurrentTile(EnviromentTile tileTransform)
     {
@@ -57,6 +71,7 @@ public class CardObject : MonoBehaviour {
         aiCharacterControl = GetComponent<AICharacterControl>();
         cameraRaycaster = FindObjectOfType<CameraRaycaster>();
         pathBuilder = FindObjectOfType<PathBuilder>();
+        currentHealthPoints = maxHealthPoints;
 
     }
 	
