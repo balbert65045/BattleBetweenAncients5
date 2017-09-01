@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class PathBuilder : MonoBehaviour {
+public class TerrainControl : MonoBehaviour {
 
 
     //Grid size (Note: may want to change to automatically update with new map)
@@ -13,6 +13,7 @@ public class PathBuilder : MonoBehaviour {
     public EnviromentTile[,] GridTiles;
     private Node[,] GridNodes;
     public EnviromentTile[] PathTiles;
+    private EnviromentTile CurrentTile;
     List<EnviromentTile> TileRange;
     public List<Node> PathNodes;
 
@@ -20,9 +21,13 @@ public class PathBuilder : MonoBehaviour {
 
     public int PathLength { get { return PathTiles.Length; } }
 
+    Color Orange;
+
     //Simply Turns off selection (Note: may want to take tiles out of path)
     public void DeselectPath()
     {
+        if (CurrentTile != null) { CurrentTile.ChangeColor(CurrentTile.MatColorOriginal); }
+
         if (TileRange != null)
         {
             foreach (EnviromentTile Tile in TileRange)
@@ -60,12 +65,58 @@ public class PathBuilder : MonoBehaviour {
         return null;
     }
 
+    public void HighlightAttckRange(EnviromentTile TileStart, int MaxDistance)
+    {
+        int layer = MaxDistance;
+        TileRange = new List<EnviromentTile>();
+        TileRange.Clear();
+        while (layer > 0)
+        {
+            for (int j = -layer; j <= layer; j++)
+            {
+                int i = Mathf.Abs(j) - layer;
+                int Y = Mathf.Clamp(TileStart.Z + j, 0, zGridLength - 1);
+                if (i == 0)
+                {
+                    int X = Mathf.Clamp(TileStart.X, 0, xGridLength - 1);
+                    TileRange.Add(GridTiles[X, Y]);
+                }
+                else
+                {
+                    int X = Mathf.Clamp(TileStart.X + i, 0, xGridLength - 1);
+                    TileRange.Add(GridTiles[X, Y]);
+                    X = Mathf.Clamp(TileStart.X - i, 0, xGridLength - 1);
+                    TileRange.Add(GridTiles[X, Y]);
+                }
+            }
+            layer--;
+        }
+        foreach (EnviromentTile Tile in TileRange)
+        {
+            Tile.ChangeColor(Orange);
+        }
+
+    }
+
+    public void FindInAttackRange(EnviromentTile TileOver)
+    {
+       
+        if (TileRange.Contains(TileOver))
+        {
+            if (CurrentTile != null) { CurrentTile.ChangeColor(Orange); }
+            CurrentTile = TileOver;
+            CurrentTile.ChangeColor(Color.red);
+        }
+      
+    }
+
     // Find the total range area that this object can move to and highlight it
-    public void HighlightRange(EnviromentTile TileStart, int MaxDistance)
+    public void HighlightMoveRange(EnviromentTile TileStart, int MaxDistance)
     {
        
         int layer = MaxDistance;
         TileRange = new List<EnviromentTile>();
+        TileRange.Clear();
         List<Node> RangePath = new List<Node>();
         // Loop through layers (Where layers is essentially the radius of a circle shrinking in)
         while (layer > 0)
@@ -252,6 +303,9 @@ public class PathBuilder : MonoBehaviour {
         
 
         astar = GetComponent<AStar>();
+
+        Orange = new Color(1, 0.5f, 0, 1);
+
         }
 
     

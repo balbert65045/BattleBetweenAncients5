@@ -11,6 +11,9 @@ public class CardObject : MonoBehaviour, IDamageable
     [SerializeField]
     int MaxMoveDistance = 4;
     public int GetMaxMoveDistance { get { return MaxMoveDistance; } }
+    [SerializeField]
+    int MaxAttackDistance = 1;
+    public int GetMaxAttackDistance { get { return MaxAttackDistance; } }
 
     public CardType cardType;
     public CardState cardState = CardState.Move;
@@ -23,7 +26,7 @@ public class CardObject : MonoBehaviour, IDamageable
     AICharacterControl aiCharacterControl;
     ObjectController objectController;
     CameraRaycaster cameraRaycaster;
-    PathBuilder pathBuilder;
+    TerrainControl pathBuilder;
 
     public delegate void OnMoveChange(bool inMoveState); // declare delegate type
     public event OnMoveChange MoveChangeObservers; //instantiate an observer set
@@ -70,7 +73,7 @@ public class CardObject : MonoBehaviour, IDamageable
     void Start () {
         aiCharacterControl = GetComponent<AICharacterControl>();
         cameraRaycaster = FindObjectOfType<CameraRaycaster>();
-        pathBuilder = FindObjectOfType<PathBuilder>();
+        pathBuilder = FindObjectOfType<TerrainControl>();
         currentHealthPoints = maxHealthPoints;
 
     }

@@ -9,10 +9,9 @@ public class SelectionTool : MonoBehaviour {
     CameraRaycaster cameraRaycaster;
     EnviromentTile playerObjectCreatorSelected;
     public CardObject cardObjectSelected;
-    ItemCreator itemCreator;
     RaycastHit m_hit;
-    PathBuilder pathBuilder;
-    GameController gameController;
+    TerrainControl pathBuilder;
+    PlayerController gameController;
 
     
 
@@ -20,9 +19,8 @@ public class SelectionTool : MonoBehaviour {
 
     void Start () {
         cameraRaycaster = FindObjectOfType<CameraRaycaster>();
-        itemCreator = GetComponent<ItemCreator>();
-        pathBuilder = FindObjectOfType<PathBuilder>();
-        gameController = FindObjectOfType<GameController>();
+        pathBuilder = FindObjectOfType<TerrainControl>();
+        gameController = FindObjectOfType<PlayerController>();
     }
 
     //TODO Create a User Control Script that delegates button/mouseclick/key presses

@@ -2,11 +2,11 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class GameController : MonoBehaviour {
+public class PlayerController : MonoBehaviour {
 
     // Use this for initialization
     SelectionTool selectionTool;
-    PathBuilder pathBuilder;
+    TerrainControl terrainControl;
     CardObject selectedCardObject;
     CameraRaycaster cameraRaycaster;
     EnviromentTile currentTileSelected;
@@ -24,7 +24,7 @@ public class GameController : MonoBehaviour {
 
         }
         //reset Path on new selection
-        pathBuilder.DeselectPath();
+        terrainControl.DeselectPath();
 
         if (cardObject != null)
         {
@@ -41,7 +41,7 @@ public class GameController : MonoBehaviour {
                         currentTileSelected = selectedCardObject.GetCurrentTile;
                         currentTileSelected.ChangeColor(Color.blue);
                         //HighlightRange
-                        pathBuilder.HighlightRange(selectedCardObject.GetCurrentTile, selectedCardObject.GetMaxMoveDistance);
+                        terrainControl.HighlightMoveRange(selectedCardObject.GetCurrentTile, selectedCardObject.GetMaxMoveDistance);
                         //EnableUI and show it
                         selectionPanel.gameObject.SetActive(true);
                         selectionPanel.SetObject(selectedCardObject);
@@ -83,7 +83,8 @@ public class GameController : MonoBehaviour {
         switch (selectedCardObject.cardState)
         {
             case CardState.Move:
-                pathBuilder.HighlightRange(selectedCardObject.GetCurrentTile, selectedCardObject.GetMaxMoveDistance);
+                currentTileSelected.ChangeColor(Color.blue);
+                terrainControl.HighlightMoveRange(selectedCardObject.GetCurrentTile, selectedCardObject.GetMaxMoveDistance);
                 var hit = cameraRaycaster.RaycastForLayer(Layer.LevelTerrain);
                 if (hit.HasValue)
                 {
@@ -92,13 +93,16 @@ public class GameController : MonoBehaviour {
                     // Check if their is another object on the tile/ if the tile is open
                     if (m_hit.transform.GetComponent<EnviromentTile>().cardType == CardType.Open)
                     {
-                        pathBuilder.FindTilesBetween(currentTileSelected, m_hit.transform.GetComponent<EnviromentTile>(), 
+                        terrainControl.FindTilesBetween(currentTileSelected, m_hit.transform.GetComponent<EnviromentTile>(), 
                             selectedCardObject.GetMaxMoveDistance);
                     }
                 }
                 break;
             case CardState.Attack:
-                pathBuilder.DeselectPath();
+                terrainControl.DeselectPath();
+                currentTileSelected.ChangeColor(Color.red);
+                terrainControl.HighlightAttckRange(selectedCardObject.GetCurrentTile, selectedCardObject.GetMaxAttackDistance);
+
                 break;
             default:
                 return;
@@ -110,7 +114,7 @@ public class GameController : MonoBehaviour {
         selectionTool = FindObjectOfType<SelectionTool>();
         selectionPanel = FindObjectOfType<SelectionPanel>();
         selectionPanel.gameObject.SetActive(false);
-        pathBuilder = FindObjectOfType<PathBuilder>();
+        terrainControl = FindObjectOfType<TerrainControl>();
         cameraRaycaster = FindObjectOfType<CameraRaycaster>();
         cameraRaycaster.layerChangeObservers += OnPathChange;
     }
@@ -127,10 +131,10 @@ public class GameController : MonoBehaviour {
                 {
                     case CardState.Move:
                       
-                        pathBuilder.FindTilesBetween(currentTileSelected, newTransform.GetComponent<EnviromentTile>(), selectedCardObject.GetMaxMoveDistance);
+                        terrainControl.FindTilesBetween(currentTileSelected, newTransform.GetComponent<EnviromentTile>(), selectedCardObject.GetMaxMoveDistance);
                         break;
                     case CardState.Attack:
-
+                        terrainControl.FindInAttackRange(newTransform.GetComponent<EnviromentTile>());
                         break;
                     default:
                         return;
@@ -151,7 +155,7 @@ public class GameController : MonoBehaviour {
         if (Moving)
         {
             //Deselect path made (NOTE: comment this if you want to see tiles diapear one at a time)
-            pathBuilder.DeselectPath();
+            terrainControl.DeselectPath();
 
             //Disable ability to change path mid move and select different target
             allowPathChange = false;

@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityStandardAssets.CrossPlatformInput;
 
-public class ItemCreator : MonoBehaviour {
+public class CardCreator : MonoBehaviour {
 
     // Use this for initialization
     CameraRaycaster cameraRaycaster;
