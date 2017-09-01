@@ -14,7 +14,7 @@ public class TerrainControl : MonoBehaviour {
     private Node[,] GridNodes;
     public EnviromentTile[] PathTiles;
     private EnviromentTile CurrentTile;
-    List<EnviromentTile> TileRange;
+    public List<EnviromentTile> TileRange;
     public List<Node> PathNodes;
 
     private AStar astar;
@@ -33,7 +33,11 @@ public class TerrainControl : MonoBehaviour {
             foreach (EnviromentTile Tile in TileRange)
             {
                  { Tile.ChangeColor(Tile.MatColorOriginal); }
+               
             }
+            //Deselect Range and last tile over
+            TileRange.Clear();
+            CurrentTile = null;
         }
     }
 
@@ -98,7 +102,16 @@ public class TerrainControl : MonoBehaviour {
 
     }
 
-    public void FindInAttackRange(EnviromentTile TileOver)
+    public bool FindEnemyInAttackRange(EnviromentTile TileOver)
+    {
+        if (TileRange.Contains(TileOver))
+        {
+            return true;
+        }
+        return false;
+    }
+
+    public void FindTileInAttackRange(EnviromentTile TileOver)
     {
        
         if (TileRange.Contains(TileOver))
@@ -237,6 +250,8 @@ public class TerrainControl : MonoBehaviour {
             }
            
         }
+
+        else { TileStart.ChangeColor(Color.blue); }
 
 
 

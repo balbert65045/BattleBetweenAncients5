@@ -2,8 +2,8 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityStandardAssets.Characters.ThirdPerson;
-using UnityStandardAssets.CrossPlatformInput;
 using UnityEngine.UI;
+using UnityStandardAssets.CrossPlatformInput;
 
 public class CardObject : MonoBehaviour, IDamageable
 {
@@ -14,6 +14,8 @@ public class CardObject : MonoBehaviour, IDamageable
     [SerializeField]
     int MaxAttackDistance = 1;
     public int GetMaxAttackDistance { get { return MaxAttackDistance; } }
+    [SerializeField]
+    int AttackDamage = 2;
 
     public CardType cardType;
     public CardState cardState = CardState.Move;
@@ -40,18 +42,25 @@ public class CardObject : MonoBehaviour, IDamageable
     public EnviromentTile GetCurrentTile { get { return CurrentTile; } }
 
     [SerializeField]
-    float maxHealthPoints = 100f;
-    float currentHealthPoints;
+    int maxHealthPoints = 100;
+    int currentHealthPoints;
 
     public float healthAsPercentage { get { return currentHealthPoints / maxHealthPoints; } }
 
-    public void TakeDamage(float Damage)
+    public void TakeDamage(int Damage)
     {
         currentHealthPoints = Mathf.Clamp(currentHealthPoints - Damage, 0, maxHealthPoints);
         if (currentHealthPoints <= 0) { Destroy(gameObject); }
     }
 
-
+    public void DealDamage(GameObject obj)
+    {
+        Component damageableComponent = obj.GetComponent(typeof(IDamageable));
+        if (damageableComponent)
+        {
+            (damageableComponent as IDamageable).TakeDamage(AttackDamage);
+        }
+    }
 
     public void OnCurrentTile(EnviromentTile tileTransform)
     {
@@ -68,6 +77,20 @@ public class CardObject : MonoBehaviour, IDamageable
         Selected = false;
     }
 
+    public void enableMovement()
+    {
+        Moving = true;
+        if (MoveChangeObservers != null) MoveChangeObservers(Moving);
+    }
+
+    public void StateChange(CardState State)
+    {
+        cardState = State;
+        if (StateChangeObservers != null) StateChangeObservers(cardState);
+    }
+
+
+
 
     // Use this for initialization
     void Start () {
@@ -80,26 +103,7 @@ public class CardObject : MonoBehaviour, IDamageable
 	
 	// Update is called once per frame
 	void Update () {
-        // Move on right click
-        if (Selected)
-        {
-            if (cardType == CardType.Player)
-            {
-                switch (cardState)
-                {
-                    case CardState.Move:
-                        LookForMoveInput();
-                        break;
-                    case CardState.Attack:
-                        break;
-                    default:
-                        return;
-                }
-               
-                LookForStateChange();
-            }
-
-        }
+       
 
         if (Moving)
         {
@@ -128,42 +132,7 @@ public class CardObject : MonoBehaviour, IDamageable
             }  
         }
     }
-
-    private void LookForStateChange()
-    {
-        if (CrossPlatformInputManager.GetButtonDown("MoveStateButton"))
-        {
-            cardState = CardState.Move;
-            if (StateChangeObservers != null) StateChangeObservers(cardState);
-           
-        }
-        else if (CrossPlatformInputManager.GetButtonDown("AttackStateButton"))
-        {
-            cardState = CardState.Attack;
-            if (StateChangeObservers != null) StateChangeObservers(cardState);
-        }
-    }
-
-    private void LookForMoveInput()
-    {
-        if (CrossPlatformInputManager.GetButtonDown("pointer2"))
-        {
-            var hit = cameraRaycaster.RaycastForLayer(Layer.LevelTerrain);
-            if (hit.HasValue)
-            {
-                m_hit = hit.Value;
-                // Check if their is another object on the tile/ if the tile is open
-                if (m_hit.transform.GetComponent<EnviromentTile>().cardType == CardType.Open)
-                {
-                    //Tell Observers object moving
-                    Moving = true;
-                    if (MoveChangeObservers != null) MoveChangeObservers(Moving);
-                }
-                // elseif (m_hit.transform.GetComponent<PlayerObjectCreator>().cardType == CardType.Enemy)
-                //This will be how to handle attacking
-            }
-        }
-    }
+    
 
     void MoveToPosition(Transform newTansform)
     {
