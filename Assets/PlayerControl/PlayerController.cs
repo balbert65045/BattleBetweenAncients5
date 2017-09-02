@@ -189,7 +189,7 @@ public class PlayerController : MonoBehaviour
                 if (m_hit.transform.GetComponent<EnviromentTile>().cardType == CardType.Enemy)
                 {
                     if (selectedCardObject.CheckAttackInRange(m_hit.transform.GetComponent<EnviromentTile>()))
-                    { selectedCardObject.DealDamage(m_hit.transform.GetComponent<EnviromentTile>().ObjectHeld); }
+                    { selectedCardObject.AttackObject(m_hit.transform.GetComponent<EnviromentTile>().ObjectHeld); }
                 }
             }
         }

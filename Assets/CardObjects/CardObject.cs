@@ -39,7 +39,7 @@ public class CardObject : MonoBehaviour, IDamageable
     EnviromentTile CurrentTile;
     public EnviromentTile GetCurrentTile { get { return CurrentTile; } }
 
-
+    private GameObject ObjectAttacking;
 
 
     // DAMAGE and HEEALTH
@@ -52,15 +52,28 @@ public class CardObject : MonoBehaviour, IDamageable
     public void TakeDamage(int Damage)
     {
         currentHealthPoints = Mathf.Clamp(currentHealthPoints - Damage, 0, maxHealthPoints);
-        if (currentHealthPoints <= 0) { Destroy(gameObject); }
+        if (currentHealthPoints <= 0) {
+            CurrentTile.ObjectMovedOffTile();
+            Destroy(gameObject);
+        }
     }
 
-    public void DealDamage(GameObject obj)
+    public void AttackObject(GameObject obj)
     {
-        Component damageableComponent = obj.GetComponent(typeof(IDamageable));
+        ObjectAttacking = obj;
+        transform.LookAt(obj.transform);
+        this.GetComponent<ThirdPersonCharacter>().Attack();
+    }
+
+
+    public void DealDamage()
+    {
+
+        Component damageableComponent = ObjectAttacking.GetComponent(typeof(IDamageable));
         if (damageableComponent)
         {
             (damageableComponent as IDamageable).TakeDamage(AttackDamage);
+            ObjectAttacking.GetComponent<ThirdPersonCharacter>().Hit(this.transform);
         }
     }
 
@@ -154,7 +167,6 @@ public class CardObject : MonoBehaviour, IDamageable
                 else
                 {
                     //Once reaching destination Stop moving and send message to observers 
-                    Debug.Log("Stop Moving");
                     Moving = false;
                     if (MoveChangeObservers != null) MoveChangeObservers(Moving);
                 }

@@ -30,6 +30,18 @@ namespace UnityStandardAssets.Characters.ThirdPerson
 		bool m_Crouching;
 
 
+        public void Attack()
+        {
+            m_Animator.SetTrigger("Attack1");
+        }
+
+        public void Hit(Transform onjAttackingTransform)
+        {
+            transform.LookAt(onjAttackingTransform);
+            m_Animator.SetTrigger("Hit");
+        }
+
+
 		void Start()
 		{
 			m_Animator = GetComponent<Animator>();

@@ -26,7 +26,6 @@ public class TerrainControl : MonoBehaviour {
     //Simply Turns off selection (Note: may want to take tiles out of path)
     public void ResetTiles()
     {
-        Debug.Log("Path deselected");
         if (CurrentTile != null) { CurrentTile.ChangeColor(CurrentTile.MatColorOriginal); }
 
         if (TileRange != null)
