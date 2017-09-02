@@ -9,6 +9,7 @@ public class PlayerController : MonoBehaviour
     // Use this for initialization
     SelectionTool selectionTool;
     CardObject selectedCardObject;
+    CardCreator cardCreator;
     CameraRaycaster cameraRaycaster;
     SelectionPanel selectionPanel;
     RaycastHit m_hit;
@@ -27,6 +28,7 @@ public class PlayerController : MonoBehaviour
             //Disable ability to change path mid move and select different target
             allowPathChange = false;
             selectionTool.enabled = false;
+            cardCreator.enabled = false;
         }
         else
         {
@@ -36,6 +38,7 @@ public class PlayerController : MonoBehaviour
             //Enable ability to change path mid move and select different target
             allowPathChange = true;
             selectionTool.enabled = true;
+            cardCreator.enabled = true;
         }
 
     }
@@ -139,6 +142,7 @@ public class PlayerController : MonoBehaviour
     void Start()
     {
         selectionTool = FindObjectOfType<SelectionTool>();
+        cardCreator = FindObjectOfType<CardCreator>();
         selectionPanel = FindObjectOfType<SelectionPanel>();
         selectionPanel.gameObject.SetActive(false);
         cameraRaycaster = FindObjectOfType<CameraRaycaster>();

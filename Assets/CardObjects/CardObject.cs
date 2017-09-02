@@ -35,6 +35,7 @@ public class CardObject : MonoBehaviour, IDamageable
 
     public delegate void OnStateChange(CardState state);
     public event OnStateChange StateChangeObservers;
+    private Rigidbody m_Rigidbody;
 
     EnviromentTile CurrentTile;
     public EnviromentTile GetCurrentTile { get { return CurrentTile; } }
@@ -47,10 +48,11 @@ public class CardObject : MonoBehaviour, IDamageable
     int maxHealthPoints = 100;
     public int currentHealthPoints;
 
-    public float getCurrentHealthasPercentage { get { return (float)currentHealthPoints/ (float)maxHealthPoints; } }
+    public float getCurrentHealth { get { return (float)currentHealthPoints; } }
 
     public void TakeDamage(int Damage)
     {
+        BroadcastMessage("DamageDealt", Damage);
         currentHealthPoints = Mathf.Clamp(currentHealthPoints - Damage, 0, maxHealthPoints);
         if (currentHealthPoints <= 0) {
             CurrentTile.ObjectMovedOffTile();
@@ -61,7 +63,8 @@ public class CardObject : MonoBehaviour, IDamageable
     public void AttackObject(GameObject obj)
     {
         ObjectAttacking = obj;
-        transform.LookAt(obj.transform);
+        m_Rigidbody.constraints = RigidbodyConstraints.FreezeAll;
+        transform.LookAt(ObjectAttacking.transform);
         this.GetComponent<ThirdPersonCharacter>().Attack();
     }
 
@@ -107,6 +110,8 @@ public class CardObject : MonoBehaviour, IDamageable
     public void enableMovement()
     {
         Moving = true;
+        m_Rigidbody.constraints = RigidbodyConstraints.FreezeRotationX | RigidbodyConstraints.FreezeRotationY | RigidbodyConstraints.FreezeRotationZ;
+        aiCharacterControl.agent.stoppingDistance = .2f;
         terrainControl.ResetTiles();
         if (MoveChangeObservers != null) MoveChangeObservers(Moving);
     }
@@ -118,10 +123,12 @@ public class CardObject : MonoBehaviour, IDamageable
         switch (cardState)
         {
             case CardState.Move:
+               
                 CurrentTile.ChangeColor(Color.blue);
                 terrainControl.HighlightMoveRange(CurrentTile, MaxMoveDistance);
                 break;
             case CardState.Attack:
+               
                 CurrentTile.ChangeColor(Color.red);
                 terrainControl.HighlightAttckRange(CurrentTile, MaxAttackDistance);
                 break;
@@ -141,6 +148,7 @@ public class CardObject : MonoBehaviour, IDamageable
         cameraRaycaster = FindObjectOfType<CameraRaycaster>();
         terrainControl = FindObjectOfType<TerrainControl>();
         currentHealthPoints = maxHealthPoints;
+        m_Rigidbody = GetComponent<Rigidbody>();
 
     }
 

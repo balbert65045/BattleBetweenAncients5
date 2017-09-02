@@ -71,7 +71,7 @@ public class TerrainControl : MonoBehaviour {
 
     public void HighlightAttckRange(EnviromentTile TileStart, int MaxDistance)
     {
-        Debug.Log("Finding Range");
+       
         int layer = MaxDistance;
         TileRange = new List<EnviromentTile>();
         TileRange.Clear();
