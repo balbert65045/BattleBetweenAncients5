@@ -24,8 +24,9 @@ public class TerrainControl : MonoBehaviour {
     Color Orange;
 
     //Simply Turns off selection (Note: may want to take tiles out of path)
-    public void DeselectPath()
+    public void ResetTiles()
     {
+        Debug.Log("Path deselected");
         if (CurrentTile != null) { CurrentTile.ChangeColor(CurrentTile.MatColorOriginal); }
 
         if (TileRange != null)
@@ -71,6 +72,7 @@ public class TerrainControl : MonoBehaviour {
 
     public void HighlightAttckRange(EnviromentTile TileStart, int MaxDistance)
     {
+        Debug.Log("Finding Range");
         int layer = MaxDistance;
         TileRange = new List<EnviromentTile>();
         TileRange.Clear();
@@ -97,8 +99,9 @@ public class TerrainControl : MonoBehaviour {
         }
         foreach (EnviromentTile Tile in TileRange)
         {
-            Tile.ChangeColor(Orange);
+            if (Tile != TileStart) { Tile.ChangeColor(Orange); }
         }
+        if (TileRange.Contains(TileStart)) { TileRange.Remove(TileStart); }
 
     }
 
@@ -157,8 +160,14 @@ public class TerrainControl : MonoBehaviour {
                     // find how long Astar calculates a path 
                     RangePath = astar.FindPath(TileStart.GetComponent<Node>(), GridTiles[X, Y].GetComponent<Node>(), GridNodes);
                     // If it is equal then no obstacles decreasing range
-                    if (RangePath.Count == range) { TileRange.Add(GridTiles[X, Y]); }
-                   
+                    foreach (Node node in RangePath)
+                    {
+                        if (node == (GridTiles[X, Y]).GetComponent<Node>())
+                        {
+                            if (RangePath.IndexOf(node) < MaxDistance) { { TileRange.Add(GridTiles[X, Y]); } }
+                        }
+                    }
+
                 }
                 // if there is a change in the X position then 2 tiles are found 
                 //   _
@@ -172,13 +181,28 @@ public class TerrainControl : MonoBehaviour {
                     int range = Mathf.Abs(X - TileStart.X) + Mathf.Abs(Y - TileStart.Z);
                     RangePath.Clear();
                     RangePath = astar.FindPath(TileStart.GetComponent<Node>(), GridTiles[X, Y].GetComponent<Node>(), GridNodes);
-                    if (RangePath.Count == range) { TileRange.Add(GridTiles[X, Y]); }
+                    foreach (Node node in RangePath)
+                    {
+                        if (node == (GridTiles[X, Y]).GetComponent<Node>())
+                        {
+                            if (RangePath.IndexOf(node) < MaxDistance) { { TileRange.Add(GridTiles[X, Y]); } }
+                        }
+                    }
+    
+                       
 
                     X = Mathf.Clamp(TileStart.X - i, 0, xGridLength-1);
                     range = Mathf.Abs(X - TileStart.X) + Mathf.Abs(Y - TileStart.Z);
                     RangePath.Clear();
                     RangePath = astar.FindPath(TileStart.GetComponent<Node>(), GridTiles[X, Y].GetComponent<Node>(), GridNodes);
-                    if (RangePath.Count == range) { TileRange.Add(GridTiles[X, Y]); }
+                    foreach (Node node in RangePath)
+                    {
+                        if (node == (GridTiles[X, Y]).GetComponent<Node>())
+                        {
+                            if (RangePath.IndexOf(node) < MaxDistance) { { TileRange.Add(GridTiles[X, Y]); } }
+                        }
+                    }
+
                 }
             }
             layer--;
@@ -186,8 +210,10 @@ public class TerrainControl : MonoBehaviour {
         // Highlight all the tiles in the range 
         foreach (EnviromentTile Tile in TileRange)
         {
-            Tile.ChangeColor(Color.cyan);
+            if (Tile != TileStart) { Tile.ChangeColor(Color.cyan); };
         }
+
+        if (TileRange.Contains(TileStart)) { TileRange.Remove(TileStart); }
     }
 
     // Creates a path depending on a Start and end tile 

@@ -7,7 +7,6 @@ public class CardObjectHealthBar : MonoBehaviour
 {
     RawImage healthBarRawImage = null;
     public CardObject cardObject = null;
-    public float X;
 
     // Use this for initialization
     void Start()
@@ -19,8 +18,7 @@ public class CardObjectHealthBar : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        float xValue = -(cardObject.healthAsPercentage / 2f) - 0.5f;
-        X = xValue;
+        float xValue = (cardObject.getCurrentHealthasPercentage / 2f) - 0.5f;
         healthBarRawImage.uvRect = new Rect(xValue, 0f, 0.5f, 1f);
     }
 }

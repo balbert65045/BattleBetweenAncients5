@@ -10,10 +10,8 @@ public class CardObject : MonoBehaviour, IDamageable
 
     [SerializeField]
     int MaxMoveDistance = 4;
-    public int GetMaxMoveDistance { get { return MaxMoveDistance; } }
     [SerializeField]
     int MaxAttackDistance = 1;
-    public int GetMaxAttackDistance { get { return MaxAttackDistance; } }
     [SerializeField]
     int AttackDamage = 2;
 
@@ -22,13 +20,15 @@ public class CardObject : MonoBehaviour, IDamageable
 
     public Sprite CardImage;
 
-    public float RemainingDistance { get; private set; }
     public bool Selected { get; private set; }
     public bool Moving { get; private set; }
+
+
     AICharacterControl aiCharacterControl;
     ObjectController objectController;
     CameraRaycaster cameraRaycaster;
-    TerrainControl pathBuilder;
+    TerrainControl terrainControl;
+    private float RemainingDistance;
 
     public delegate void OnMoveChange(bool inMoveState); // declare delegate type
     public event OnMoveChange MoveChangeObservers; //instantiate an observer set
@@ -36,16 +36,18 @@ public class CardObject : MonoBehaviour, IDamageable
     public delegate void OnStateChange(CardState state);
     public event OnStateChange StateChangeObservers;
 
-
-    RaycastHit m_hit;
     EnviromentTile CurrentTile;
     public EnviromentTile GetCurrentTile { get { return CurrentTile; } }
 
+
+
+
+    // DAMAGE and HEEALTH
     [SerializeField]
     int maxHealthPoints = 100;
-    int currentHealthPoints;
+    public int currentHealthPoints;
 
-    public float healthAsPercentage { get { return currentHealthPoints / maxHealthPoints; } }
+    public float getCurrentHealthasPercentage { get { return (float)currentHealthPoints/ (float)maxHealthPoints; } }
 
     public void TakeDamage(int Damage)
     {
@@ -62,30 +64,57 @@ public class CardObject : MonoBehaviour, IDamageable
         }
     }
 
-    public void OnCurrentTile(EnviromentTile tileTransform)
+
+    // MOVEMENT
+    public void OnCurrentTile(EnviromentTile tileTransform) { CurrentTile = tileTransform;}
+
+    public void MakePath(EnviromentTile EndTile){ terrainControl.FindTilesBetween(CurrentTile, EndTile, MaxMoveDistance);}
+    public void HighlightTileInAttackRange(EnviromentTile SlectedTile) { terrainControl.FindTileInAttackRange(SlectedTile); }
+
+    public bool CheckAttackInRange(EnviromentTile AttackTile)
     {
-        CurrentTile = tileTransform;
+        if (terrainControl.FindEnemyInAttackRange(AttackTile)) {return true;}
+        return false;
     }
 
     public void SelectedObject()
     {
         Selected = true;
+        CurrentTile.ChangeColor(Color.blue);
+        terrainControl.HighlightMoveRange(CurrentTile, MaxMoveDistance);
     }
-    
+
     public void DeselectObject()
     {
         Selected = false;
+        CurrentTile.ChangeColor(CurrentTile.MatColorOriginal);
+        terrainControl.ResetTiles();
     }
 
     public void enableMovement()
     {
         Moving = true;
+        terrainControl.ResetTiles();
         if (MoveChangeObservers != null) MoveChangeObservers(Moving);
     }
 
     public void StateChange(CardState State)
     {
         cardState = State;
+        terrainControl.ResetTiles();
+        switch (cardState)
+        {
+            case CardState.Move:
+                CurrentTile.ChangeColor(Color.blue);
+                terrainControl.HighlightMoveRange(CurrentTile, MaxMoveDistance);
+                break;
+            case CardState.Attack:
+                CurrentTile.ChangeColor(Color.red);
+                terrainControl.HighlightAttckRange(CurrentTile, MaxAttackDistance);
+                break;
+            default:
+                return;
+        }
         if (StateChangeObservers != null) StateChangeObservers(cardState);
     }
 
@@ -93,18 +122,18 @@ public class CardObject : MonoBehaviour, IDamageable
 
 
     // Use this for initialization
-    void Start () {
+    void Start()
+    {
         aiCharacterControl = GetComponent<AICharacterControl>();
         cameraRaycaster = FindObjectOfType<CameraRaycaster>();
-        pathBuilder = FindObjectOfType<TerrainControl>();
+        terrainControl = FindObjectOfType<TerrainControl>();
         currentHealthPoints = maxHealthPoints;
 
     }
-	
-	// Update is called once per frame
-	void Update () {
-       
 
+    // Update is called once per frame
+    void Update()
+    {
         if (Moving)
         {
             // Move Character to next tile in Tile Path once reaching destination
@@ -112,13 +141,13 @@ public class CardObject : MonoBehaviour, IDamageable
             if (RemainingDistance < aiCharacterControl.agent.stoppingDistance)
             {
 
-                int CurrentPathLength = pathBuilder.PathLength - 1;
-                int CurrentTileIndex = pathBuilder.CheckPathPosition(CurrentTile);
+                int CurrentPathLength = terrainControl.PathLength - 1;
+                int CurrentTileIndex = terrainControl.CheckPathPosition(CurrentTile);
                 if (CurrentTileIndex == -1) { Debug.LogError("CurrentPathIndex not in Path of pathBuilder"); }
 
                 if (CurrentTileIndex != CurrentPathLength)
                 {
-                    Transform NextTileInPath = pathBuilder.FindNextTileInPath(CurrentTile);
+                    Transform NextTileInPath = terrainControl.FindNextTileInPath(CurrentTile);
                     if (NextTileInPath == null) { Debug.LogError("NextTileInPath not in Path of pathBuilder"); }
                     MoveToPosition(NextTileInPath);
                 }
@@ -129,10 +158,10 @@ public class CardObject : MonoBehaviour, IDamageable
                     Moving = false;
                     if (MoveChangeObservers != null) MoveChangeObservers(Moving);
                 }
-            }  
+            }
         }
     }
-    
+
 
     void MoveToPosition(Transform newTansform)
     {
@@ -146,7 +175,5 @@ public class CardObject : MonoBehaviour, IDamageable
         CurrentTile.ObjectMovecOnTile(this.gameObject);
 
         // Make it so the Object has to be reselected to move again
-        //DeselectObject();
-
     }
 }

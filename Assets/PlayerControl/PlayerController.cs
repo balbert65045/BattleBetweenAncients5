@@ -3,14 +3,13 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityStandardAssets.CrossPlatformInput;
 
-public class PlayerController : MonoBehaviour {
+public class PlayerController : MonoBehaviour
+{
 
     // Use this for initialization
     SelectionTool selectionTool;
-    TerrainControl terrainControl;
     CardObject selectedCardObject;
     CameraRaycaster cameraRaycaster;
-    EnviromentTile currentTileSelected;
     SelectionPanel selectionPanel;
     RaycastHit m_hit;
 
@@ -24,7 +23,6 @@ public class PlayerController : MonoBehaviour {
         if (Moving)
         {
             //Deselect path made (NOTE: comment this if you want to see tiles diapear one at a time)
-            terrainControl.DeselectPath();
 
             //Disable ability to change path mid move and select different target
             allowPathChange = false;
@@ -51,44 +49,38 @@ public class PlayerController : MonoBehaviour {
 
         }
         //reset Path on new selection
-        terrainControl.DeselectPath();
 
         if (cardObject != null)
         {
             switch (cardObject.cardType)
             {
                 case CardType.Player:
-                {
+                    {
                         //Select new object held
                         selectedCardObject = cardObject;
                         selectedCardObject.SelectedObject();
                         selectedCardObject.MoveChangeObservers += SelectedObjectMoveStateChange;
                         selectedCardObject.StateChangeObservers += OnCurrentObjectStateChange;
-                        //Highlight Tile
-                        currentTileSelected = selectedCardObject.GetCurrentTile;
-                        currentTileSelected.ChangeColor(Color.blue);
-                        //HighlightRange
-                        terrainControl.HighlightMoveRange(selectedCardObject.GetCurrentTile, selectedCardObject.GetMaxMoveDistance);
+
                         //EnableUI and show it
                         selectionPanel.gameObject.SetActive(true);
                         selectionPanel.SetObject(selectedCardObject);
                         break;
-                }
+                    }
                 case CardType.Enemy:
-                {
-                    break;
-                }
+                    {
+                        break;
+                    }
                 default:
-                {
-                    return;
-                }
+                    {
+                        return;
+                    }
             }
-          
+
         }
         else
         {
             selectedCardObject = null;
-            currentTileSelected = null;
         }
     }
 
@@ -100,21 +92,17 @@ public class PlayerController : MonoBehaviour {
         selectionPanel.gameObject.SetActive(false);
         selectedCardObject.MoveChangeObservers -= SelectedObjectMoveStateChange;
         selectedCardObject.StateChangeObservers -= OnCurrentObjectStateChange;
-        selectedCardObject.GetCurrentTile.ChangeColor(selectedCardObject.GetCurrentTile.MatColorOriginal);
         selectedCardObject.DeselectObject();
         selectedCardObject = null;
-        currentTileSelected = null;
     }
 
     void OnCurrentObjectStateChange(CardState state)
     {
+        var hit = cameraRaycaster.RaycastForLayer(Layer.LevelTerrain);
         switch (selectedCardObject.cardState)
         {
             case CardState.Move:
-                terrainControl.DeselectPath();
-                currentTileSelected.ChangeColor(Color.blue);
-                terrainControl.HighlightMoveRange(selectedCardObject.GetCurrentTile, selectedCardObject.GetMaxMoveDistance);
-                var hit = cameraRaycaster.RaycastForLayer(Layer.LevelTerrain);
+              
                 if (hit.HasValue)
                 {
                     RaycastHit m_hit;
@@ -122,16 +110,24 @@ public class PlayerController : MonoBehaviour {
                     // Check if their is another object on the tile/ if the tile is open
                     if (m_hit.transform.GetComponent<EnviromentTile>().cardType == CardType.Open)
                     {
-                        terrainControl.FindTilesBetween(currentTileSelected, m_hit.transform.GetComponent<EnviromentTile>(), 
-                            selectedCardObject.GetMaxMoveDistance);
+                        selectedCardObject.MakePath(m_hit.transform.GetComponent<EnviromentTile>());
                     }
                 }
+            
+                
                 break;
             case CardState.Attack:
-                Debug.Log("StateChange Attack");
-                terrainControl.DeselectPath();
-                currentTileSelected.ChangeColor(Color.red);
-                terrainControl.HighlightAttckRange(selectedCardObject.GetCurrentTile, selectedCardObject.GetMaxAttackDistance);
+                if (hit.HasValue)
+                {
+                    RaycastHit m_hit;
+                    m_hit = hit.Value;
+                    // Check if their is another object on the tile/ if the tile is open
+                    if (m_hit.transform.GetComponent<EnviromentTile>().cardType == CardType.Open || m_hit.transform.GetComponent<EnviromentTile>().cardType == CardType.Enemy)
+                    {
+                        Debug.Log("Looking");
+                        selectedCardObject.HighlightTileInAttackRange(m_hit.transform.GetComponent<EnviromentTile>());
+                    }
+                }
 
                 break;
             default:
@@ -140,11 +136,11 @@ public class PlayerController : MonoBehaviour {
     }
 
 
-    void Start () {
+    void Start()
+    {
         selectionTool = FindObjectOfType<SelectionTool>();
         selectionPanel = FindObjectOfType<SelectionPanel>();
         selectionPanel.gameObject.SetActive(false);
-        terrainControl = FindObjectOfType<TerrainControl>();
         cameraRaycaster = FindObjectOfType<CameraRaycaster>();
         cameraRaycaster.layerChangeObservers += OnPathChange;
     }
@@ -192,7 +188,7 @@ public class PlayerController : MonoBehaviour {
                 // Check if their is another object on the tile/ if the tile is open
                 if (m_hit.transform.GetComponent<EnviromentTile>().cardType == CardType.Enemy)
                 {
-                    if (terrainControl.FindEnemyInAttackRange(m_hit.transform.GetComponent<EnviromentTile>()))
+                    if (selectedCardObject.CheckAttackInRange(m_hit.transform.GetComponent<EnviromentTile>()))
                     { selectedCardObject.DealDamage(m_hit.transform.GetComponent<EnviromentTile>().ObjectHeld); }
                 }
             }
@@ -228,16 +224,16 @@ public class PlayerController : MonoBehaviour {
                 switch (selectedCardObject.cardState)
                 {
                     case CardState.Move:
-                        terrainControl.FindTilesBetween(currentTileSelected, newTransform.GetComponent<EnviromentTile>(), selectedCardObject.GetMaxMoveDistance);
+                        selectedCardObject.MakePath(newTransform.GetComponent<EnviromentTile>());
                         break;
                     case CardState.Attack:
-                        terrainControl.FindTileInAttackRange(newTransform.GetComponent<EnviromentTile>());
+                        selectedCardObject.HighlightTileInAttackRange(newTransform.GetComponent<EnviromentTile>());
                         break;
                     default:
                         return;
                 }
             }
-           
+
         }
     }
 
