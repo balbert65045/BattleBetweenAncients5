@@ -10,8 +10,10 @@ public class CardObject : MonoBehaviour, IDamageable
 
     [SerializeField]
     int MaxMoveDistance = 4;
+    int initialMaxMoveDistance;
     [SerializeField]
     int MaxAttackDistance = 1;
+    int initialMaxAttackDistance;
     [SerializeField]
     int AttackDamage = 2;
 
@@ -23,6 +25,8 @@ public class CardObject : MonoBehaviour, IDamageable
     public bool Selected { get; private set; }
     public bool Moving { get; private set; }
 
+    public bool MoveTurnUsed { get; private set; }
+    public bool AttackTurnUsed { get; private set; }
 
     AICharacterControl aiCharacterControl;
     ObjectController objectController;
@@ -62,6 +66,8 @@ public class CardObject : MonoBehaviour, IDamageable
 
     public void AttackObject(GameObject obj)
     {
+        AttackTurnUsed = true;
+        StateChange(CardState.Attack);
         ObjectAttacking = obj;
         m_Rigidbody.constraints = RigidbodyConstraints.FreezeAll;
         transform.LookAt(ObjectAttacking.transform);
@@ -96,6 +102,7 @@ public class CardObject : MonoBehaviour, IDamageable
     public void SelectedObject()
     {
         Selected = true;
+        StateChange(CardState.Move);
         CurrentTile.ChangeColor(Color.blue);
         terrainControl.HighlightMoveRange(CurrentTile, MaxMoveDistance);
     }
@@ -110,6 +117,7 @@ public class CardObject : MonoBehaviour, IDamageable
     public void enableMovement()
     {
         Moving = true;
+        MoveTurnUsed = true;
         m_Rigidbody.constraints = RigidbodyConstraints.FreezeRotationX | RigidbodyConstraints.FreezeRotationY | RigidbodyConstraints.FreezeRotationZ;
         aiCharacterControl.agent.stoppingDistance = .2f;
         terrainControl.ResetTiles();
@@ -149,7 +157,8 @@ public class CardObject : MonoBehaviour, IDamageable
         terrainControl = FindObjectOfType<TerrainControl>();
         currentHealthPoints = maxHealthPoints;
         m_Rigidbody = GetComponent<Rigidbody>();
-
+        initialMaxMoveDistance = MaxMoveDistance;
+        initialMaxAttackDistance = MaxAttackDistance;
     }
 
     // Update is called once per frame
@@ -180,6 +189,21 @@ public class CardObject : MonoBehaviour, IDamageable
                 }
             }
         }
+
+        if (MoveTurnUsed)
+        {
+            MaxMoveDistance = 0;
+        }
+        else { MaxMoveDistance = initialMaxMoveDistance;}
+        if (AttackTurnUsed)
+        {
+            MaxAttackDistance = 0;
+        }
+        else
+        {
+            MaxAttackDistance = initialMaxAttackDistance;
+        }
+
     }
 
 

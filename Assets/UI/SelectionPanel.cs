@@ -36,12 +36,16 @@ public class SelectionPanel : MonoBehaviour {
         switch (state)
         {
             case CardState.Move:
-                MoveIcon.color = Color.blue;
-                AttackIcon.color = Color.white;
+                if (selectedCardObject.MoveTurnUsed) { MoveIcon.color = Color.gray; }
+                else { MoveIcon.color = Color.blue; }
+                if (selectedCardObject.AttackTurnUsed) { AttackIcon.color = Color.gray; }
+                else { AttackIcon.color = Color.white; }
                 break;
             case CardState.Attack:
-                AttackIcon.color = Color.red;
-                MoveIcon.color = Color.white;
+                if (selectedCardObject.MoveTurnUsed) { MoveIcon.color = Color.gray; }
+                else { MoveIcon.color = Color.white; }
+                if (selectedCardObject.AttackTurnUsed) { AttackIcon.color = Color.gray; }
+                else { AttackIcon.color = Color.red; }
                 break;
             default:
                 return;

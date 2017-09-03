@@ -17,6 +17,23 @@ public class PlayerController : MonoBehaviour
     bool allowPathChange = true;
 
 
+    public void DisableTools()
+    {
+        selectionTool.enabled = false;
+        cardCreator.enabled = false;
+        allowPathChange = false;
+        if (selectedCardObject != null) { deSelectObject(); }
+    } 
+
+    public void ResetTools()
+    {
+        selectionTool.enabled = true;
+        cardCreator.enabled = true;
+        allowPathChange = true;
+    }
+
+
+
     // Listens to Current Card Object for Movement Calls
     public void SelectedObjectMoveStateChange(bool Moving)
     {
@@ -34,8 +51,9 @@ public class PlayerController : MonoBehaviour
         {
             //After Moving Disable the Object 
             //(Note: May want to keep object selected in order to do combat actions after move)
-            deSelectObject();
+            // deSelectObject();
             //Enable ability to change path mid move and select different target
+            selectedCardObject.SelectedObject();
             allowPathChange = true;
             selectionTool.enabled = true;
             cardCreator.enabled = true;
@@ -59,15 +77,18 @@ public class PlayerController : MonoBehaviour
             {
                 case CardType.Player:
                     {
+
                         //Select new object held
                         selectedCardObject = cardObject;
-                        selectedCardObject.SelectedObject();
-                        selectedCardObject.MoveChangeObservers += SelectedObjectMoveStateChange;
-                        selectedCardObject.StateChangeObservers += OnCurrentObjectStateChange;
 
                         //EnableUI and show it
                         selectionPanel.gameObject.SetActive(true);
                         selectionPanel.SetObject(selectedCardObject);
+
+                        selectedCardObject.SelectedObject();
+                        selectedCardObject.MoveChangeObservers += SelectedObjectMoveStateChange;
+                        selectedCardObject.StateChangeObservers += OnCurrentObjectStateChange;
+
                         break;
                     }
                 case CardType.Enemy:
@@ -156,10 +177,10 @@ public class PlayerController : MonoBehaviour
             switch (selectedCardObject.cardState)
             {
                 case CardState.Move:
-                    LookForMoveInput();
+                    if (!selectedCardObject.MoveTurnUsed) { LookForMoveInput(); }
                     break;
                 case CardState.Attack:
-                    LookForAttackInput();
+                    if (!selectedCardObject.AttackTurnUsed) { LookForAttackInput(); }
                     break;
                 default:
                     return;
