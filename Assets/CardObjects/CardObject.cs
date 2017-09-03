@@ -54,6 +54,12 @@ public class CardObject : MonoBehaviour, IDamageable
 
     public float getCurrentHealth { get { return (float)currentHealthPoints; } }
 
+    public void ResetAbilities()
+    {
+        MoveTurnUsed = false;
+        AttackTurnUsed = false;
+    }
+
     public void TakeDamage(int Damage)
     {
         BroadcastMessage("DamageDealt", Damage);
@@ -68,6 +74,7 @@ public class CardObject : MonoBehaviour, IDamageable
     {
         AttackTurnUsed = true;
         StateChange(CardState.Attack);
+        terrainControl.ResetTiles();
         ObjectAttacking = obj;
         m_Rigidbody.constraints = RigidbodyConstraints.FreezeAll;
         transform.LookAt(ObjectAttacking.transform);

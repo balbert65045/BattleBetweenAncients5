@@ -30,6 +30,11 @@ public class PlayerController : MonoBehaviour
         selectionTool.enabled = true;
         cardCreator.enabled = true;
         allowPathChange = true;
+        CardObject[] PlayerCardsonField = FindObjectsOfType<CardObject>();
+        foreach (CardObject cardObject in PlayerCardsonField)
+        {
+            if (cardObject.cardType == CardType.Player) { cardObject.ResetAbilities(); }
+        }
     }
 
 
