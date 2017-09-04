@@ -15,7 +15,7 @@ public class TerrainControl : MonoBehaviour {
     public EnviromentTile[] PathTiles;
     private EnviromentTile CurrentTile;
     public List<EnviromentTile> TileRange;
-    public List<Node> PathNodes;
+   
 
     private AStar astar;
 
@@ -24,6 +24,7 @@ public class TerrainControl : MonoBehaviour {
     Color Orange;
 
     //Simply Turns off selection (Note: may want to take tiles out of path)
+    // TODO MOVE this to player controller
     public void ResetTiles()
     {
         if (CurrentTile != null) { CurrentTile.ChangeColor(CurrentTile.MatColorOriginal); }
@@ -69,6 +70,7 @@ public class TerrainControl : MonoBehaviour {
         return null;
     }
 
+    // TODO MOVE this to player controller or return a 
     public void HighlightAttckRange(EnviromentTile TileStart, int MaxDistance)
     {
        
@@ -104,6 +106,8 @@ public class TerrainControl : MonoBehaviour {
 
     }
 
+
+    //TODO Modify this to have the range as an input  
     public bool FindEnemyInAttackRange(EnviromentTile TileOver)
     {
         if (TileRange.Contains(TileOver))
@@ -113,6 +117,7 @@ public class TerrainControl : MonoBehaviour {
         return false;
     }
 
+    //TODO Move this to Player Controller
     public void FindTileInAttackRange(EnviromentTile TileOver)
     {
        
@@ -126,6 +131,7 @@ public class TerrainControl : MonoBehaviour {
     }
 
     // Find the total range area that this object can move to and highlight it
+    //TODO Return a range of tiles
     public void HighlightMoveRange(EnviromentTile TileStart, int MaxDistance)
     {
        
@@ -206,7 +212,7 @@ public class TerrainControl : MonoBehaviour {
             }
             layer--;
         }
-        // Highlight all the tiles in the range 
+        //TODO Move this to Player Controller
         foreach (EnviromentTile Tile in TileRange)
         {
             if (Tile != TileStart) { Tile.ChangeColor(Color.cyan); };
@@ -216,7 +222,7 @@ public class TerrainControl : MonoBehaviour {
     }
 
     // Creates a path depending on a Start and end tile 
-    //TODO needs to be modified for avoidance objects like terrain and other cards
+    //TODO return a path 
     public void FindTilesBetween(EnviromentTile TileStart, EnviromentTile TileEnd, int MaxDistance)
     {
         int Xdelta = TileEnd.X - TileStart.X;
@@ -242,8 +248,7 @@ public class TerrainControl : MonoBehaviour {
         // TODO refactor this into cleaner code
 
 
-
-        PathNodes.Clear();
+        List<Node> PathNodes = new List<Node>();
         PathNodes = astar.FindPath(TileStart.GetComponent<Node>(), TileEnd.GetComponent<Node>(), GridNodes);
         //Debug.Log(PathNodes.Count );
 

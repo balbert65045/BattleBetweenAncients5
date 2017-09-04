@@ -13,6 +13,7 @@ public class TurnSystem : MonoBehaviour {
     bool pressed = false;
 
     PlayerController playerController;
+    AIControl aiControl;
 
     private bool PlayerTurn = true;
     private bool AITurn = false;
@@ -24,6 +25,7 @@ public class TurnSystem : MonoBehaviour {
         PlayerTurn = false;
         playerController.DisableTools();
         AITurn = true;
+        aiControl.Active();
     }
 
     void ResetTurn()
@@ -38,6 +40,7 @@ public class TurnSystem : MonoBehaviour {
     private void Start()
     {
         playerController = FindObjectOfType<PlayerController>();
+        aiControl = FindObjectOfType<AIControl>();
     }
 
     private void Update()

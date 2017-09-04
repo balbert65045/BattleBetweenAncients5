@@ -13,6 +13,10 @@ public class AIControl : MonoBehaviour {
     public EnviromentTile[] TilesTotal;
     public EnviromentTile[,] GridTiles;
 
+    private CardObject[] cardsObjectsOut;
+    public List<CardObject> enemyCardObjectsOut;
+    public List<CardObject> playerCardObjectsOut;
+
 
     // Use this for initialization
     void Start () {
@@ -25,9 +29,28 @@ public class AIControl : MonoBehaviour {
 
         GridTiles[5, 5].OnItemMake(enmyCardObjects[0]);
     }
+
+
+    public void Active()
+    {
+        cardsObjectsOut = FindObjectsOfType<CardObject>();
+        enemyCardObjectsOut.Clear();
+        foreach (CardObject cardObject in cardsObjectsOut)
+        {
+            if (cardObject.cardType == CardType.Enemy) { enemyCardObjectsOut.Add(cardObject); }
+            else if (cardObject.cardType == CardType.Player) { playerCardObjectsOut.Add(cardObject); }
+        }
+    }
 	
 	// Update is called once per frame
 	void Update () {
-		
-	}
+		if (enemyCardObjectsOut.Count > 0)
+        {
+            foreach (CardObject cardObject in enemyCardObjectsOut)
+            {
+                ;
+            }
+        }
+
+    }
 }
