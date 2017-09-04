@@ -12,44 +12,19 @@ public class TerrainControl : MonoBehaviour {
     private EnviromentTile[] TilesTotal;
     public EnviromentTile[,] GridTiles;
     private Node[,] GridNodes;
-    public EnviromentTile[] PathTiles;
-    private EnviromentTile CurrentTile;
-    public List<EnviromentTile> TileRange;
    
 
     private AStar astar;
 
-    public int PathLength { get { return PathTiles.Length; } }
-
-    Color Orange;
-
-    //Simply Turns off selection (Note: may want to take tiles out of path)
-    // TODO MOVE this to player controller
-    public void ResetTiles()
-    {
-        if (CurrentTile != null) { CurrentTile.ChangeColor(CurrentTile.MatColorOriginal); }
-
-        if (TileRange != null)
-        {
-            foreach (EnviromentTile Tile in TileRange)
-            {
-                 { Tile.ChangeColor(Tile.MatColorOriginal); }
-               
-            }
-            //Deselect Range and last tile over
-            TileRange.Clear();
-            CurrentTile = null;
-        }
-    }
 
 
     //Returns the position of the Tile in the path 
     //If not in path returns -1
-    public int CheckPathPosition(EnviromentTile CurrentTile)
+    public int CheckPathPosition(EnviromentTile CurrentTile, List<EnviromentTile> path)
     {
-        for (int i = 0; i< PathTiles.Length; i++)
+        for (int i = 0; i< path.Count; i++)
         {
-            if (PathTiles[i] == CurrentTile)
+            if (path[i] == CurrentTile)
             {
                 return i;
             }
@@ -58,25 +33,24 @@ public class TerrainControl : MonoBehaviour {
     }
 
     //Returns the tile next in path
-    public Transform FindNextTileInPath(EnviromentTile CurrentTile)
+    public Transform FindNextTileInPath(EnviromentTile CurrentTile, List<EnviromentTile> path)
     {
-        for (int i = 0; i < PathTiles.Length; i++)
+        for (int i = 0; i < path.Count; i++)
         {
-            if (PathTiles[i] == CurrentTile)
+            if (path[i] == CurrentTile)
             {
-                return PathTiles[i + 1].transform;
+                return path[i + 1].transform;
             }
         }
         return null;
     }
 
     // TODO MOVE this to player controller or return a 
-    public void HighlightAttckRange(EnviromentTile TileStart, int MaxDistance)
+    public List<EnviromentTile> FindAttackRange(EnviromentTile TileStart, int MaxDistance)
     {
        
         int layer = MaxDistance;
-        TileRange = new List<EnviromentTile>();
-        TileRange.Clear();
+        List<EnviromentTile> TileRange = new List<EnviromentTile>();
         while (layer > 0)
         {
             for (int j = -layer; j <= layer; j++)
@@ -98,17 +72,15 @@ public class TerrainControl : MonoBehaviour {
             }
             layer--;
         }
-        foreach (EnviromentTile Tile in TileRange)
-        {
-            if (Tile != TileStart) { Tile.ChangeColor(Orange); }
-        }
+       
         if (TileRange.Contains(TileStart)) { TileRange.Remove(TileStart); }
+        return (TileRange);
 
     }
 
 
     //TODO Modify this to have the range as an input  
-    public bool FindEnemyInAttackRange(EnviromentTile TileOver)
+    public bool FindEnemyInAttackRange(EnviromentTile TileOver, List<EnviromentTile> TileRange)
     {
         if (TileRange.Contains(TileOver))
         {
@@ -117,27 +89,15 @@ public class TerrainControl : MonoBehaviour {
         return false;
     }
 
-    //TODO Move this to Player Controller
-    public void FindTileInAttackRange(EnviromentTile TileOver)
-    {
-       
-        if (TileRange.Contains(TileOver))
-        {
-            if (CurrentTile != null) { CurrentTile.ChangeColor(Orange); }
-            CurrentTile = TileOver;
-            CurrentTile.ChangeColor(Color.red);
-        }
-      
-    }
 
     // Find the total range area that this object can move to and highlight it
     //TODO Return a range of tiles
-    public void HighlightMoveRange(EnviromentTile TileStart, int MaxDistance)
+    public List<EnviromentTile> FindMoveRange(EnviromentTile TileStart, int MaxDistance)
     {
        
         int layer = MaxDistance;
-        TileRange = new List<EnviromentTile>();
-        TileRange.Clear();
+        List<EnviromentTile> TileRange = new List<EnviromentTile>();
+
         List<Node> RangePath = new List<Node>();
         // Loop through layers (Where layers is essentially the radius of a circle shrinking in)
         while (layer > 0)
@@ -212,125 +172,43 @@ public class TerrainControl : MonoBehaviour {
             }
             layer--;
         }
-        //TODO Move this to Player Controller
-        foreach (EnviromentTile Tile in TileRange)
-        {
-            if (Tile != TileStart) { Tile.ChangeColor(Color.cyan); };
-        }
-
         if (TileRange.Contains(TileStart)) { TileRange.Remove(TileStart); }
+        return TileRange;
     }
 
     // Creates a path depending on a Start and end tile 
     //TODO return a path 
-    public void FindTilesBetween(EnviromentTile TileStart, EnviromentTile TileEnd, int MaxDistance)
+    public List<EnviromentTile> FindTilesBetween(EnviromentTile TileStart, EnviromentTile TileEnd, int MaxDistance)
     {
-        int Xdelta = TileEnd.X - TileStart.X;
-        int Zdelta = TileEnd.Z - TileStart.Z;
-
-        // At each new path created unhighlight previous path made
-        if (PathTiles != null)
-        {
-            foreach (EnviromentTile Tile in PathTiles)
-            {
-                if (TileRange.Contains(Tile)) { Tile.ChangeColor(Color.cyan); }
-                else { Tile.ChangeColor(Tile.MatColorOriginal); }
-            }
-        }
-
-        // Create new empty path
-        //PathTiles = new EnviromentTile[Mathf.Abs(Xdelta) + Mathf.Abs(Zdelta) + 1];
-        //int TilePathIndex = 0;
-
-
-        // Depending on delta positions, add Tiles into tile path
-        // (Note: Currently adds z tiles first then x tiles)
-        // TODO refactor this into cleaner code
-
 
         List<Node> PathNodes = new List<Node>();
         PathNodes = astar.FindPath(TileStart.GetComponent<Node>(), TileEnd.GetComponent<Node>(), GridNodes);
-        //Debug.Log(PathNodes.Count );
 
+        List<EnviromentTile> Path = new List<EnviromentTile>();
         //// Add Tile currently standing on
+        Path.Add(TileStart);
+
+        // Add rest of tiles
         if (PathNodes.Count > 0)
         {
             if (PathNodes.Count < MaxDistance)
             {
-                PathTiles = new EnviromentTile[PathNodes.Count + 1];
-                PathTiles[0] = TileStart;
-                PathTiles[0].ChangeColor(Color.blue);
                 for (int i = 1; i <= PathNodes.Count; i++)
                 {
-                    PathTiles[i] = PathNodes[i - 1].GetComponent<EnviromentTile>();
-                    PathTiles[i].ChangeColor(Color.blue);
+                    Path.Add(PathNodes[i - 1].GetComponent<EnviromentTile>());
                 }
             }
             // Path excedes the max move distance
             else
             {
-                PathTiles = new EnviromentTile[MaxDistance + 1];
-                PathTiles[0] = TileStart;
-                PathTiles[0].ChangeColor(Color.blue);
                 for (int i = 1; i <= MaxDistance; i++)
                 {
-                    PathTiles[i] = PathNodes[i - 1].GetComponent<EnviromentTile>();
-                    PathTiles[i].ChangeColor(Color.blue);
+                    Path.Add(PathNodes[i - 1].GetComponent<EnviromentTile>());
                 }
             }
-           
         }
 
-        else { TileStart.ChangeColor(Color.blue); }
-
-
-
-
-
-        //if (Zdelta > 0)
-        //{
-        //    for (int z = TileStart.Z; z <= TileEnd.Z; z++)
-        //    {
-        //        GridTiles[TileStart.X, z].ChangeColor(Color.blue);
-        //        PathTiles[TilePathIndex] = GridTiles[TileStart.X, z];
-        //        TilePathIndex++;
-
-        //    }
-        //}
-        //else
-        //{
-        //    for (int z = TileStart.Z; z >= TileEnd.Z; z--)
-        //    {
-        //        GridTiles[TileStart.X, z].ChangeColor(Color.blue);
-        //        PathTiles[TilePathIndex] = GridTiles[TileStart.X, z];
-        //        TilePathIndex++;
-
-        //    }
-        //}
-
-        //if (Xdelta > 0)
-        //{
-        //    for (int x = TileStart.X + 1; x <= TileEnd.X; x++)
-        //    {
-        //        GridTiles[x, TileEnd.Z].ChangeColor(Color.blue);
-        //        PathTiles[TilePathIndex] = GridTiles[x, TileEnd.Z];
-        //        TilePathIndex++;
-
-        //    }
-        //}
-        //else if (Xdelta < 0)
-        //{
-        //    for (int x = TileStart.X - 1; x >= TileEnd.X; x--)
-        //    {
-        //        GridTiles[x, TileEnd.Z].ChangeColor(Color.blue);
-        //        PathTiles[TilePathIndex] = GridTiles[x, TileEnd.Z];
-        //        TilePathIndex++;
-
-        //    }
-        //}
-
-
-
+        return Path;
 
     }
 
@@ -349,7 +227,7 @@ public class TerrainControl : MonoBehaviour {
 
         astar = GetComponent<AStar>();
 
-        Orange = new Color(1, 0.5f, 0, 1);
+      
 
         }
 

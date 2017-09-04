@@ -10,11 +10,15 @@ public class PlayerController : MonoBehaviour
     SelectionTool selectionTool;
     CardObject selectedCardObject;
     CardCreator cardCreator;
+    public List<EnviromentTile> Path;
+    public List<EnviromentTile> Range;
     CameraRaycaster cameraRaycaster;
     SelectionPanel selectionPanel;
     RaycastHit m_hit;
 
     bool allowPathChange = true;
+
+    Color Orange;
 
 
     public void DisableTools()
@@ -59,6 +63,8 @@ public class PlayerController : MonoBehaviour
             // deSelectObject();
             //Enable ability to change path mid move and select different target
             selectedCardObject.SelectedObject();
+            Range = selectedCardObject.FindMoveRange();
+
             allowPathChange = true;
             selectionTool.enabled = true;
             cardCreator.enabled = true;
@@ -91,6 +97,12 @@ public class PlayerController : MonoBehaviour
                         selectionPanel.SetObject(selectedCardObject);
 
                         selectedCardObject.SelectedObject();
+                        Range = selectedCardObject.FindMoveRange();
+                        foreach (EnviromentTile tile in Range)
+                        {
+                            tile.ChangeColor(Color.cyan);
+                        }
+
                         selectedCardObject.MoveChangeObservers += SelectedObjectMoveStateChange;
                         selectedCardObject.StateChangeObservers += OnCurrentObjectStateChange;
 
@@ -114,24 +126,44 @@ public class PlayerController : MonoBehaviour
     }
 
 
+    void ResetTiles()
+    {
+        foreach (EnviromentTile tile in Range)
+        {
+            tile.ChangeColor(tile.MatColorOriginal);
+        }
+        selectedCardObject.GetCurrentTile.ChangeColor(selectedCardObject.GetCurrentTile.MatColorOriginal);
+    }
+
     //Method used to completely deslect the object (NOTE: may want to see if this can be refactored into fewer lines)
     void deSelectObject()
     {
         selectionPanel.SetObject(null);
         selectionPanel.gameObject.SetActive(false);
+
+        ResetTiles();
+
         selectedCardObject.MoveChangeObservers -= SelectedObjectMoveStateChange;
         selectedCardObject.StateChangeObservers -= OnCurrentObjectStateChange;
         selectedCardObject.DeselectObject();
+
         selectedCardObject = null;
     }
 
     void OnCurrentObjectStateChange(CardState state)
     {
+        ResetTiles();
         var hit = cameraRaycaster.RaycastForLayer(Layer.LevelTerrain);
         switch (selectedCardObject.cardState)
         {
             case CardState.Move:
-              
+                selectedCardObject.GetCurrentTile.ChangeColor(Color.blue);
+                Range = selectedCardObject.FindMoveRange();
+                foreach (EnviromentTile tile in Range)
+                {
+                    tile.ChangeColor(Color.cyan);
+                }
+
                 if (hit.HasValue)
                 {
                     RaycastHit m_hit;
@@ -139,13 +171,26 @@ public class PlayerController : MonoBehaviour
                     // Check if their is another object on the tile/ if the tile is open
                     if (m_hit.transform.GetComponent<EnviromentTile>().cardType == CardType.Open)
                     {
-                        selectedCardObject.MakePath(m_hit.transform.GetComponent<EnviromentTile>());
+                        if (Path != null) { foreach (EnviromentTile tile in Path)
+                            {
+                                if (Range.Contains(tile)){ tile.ChangeColor(Color.cyan); }
+                                else { tile.ChangeColor(tile.MatColorOriginal); }
+                            }
+                        }
+                        Path = selectedCardObject.MakePath(m_hit.transform.GetComponent<EnviromentTile>());
+                        foreach (EnviromentTile tile in Path) { tile.ChangeColor(Color.blue); }
                     }
                 }
             
                 
                 break;
             case CardState.Attack:
+                selectedCardObject.GetCurrentTile.ChangeColor(Color.red);
+                Range = selectedCardObject.FindAttackRange();
+                foreach (EnviromentTile tile in Range)
+                {
+                    tile.ChangeColor(Orange);
+                }
                 if (hit.HasValue)
                 {
                     RaycastHit m_hit;
@@ -154,7 +199,9 @@ public class PlayerController : MonoBehaviour
                     if (m_hit.transform.GetComponent<EnviromentTile>().cardType == CardType.Open || m_hit.transform.GetComponent<EnviromentTile>().cardType == CardType.Enemy)
                     {
                         Debug.Log("Looking");
-                        selectedCardObject.HighlightTileInAttackRange(m_hit.transform.GetComponent<EnviromentTile>());
+                        if (selectedCardObject.CheckAttackInRange(m_hit.transform.GetComponent<EnviromentTile>(), Range))
+                        { m_hit.transform.GetComponent<EnviromentTile>().ChangeColor(Color.red); }
+                       
                     }
                 }
 
@@ -173,6 +220,7 @@ public class PlayerController : MonoBehaviour
         selectionPanel.gameObject.SetActive(false);
         cameraRaycaster = FindObjectOfType<CameraRaycaster>();
         cameraRaycaster.layerChangeObservers += OnPathChange;
+        Orange = new Color(1, 0.5f, 0, 1);
     }
 
     private void Update()
@@ -218,8 +266,11 @@ public class PlayerController : MonoBehaviour
                 // Check if their is another object on the tile/ if the tile is open
                 if (m_hit.transform.GetComponent<EnviromentTile>().cardType == CardType.Enemy)
                 {
-                    if (selectedCardObject.CheckAttackInRange(m_hit.transform.GetComponent<EnviromentTile>()))
-                    { selectedCardObject.AttackObject(m_hit.transform.GetComponent<EnviromentTile>().ObjectHeld); }
+                    if (selectedCardObject.CheckAttackInRange(m_hit.transform.GetComponent<EnviromentTile>(), Range))
+                    { selectedCardObject.AttackObject(m_hit.transform.GetComponent<EnviromentTile>().ObjectHeld);
+                      ResetTiles();
+                       
+                    }
                 }
             }
         }
@@ -237,7 +288,8 @@ public class PlayerController : MonoBehaviour
                 if (m_hit.transform.GetComponent<EnviromentTile>().cardType == CardType.Open)
                 {
                     //Tell Observers object moving
-                    selectedCardObject.enableMovement();
+                    selectedCardObject.enableMovement(Path);
+                    ResetTiles();
                 }
             }
         }
@@ -254,10 +306,28 @@ public class PlayerController : MonoBehaviour
                 switch (selectedCardObject.cardState)
                 {
                     case CardState.Move:
-                        selectedCardObject.MakePath(newTransform.GetComponent<EnviromentTile>());
+                        if (Path != null) {
+                            foreach (EnviromentTile tile in Path)
+                            {
+                                if (Range.Contains(tile)){ tile.ChangeColor(Color.cyan); }
+                                else { tile.ChangeColor(tile.MatColorOriginal); }
+                            }
+                        }
+                        Path = selectedCardObject.MakePath(newTransform.GetComponent<EnviromentTile>());
+                        foreach (EnviromentTile tile in Path) { tile.ChangeColor(Color.blue); }
                         break;
                     case CardState.Attack:
-                        selectedCardObject.HighlightTileInAttackRange(newTransform.GetComponent<EnviromentTile>());
+                        Range = selectedCardObject.FindAttackRange();
+                        if (Range != null)
+                        {
+                            foreach (EnviromentTile tile in Range)
+                            {
+                                if (Range.Contains(tile)) { tile.ChangeColor(Orange); }
+                            }
+                        }
+
+                        if (selectedCardObject.CheckAttackInRange(newTransform.GetComponent<EnviromentTile>(), Range))
+                        { newTransform.GetComponent<EnviromentTile>().ChangeColor(Color.red); }
                         break;
                     default:
                         return;

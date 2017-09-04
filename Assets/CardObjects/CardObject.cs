@@ -8,12 +8,14 @@ using UnityStandardAssets.CrossPlatformInput;
 public class CardObject : MonoBehaviour, IDamageable
 {
 
+    public int MaxMoveDistance;
+
     [SerializeField]
-    int MaxMoveDistance = 4;
-    int initialMaxMoveDistance;
+    int initialMaxMoveDistance = 4;
+
+    public int MaxAttackDistance;
     [SerializeField]
-    int MaxAttackDistance = 1;
-    int initialMaxAttackDistance;
+    int initialMaxAttackDistance = 1;
     [SerializeField]
     int AttackDamage = 2;
 
@@ -46,6 +48,7 @@ public class CardObject : MonoBehaviour, IDamageable
 
     private GameObject ObjectAttacking;
 
+    private List<EnviromentTile> pathTaking;
 
     // DAMAGE and HEEALTH
     [SerializeField]
@@ -58,6 +61,8 @@ public class CardObject : MonoBehaviour, IDamageable
     {
         MoveTurnUsed = false;
         AttackTurnUsed = false;
+        MaxAttackDistance = initialMaxAttackDistance;
+        MaxMoveDistance = initialMaxMoveDistance;
     }
 
     public void TakeDamage(int Damage)
@@ -73,8 +78,8 @@ public class CardObject : MonoBehaviour, IDamageable
     public void AttackObject(GameObject obj)
     {
         AttackTurnUsed = true;
+        MaxAttackDistance = 0;
         StateChange(CardState.Attack);
-        terrainControl.ResetTiles();
         ObjectAttacking = obj;
         m_Rigidbody.constraints = RigidbodyConstraints.FreezeAll;
         transform.LookAt(ObjectAttacking.transform);
@@ -97,12 +102,12 @@ public class CardObject : MonoBehaviour, IDamageable
     // MOVEMENT
     public void OnCurrentTile(EnviromentTile tileTransform) { CurrentTile = tileTransform;}
 
-    public void MakePath(EnviromentTile EndTile){ terrainControl.FindTilesBetween(CurrentTile, EndTile, MaxMoveDistance);}
-    public void HighlightTileInAttackRange(EnviromentTile SlectedTile) { terrainControl.FindTileInAttackRange(SlectedTile); }
-
-    public bool CheckAttackInRange(EnviromentTile AttackTile)
+    public List<EnviromentTile> MakePath(EnviromentTile EndTile){ return (terrainControl.FindTilesBetween(CurrentTile, EndTile, MaxMoveDistance));}
+    public List<EnviromentTile> FindMoveRange() { return(terrainControl.FindMoveRange(CurrentTile, MaxMoveDistance)); }
+    public List<EnviromentTile> FindAttackRange() { return (terrainControl.FindAttackRange(CurrentTile, MaxAttackDistance)); }
+    public bool CheckAttackInRange(EnviromentTile AttackTile, List<EnviromentTile> AttackRange)
     {
-        if (terrainControl.FindEnemyInAttackRange(AttackTile)) {return true;}
+        if (terrainControl.FindEnemyInAttackRange(AttackTile, AttackRange)) {return true;}
         return false;
     }
 
@@ -110,42 +115,37 @@ public class CardObject : MonoBehaviour, IDamageable
     {
         Selected = true;
         StateChange(CardState.Move);
-        CurrentTile.ChangeColor(Color.blue);
-        terrainControl.HighlightMoveRange(CurrentTile, MaxMoveDistance);
     }
 
     public void DeselectObject()
     {
         Selected = false;
-        CurrentTile.ChangeColor(CurrentTile.MatColorOriginal);
-        terrainControl.ResetTiles();
     }
 
-    public void enableMovement()
+    public void enableMovement(List<EnviromentTile> path)
     {
         Moving = true;
         MoveTurnUsed = true;
+        MaxMoveDistance = 0;
+        pathTaking = path;
         m_Rigidbody.constraints = RigidbodyConstraints.FreezeRotationX | RigidbodyConstraints.FreezeRotationY | RigidbodyConstraints.FreezeRotationZ;
         aiCharacterControl.agent.stoppingDistance = .2f;
-        terrainControl.ResetTiles();
         if (MoveChangeObservers != null) MoveChangeObservers(Moving);
     }
 
     public void StateChange(CardState State)
     {
         cardState = State;
-        terrainControl.ResetTiles();
+
         switch (cardState)
         {
             case CardState.Move:
                
                 CurrentTile.ChangeColor(Color.blue);
-                terrainControl.HighlightMoveRange(CurrentTile, MaxMoveDistance);
                 break;
             case CardState.Attack:
                
                 CurrentTile.ChangeColor(Color.red);
-                terrainControl.HighlightAttckRange(CurrentTile, MaxAttackDistance);
                 break;
             default:
                 return;
@@ -164,8 +164,8 @@ public class CardObject : MonoBehaviour, IDamageable
         terrainControl = FindObjectOfType<TerrainControl>();
         currentHealthPoints = maxHealthPoints;
         m_Rigidbody = GetComponent<Rigidbody>();
-        initialMaxMoveDistance = MaxMoveDistance;
-        initialMaxAttackDistance = MaxAttackDistance;
+        MaxMoveDistance = initialMaxMoveDistance;
+        MaxAttackDistance = initialMaxAttackDistance;
     }
 
     // Update is called once per frame
@@ -178,13 +178,13 @@ public class CardObject : MonoBehaviour, IDamageable
             if (RemainingDistance < aiCharacterControl.agent.stoppingDistance)
             {
 
-                int CurrentPathLength = terrainControl.PathLength - 1;
-                int CurrentTileIndex = terrainControl.CheckPathPosition(CurrentTile);
+                int CurrentPathLength = pathTaking.Count - 1;
+                int CurrentTileIndex = terrainControl.CheckPathPosition(CurrentTile, pathTaking);
                 if (CurrentTileIndex == -1) { Debug.LogError("CurrentPathIndex not in Path of pathBuilder"); }
 
                 if (CurrentTileIndex != CurrentPathLength)
                 {
-                    Transform NextTileInPath = terrainControl.FindNextTileInPath(CurrentTile);
+                    Transform NextTileInPath = terrainControl.FindNextTileInPath(CurrentTile, pathTaking);
                     if (NextTileInPath == null) { Debug.LogError("NextTileInPath not in Path of pathBuilder"); }
                     MoveToPosition(NextTileInPath);
                 }
@@ -195,20 +195,6 @@ public class CardObject : MonoBehaviour, IDamageable
                     if (MoveChangeObservers != null) MoveChangeObservers(Moving);
                 }
             }
-        }
-
-        if (MoveTurnUsed)
-        {
-            MaxMoveDistance = 0;
-        }
-        else { MaxMoveDistance = initialMaxMoveDistance;}
-        if (AttackTurnUsed)
-        {
-            MaxAttackDistance = 0;
-        }
-        else
-        {
-            MaxAttackDistance = initialMaxAttackDistance;
         }
 
     }
