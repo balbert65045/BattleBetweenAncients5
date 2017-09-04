@@ -4,25 +4,25 @@ using UnityEngine;
 
 public class AIControl : MonoBehaviour {
 
-    public static int xGridLength = 7;
-    public static int zGridLength = 7;
+     static int xGridLength = 7;
+     static int zGridLength = 7;
 
     TurnSystem turnSystem;
 
     [SerializeField]
      GameObject[] enmyCardObjects;
 
-    public EnviromentTile[] TilesTotal;
-    public EnviromentTile[,] GridTiles;
+    private EnviromentTile[] TilesTotal;
+    private EnviromentTile[,] GridTiles;
 
     private CardObject SelectedCardObject;
     private CardObject[] cardsObjectsOut;
-    public List<CardObject> enemyCardObjectsOut;
-    public List<CardObject> playerCardObjectsOut;
+    private List<CardObject> enemyCardObjectsOut;
+    private List<CardObject> playerCardObjectsOut;
 
-    public List<EnviromentTile> Path;
-    public List<EnviromentTile> AttackArea;
-    public List<EnviromentTile> Range;
+    private List<EnviromentTile> Path;
+    private List<EnviromentTile> AttackArea;
+    private List<EnviromentTile> Range;
 
     bool enable = false;
     bool TurnOver = false;
@@ -47,6 +47,9 @@ public class AIControl : MonoBehaviour {
         }
 
         GridTiles[5, 5].OnItemMake(enmyCardObjects[0]);
+
+        playerCardObjectsOut = new List<CardObject>();
+        enemyCardObjectsOut = new List<CardObject>();
     }
 
     public void SelectedObjectMoveStateChange(bool Moving)
@@ -67,7 +70,8 @@ public class AIControl : MonoBehaviour {
 
     public void DeathChange(CardObject cardObject)
     {
-        playerCardObjectsOut.Remove(cardObject);
+        if (playerCardObjectsOut.Contains(cardObject)) { playerCardObjectsOut.Remove(cardObject); }
+        if (enemyCardObjectsOut.Contains(cardObject)) { enemyCardObjectsOut.Remove(cardObject); }
         cardObject.DeathChangeObservers -= DeathChange;
     }
 
@@ -78,10 +82,17 @@ public class AIControl : MonoBehaviour {
         enable = true;
         index = 0;
         cardsObjectsOut = FindObjectsOfType<CardObject>();
-        enemyCardObjectsOut.Clear();
         foreach (CardObject cardObject in cardsObjectsOut)
         {
-            if (cardObject.cardType == CardType.Enemy) { if (!enemyCardObjectsOut.Contains(cardObject)) { enemyCardObjectsOut.Add(cardObject); } }
+            if (cardObject.cardType == CardType.Enemy) {
+                if (!enemyCardObjectsOut.Contains(cardObject))
+                {
+                    enemyCardObjectsOut.Add(cardObject);
+                    cardObject.DeathChangeObservers += DeathChange;
+                }
+            }
+
+
             else if (cardObject.cardType == CardType.Player) {
                 if (!playerCardObjectsOut.Contains(cardObject)) {
                     playerCardObjectsOut.Add(cardObject);

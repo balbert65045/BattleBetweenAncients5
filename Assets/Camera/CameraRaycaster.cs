@@ -63,26 +63,30 @@ public class CameraRaycaster : MonoBehaviour
             if (hit.HasValue)
             {
                 m_hit = hit.Value;
-                // Debug.Log("Hit");
+              
                 if (m_hit.transform != m_Transform)
                 {
 
-                //    m_layerHit = layer;
-                //    m_Transform = m_hit.transform;
-                //    if (layerChangeObservers != null) layerChangeObservers(m_Transform);
+                    //    m_layerHit = layer;
+                    //    m_Transform = m_hit.transform;
+                    //    if (layerChangeObservers != null) layerChangeObservers(m_Transform);
+                  
 
-
-                        switch (m_layerHit)
+                    switch (m_layerHit)
                         {
                             case Layer.LevelTerrain:
-                                m_layerHit = layer;
+                           // Debug.Log(m_layerHit + "" + m_hit.transform);
+                            m_layerHit = layer;
                                 m_Transform = m_hit.transform;
                                 if (layerChangeObservers != null) layerChangeObservers(m_Transform);
                                 break;
                             case Layer.RaycastEndStop:
                                 break;
-                            default:
-                                return;
+
+                            //Took this out to fix beggining problem 
+                            //default:
+                            //Debug.Log(m_layerHit +""+ m_hit.transform);
+                           // return;
                         }
                   }
                 m_layerHit = layer;

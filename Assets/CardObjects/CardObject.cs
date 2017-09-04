@@ -64,6 +64,8 @@ public class CardObject : MonoBehaviour, IDamageable
 
     public float getCurrentHealth { get { return (float)currentHealthPoints; } }
 
+
+    // Reset Moving and Attacking ability
     public void ResetAbilities()
     {
         MoveTurnUsed = false;
@@ -86,6 +88,8 @@ public class CardObject : MonoBehaviour, IDamageable
     public void AttackObject(GameObject obj)
     {
         AttackTurnUsed = true;
+        MoveTurnUsed = true;
+        MaxMoveDistance = 0;
         MaxAttackDistance = 0;
         StateChange(CardState.Attack);
         ObjectAttacking = obj;

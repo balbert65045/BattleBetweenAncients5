@@ -33,6 +33,7 @@ public class CardCreator : MonoBehaviour {
             foreach (CreatorButton CB in creatorButtons)
             {
                 ActiveImage = ActiveImage || CB.CheckMousePositionOnButton();
+
             }
          
         }
@@ -60,6 +61,7 @@ public class CardCreator : MonoBehaviour {
     // TODO find why first tile hover over does not show image
     void OnItemCreateImage(Transform newTransform)
     {
+        
         if (newTransform.GetComponent<EnviromentTile>() != null)
         {
             if (ActiveImage)
