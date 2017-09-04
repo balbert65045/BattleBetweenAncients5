@@ -97,6 +97,7 @@ public class PlayerController : MonoBehaviour
                         selectionPanel.SetObject(selectedCardObject);
 
                         selectedCardObject.SelectedObject();
+                        selectedCardObject.GetCurrentTile.ChangeColor(Color.blue);
                         Range = selectedCardObject.FindMoveRange();
                         foreach (EnviromentTile tile in Range)
                         {

@@ -18,23 +18,30 @@ public class TurnSystem : MonoBehaviour {
     private bool PlayerTurn = true;
     private bool AITurn = false;
 
-    public void EndTurn()
+    public void EndTurn(int player)
     {
-        Debug.Log("Ended Turn");
-        TimeWhenPressed = Time.time;
-        PlayerTurn = false;
-        playerController.DisableTools();
-        AITurn = true;
-        aiControl.Active();
-    }
+        if (player == 1)
+        {
+            PlayerTurn = false;
+            playerController.DisableTools();
 
-    void ResetTurn()
-    {
-        Debug.Log("Reset");
-        button.interactable = true;
-        buttonText.text = "End Turn";
-        PlayerTurn = true;
-        playerController.ResetTools();
+            AITurn = true;
+            aiControl.Active();
+
+            button.interactable = false;
+            buttonText.text = "Waiting for Enemy turn";
+        }
+        else if (player == 2)
+        {
+            PlayerTurn = true;
+            playerController.ResetTools();
+
+            button.interactable = true;
+            buttonText.text = "End Turn";
+
+            AITurn = false;
+        }
+
     }
 
     private void Start()
@@ -43,21 +50,5 @@ public class TurnSystem : MonoBehaviour {
         aiControl = FindObjectOfType<AIControl>();
     }
 
-    private void Update()
-    {
-        if (Time.time < TimeWhenPressed + AITimeTurn  && AITurn)
-        {
-            button.interactable = false;
-            buttonText.text = "Waiting for Enemy turn";
-        }
-
-        else if (Time.time >= TimeWhenPressed + AITimeTurn && AITurn)
-        {
-            
-            ResetTurn();
-            AITurn = false;
-
-        }
-    }
 
 }

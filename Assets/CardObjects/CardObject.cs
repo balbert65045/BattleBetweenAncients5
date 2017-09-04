@@ -17,7 +17,9 @@ public class CardObject : MonoBehaviour, IDamageable
     [SerializeField]
     int initialMaxAttackDistance = 1;
     [SerializeField]
-    int AttackDamage = 2;
+    int AttackDamageMin = 2;
+    [SerializeField]
+    int AttackDamageMax = 8;
 
     public CardType cardType;
     public CardState cardState = CardState.Move;
@@ -41,6 +43,11 @@ public class CardObject : MonoBehaviour, IDamageable
 
     public delegate void OnStateChange(CardState state);
     public event OnStateChange StateChangeObservers;
+
+    public delegate void OnDeathChange(CardObject cardObject);
+    public event OnDeathChange DeathChangeObservers;
+
+
     private Rigidbody m_Rigidbody;
 
     EnviromentTile CurrentTile;
@@ -71,6 +78,7 @@ public class CardObject : MonoBehaviour, IDamageable
         currentHealthPoints = Mathf.Clamp(currentHealthPoints - Damage, 0, maxHealthPoints);
         if (currentHealthPoints <= 0) {
             CurrentTile.ObjectMovedOffTile();
+            if (DeathChangeObservers != null) DeathChangeObservers(this);
             Destroy(gameObject);
         }
     }
@@ -93,7 +101,8 @@ public class CardObject : MonoBehaviour, IDamageable
         Component damageableComponent = ObjectAttacking.GetComponent(typeof(IDamageable));
         if (damageableComponent)
         {
-            (damageableComponent as IDamageable).TakeDamage(AttackDamage);
+            int damage = Random.Range(AttackDamageMin, AttackDamageMax);
+            (damageableComponent as IDamageable).TakeDamage(damage);
             ObjectAttacking.GetComponent<ThirdPersonCharacter>().Hit(this.transform);
         }
     }
@@ -110,6 +119,12 @@ public class CardObject : MonoBehaviour, IDamageable
         if (terrainControl.FindEnemyInAttackRange(AttackTile, AttackRange)) {return true;}
         return false;
     }
+
+    public List<EnviromentTile> FindTilesAround( int distance) { return (terrainControl.FindMoveRange(CurrentTile, distance)); }
+    //Note 100 is expected max possible path. adjust if something moves past 100 tiles
+    public int FindTileDistance(EnviromentTile Endtile) { return (terrainControl.FindTilesBetween(CurrentTile, Endtile, 100).Count); }
+
+
 
     public void SelectedObject()
     {
@@ -141,11 +156,11 @@ public class CardObject : MonoBehaviour, IDamageable
         {
             case CardState.Move:
                
-                CurrentTile.ChangeColor(Color.blue);
+   //             CurrentTile.ChangeColor(Color.blue);
                 break;
             case CardState.Attack:
                
-                CurrentTile.ChangeColor(Color.red);
+  //              CurrentTile.ChangeColor(Color.red);
                 break;
             default:
                 return;
