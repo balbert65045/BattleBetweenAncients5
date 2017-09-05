@@ -8,18 +8,20 @@ using UnityStandardAssets.CrossPlatformInput;
 public class CardObject : MonoBehaviour, IDamageable
 {
 
-    public int MaxMoveDistance;
+    public int MaxMoveDistance { get; private set; }
+    public int MaxAttackDistance { get; private set; }
 
     [SerializeField]
     int initialMaxMoveDistance = 4;
-
-    public int MaxAttackDistance;
     [SerializeField]
     int initialMaxAttackDistance = 1;
     [SerializeField]
     int AttackDamageMin = 2;
     [SerializeField]
     int AttackDamageMax = 8;
+    [SerializeField]
+    CardCharacter CardCharacter;
+
 
     public CardType cardType;
     public CardState cardState = CardState.Move;
@@ -95,7 +97,8 @@ public class CardObject : MonoBehaviour, IDamageable
         ObjectAttacking = obj;
         m_Rigidbody.constraints = RigidbodyConstraints.FreezeAll;
         transform.LookAt(ObjectAttacking.transform);
-        this.GetComponent<ThirdPersonCharacter>().Attack();
+        this.GetComponent<ThirdPersonCharacter>().Attack(); 
+       
     }
 
 

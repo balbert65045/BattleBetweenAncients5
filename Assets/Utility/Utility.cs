@@ -16,4 +16,10 @@ public enum CardState
     Attack = 2,
 }
 
+public enum CardCharacter
+{
+    Unnarmed = 1,
+    TwoHandSword = 2,
+}
+
 
