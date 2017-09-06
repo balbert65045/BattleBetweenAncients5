@@ -151,7 +151,7 @@ public class AIControl : MonoBehaviour {
             }
             else
             {
-                Debug.Log("Waiting...");
+            //    Debug.Log("Waiting...");
                 TimeObjectStopedMoving = Time.time;
             }
         }

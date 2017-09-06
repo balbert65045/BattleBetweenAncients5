@@ -199,7 +199,7 @@ public class PlayerController : MonoBehaviour
                     // Check if their is another object on the tile/ if the tile is open
                     if (m_hit.transform.GetComponent<EnviromentTile>().cardType == CardType.Open || m_hit.transform.GetComponent<EnviromentTile>().cardType == CardType.Enemy)
                     {
-                        Debug.Log("Looking");
+                      //  Debug.Log("Looking");
                         if (selectedCardObject.CheckAttackInRange(m_hit.transform.GetComponent<EnviromentTile>(), Range))
                         { m_hit.transform.GetComponent<EnviromentTile>().ChangeColor(Color.red); }
                        

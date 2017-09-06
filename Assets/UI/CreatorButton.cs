@@ -17,11 +17,6 @@ public class CreatorButton : MonoBehaviour {
       
     }
 	
-	// Update is called once per frame
-	void Update () {
-
-
-    }
 
 
     // Checks if pointer is over their button

@@ -14,9 +14,12 @@ public class CardCreator : MonoBehaviour {
     
 
     public bool ActiveImage = false;
+    bool turnUsed = false;
 
-
-    
+    public void ResetTurn()
+    {
+        turnUsed = false;
+    }
 
 
 	void Start () {
@@ -28,34 +31,36 @@ public class CardCreator : MonoBehaviour {
     // Update is called once per frame
     void Update()
     {
-        if (CrossPlatformInputManager.GetButtonDown("pointer1"))
+        if (!turnUsed)
         {
-            creatorButtons = FindObjectsOfType<CreatorButton>();
-            foreach (CreatorButton CB in creatorButtons)
+            if (CrossPlatformInputManager.GetButtonDown("pointer1"))
             {
-                ActiveImage = ActiveImage || CB.CheckMousePositionOnButton();
+                creatorButtons = FindObjectsOfType<CreatorButton>();
+                foreach (CreatorButton CB in creatorButtons)
+                {
+                    ActiveImage = ActiveImage || CB.CheckMousePositionOnButton();
+
+                }
 
             }
-         
-        }
-        else if (CrossPlatformInputManager.GetButtonUp("pointer1"))
-        {
-            ActiveImage = false;
-            OnItemCreate();
-            OldTileOver = null;
-        }
-
-        //Cancel Object to spawn
-        if (CrossPlatformInputManager.GetButtonDown("Cancel"))
-        {
-               if (OldTileOver != null)
-                {
+            else if (CrossPlatformInputManager.GetButtonUp("pointer1"))
+            {
                 ActiveImage = false;
-                OldTileOver.DestroyImage();
+                OnItemCreate();
                 OldTileOver = null;
             }
-        }
 
+            //Cancel Object to spawn
+            if (CrossPlatformInputManager.GetButtonDown("Cancel"))
+            {
+                if (OldTileOver != null)
+                {
+                    ActiveImage = false;
+                    OldTileOver.DestroyImage();
+                    OldTileOver = null;
+                }
+            }
+        }
     }
 
 
@@ -95,6 +100,7 @@ public class CardCreator : MonoBehaviour {
                     GameObject newItem = playerObjectHolder.ReadyObject;
                     OldTileOver.OnItemMake(newItem);
                     playerObjectHolder.DestroyCardUsed();
+                    turnUsed = true;
                 }
             }
         }

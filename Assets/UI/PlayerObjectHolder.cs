@@ -16,7 +16,7 @@ public class PlayerObjectHolder : MonoBehaviour {
 
     }
 	
-	// Update is called once per frame
+	// TODO disable ability to use other cards after one has been used then reset after turn
     public void DestroyCardUsed()
     {
         Destroy(CardUsing.gameObject);
