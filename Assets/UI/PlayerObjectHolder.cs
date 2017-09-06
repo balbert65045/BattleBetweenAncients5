@@ -7,6 +7,7 @@ public class PlayerObjectHolder : MonoBehaviour {
     public CreatorButton[] PlayerObjects;
     public GameObject ReadyObject;
     public GameObject ReadyImage;
+    public CreatorButton CardUsing;
 
     // Use this for initialization
     void Start()
@@ -16,9 +17,12 @@ public class PlayerObjectHolder : MonoBehaviour {
     }
 	
 	// Update is called once per frame
-	void Update () {
-    
-       
+    public void DestroyCardUsed()
+    {
+        Destroy(CardUsing.gameObject);
+        CardUsing = null;
+        ReadyObject = null;
+        ReadyImage = null;
     }
 
     public void DeactivateotherButton(int type)
@@ -31,9 +35,10 @@ public class PlayerObjectHolder : MonoBehaviour {
         }
     }
 
-    public void ActiveObject(GameObject Obj, GameObject ObjImage)
+    public void ActiveObject(GameObject Obj, GameObject ObjImage, CreatorButton card)
     {
         //TerrainControll.ObjectReady(Obj);
+        CardUsing = card;
         ReadyObject = Obj;
         ReadyImage = ObjImage;
     }

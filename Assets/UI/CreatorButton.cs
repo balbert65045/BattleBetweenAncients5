@@ -47,7 +47,7 @@ public class CreatorButton : MonoBehaviour {
     {
         
         active = true;
-        OBJHolder.ActiveObject(Object, ImageObject);
+        OBJHolder.ActiveObject(Object, ImageObject, this);
         OBJHolder.DeactivateotherButton(type);
 
     }

@@ -13,6 +13,7 @@ public class TurnSystem : MonoBehaviour {
     bool pressed = false;
 
     PlayerController playerController;
+    CardHand cardHand;
     AIControl aiControl;
 
     private bool PlayerTurn = true;
@@ -35,6 +36,7 @@ public class TurnSystem : MonoBehaviour {
         {
             PlayerTurn = true;
             playerController.ResetTools();
+            cardHand.Redraw();
 
             button.interactable = true;
             buttonText.text = "End Turn";
@@ -48,6 +50,7 @@ public class TurnSystem : MonoBehaviour {
     {
         playerController = FindObjectOfType<PlayerController>();
         aiControl = FindObjectOfType<AIControl>();
+        cardHand = FindObjectOfType<CardHand>();
     }
 
 

@@ -23,7 +23,6 @@ public class CardCreator : MonoBehaviour {
         cameraRaycaster = FindObjectOfType<CameraRaycaster>();
         cameraRaycaster.layerChangeObservers += OnItemCreateImage;
         playerObjectHolder = FindObjectOfType<PlayerObjectHolder>();
-        creatorButtons = FindObjectsOfType<CreatorButton>();
     }
 
     // Update is called once per frame
@@ -31,6 +30,7 @@ public class CardCreator : MonoBehaviour {
     {
         if (CrossPlatformInputManager.GetButtonDown("pointer1"))
         {
+            creatorButtons = FindObjectsOfType<CreatorButton>();
             foreach (CreatorButton CB in creatorButtons)
             {
                 ActiveImage = ActiveImage || CB.CheckMousePositionOnButton();
@@ -92,9 +92,9 @@ public class CardCreator : MonoBehaviour {
             OldTileOver.DestroyImage();
             if (Tile.cardType == CardType.Open)
                 {
-                  
                     GameObject newItem = playerObjectHolder.ReadyObject;
                     OldTileOver.OnItemMake(newItem);
+                    playerObjectHolder.DestroyCardUsed();
                 }
             }
         }
