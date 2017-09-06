@@ -46,8 +46,15 @@ namespace UnityStandardAssets.Characters.ThirdPerson
             m_Animator.SetTrigger("Hit");
         }
 
+        public void Dead(Transform onjAttackingTransform)
+        {
+            transform.LookAt(onjAttackingTransform);
+            m_Animator.SetTrigger("Dead");
+        }
 
-		void Start()
+
+
+        void Start()
 		{
 			m_Animator = GetComponent<Animator>();
 			m_Rigidbody = GetComponent<Rigidbody>();

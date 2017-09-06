@@ -151,6 +151,7 @@ public class AIControl : MonoBehaviour {
             }
             else
             {
+                Debug.Log("Waiting...");
                 TimeObjectStopedMoving = Time.time;
             }
         }
@@ -181,7 +182,7 @@ public class AIControl : MonoBehaviour {
 
 
 
-	// Update is called once per frame
+	// Need to handle moving to next Card Object at apporpriate time 
 	void Update () {
       if (enable)
         {

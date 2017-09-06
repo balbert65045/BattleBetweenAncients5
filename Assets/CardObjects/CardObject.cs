@@ -63,6 +63,10 @@ public class CardObject : MonoBehaviour, IDamageable
     [SerializeField]
     int maxHealthPoints = 100;
     public int currentHealthPoints;
+    bool dead = false;
+    [SerializeField]
+    float deadDestroyTime = 1f;
+    float MomentDead;
 
     public float getCurrentHealth { get { return (float)currentHealthPoints; } }
 
@@ -76,14 +80,20 @@ public class CardObject : MonoBehaviour, IDamageable
         MaxMoveDistance = initialMaxMoveDistance;
     }
 
-    public void TakeDamage(int Damage)
+    public void TakeDamage(int Damage, Transform attackerTransform)
     {
         BroadcastMessage("DamageDealt", Damage);
         currentHealthPoints = Mathf.Clamp(currentHealthPoints - Damage, 0, maxHealthPoints);
         if (currentHealthPoints <= 0) {
+            GetComponent<ThirdPersonCharacter>().Dead(attackerTransform);
+            MomentDead = Time.time;
+            dead = true;
             CurrentTile.ObjectMovedOffTile();
             if (DeathChangeObservers != null) DeathChangeObservers(this);
-            Destroy(gameObject);
+        }
+        else
+        {
+            GetComponent<ThirdPersonCharacter>().Hit(attackerTransform);
         }
     }
 
@@ -109,8 +119,7 @@ public class CardObject : MonoBehaviour, IDamageable
         if (damageableComponent)
         {
             int damage = Random.Range(AttackDamageMin, AttackDamageMax);
-            (damageableComponent as IDamageable).TakeDamage(damage);
-            ObjectAttacking.GetComponent<ThirdPersonCharacter>().Hit(this.transform);
+            (damageableComponent as IDamageable).TakeDamage(damage, this.transform);
         }
     }
 
@@ -216,6 +225,14 @@ public class CardObject : MonoBehaviour, IDamageable
                     Moving = false;
                     if (MoveChangeObservers != null) MoveChangeObservers(Moving);
                 }
+            }
+        }
+
+        if (dead)
+        {
+            if (Time.time > deadDestroyTime + MomentDead)
+            {
+                Destroy(gameObject);
             }
         }
 

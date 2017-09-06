@@ -26,8 +26,10 @@ public class CardObjectHealthBar : MonoBehaviour
     public void DamageDealt(int damage)
     {
         currentHealth = cardObject.getCurrentHealth;
+
         float HealthasPercentage = (currentHealth - (float)damage) / MaxHealth;
-        float xValue = (HealthasPercentage / 2f) - 0.5f;
+
+        float xValue = Mathf.Clamp(((HealthasPercentage / 2f) - 0.5f), -.5f, 0);
         healthBarRawImage.uvRect = new Rect(xValue, 0f, 0.5f, 1f);
     }
 
