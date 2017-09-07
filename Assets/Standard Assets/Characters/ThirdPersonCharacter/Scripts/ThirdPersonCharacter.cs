@@ -53,8 +53,8 @@ namespace UnityStandardAssets.Characters.ThirdPerson
         }
 
 
-
-        void Start()
+        // Awake for immediate call after instaniation
+        void Awake()
 		{
 			m_Animator = GetComponent<Animator>();
 			m_Rigidbody = GetComponent<Rigidbody>();

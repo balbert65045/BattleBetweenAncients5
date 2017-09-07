@@ -128,8 +128,8 @@ public class CardObject : MonoBehaviour, IDamageable
     public void OnCurrentTile(EnviromentTile tileTransform) { CurrentTile = tileTransform;}
 
     public List<EnviromentTile> MakePath(EnviromentTile EndTile){ return (terrainControl.FindTilesBetween(CurrentTile, EndTile, MaxMoveDistance));}
-    public List<EnviromentTile> FindMoveRange() { return(terrainControl.FindMoveRange(CurrentTile, MaxMoveDistance)); }
-    public List<EnviromentTile> FindAttackRange() { return (terrainControl.FindAttackRange(CurrentTile, MaxAttackDistance)); }
+    public List<EnviromentTile> FindMoveRange() { return (terrainControl.FindMoveRange(CurrentTile, MaxMoveDistance)); }
+    public List<EnviromentTile> FindAttackRange() {return (terrainControl.FindAttackRange(CurrentTile, MaxAttackDistance));}
     public bool CheckAttackInRange(EnviromentTile AttackTile, List<EnviromentTile> AttackRange)
     {
         if (terrainControl.FindEnemyInAttackRange(AttackTile, AttackRange)) {return true;}
@@ -187,8 +187,8 @@ public class CardObject : MonoBehaviour, IDamageable
 
 
 
-    // Use this for initialization
-    void Start()
+    // awake needs to be used in order to be called as soon as instantiated
+    void Awake()
     {
         aiCharacterControl = GetComponent<AICharacterControl>();
         cameraRaycaster = FindObjectOfType<CameraRaycaster>();

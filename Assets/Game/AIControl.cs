@@ -12,6 +12,10 @@ public class AIControl : MonoBehaviour {
     [SerializeField]
      GameObject[] enmyCardObjects;
 
+    Spawner AISpawner;
+    public List<EnviromentTile> SpawnTiles;
+
+
     private EnviromentTile[] TilesTotal;
     private EnviromentTile[,] GridTiles;
 
@@ -38,6 +42,13 @@ public class AIControl : MonoBehaviour {
 
     // Use this for initialization
     void Start () {
+
+        Spawner[] spawners = FindObjectsOfType<Spawner>();
+        foreach (Spawner spawner in spawners)
+        {
+            if (spawner.cardType == CardType.Enemy) { AISpawner = spawner; }
+        }
+
         TilesTotal = FindObjectsOfType<EnviromentTile>();
         turnSystem = FindObjectOfType<TurnSystem>();
         GridTiles = new EnviromentTile[xGridLength, zGridLength];
@@ -45,8 +56,9 @@ public class AIControl : MonoBehaviour {
         {
             GridTiles[Tile.X, Tile.Z] = Tile;
         }
+        
 
-        GridTiles[5, 5].OnItemMake(enmyCardObjects[0]);
+      //  GridTiles[5, 5].OnItemMake(enmyCardObjects[0]);
 
         playerCardObjectsOut = new List<CardObject>();
         enemyCardObjectsOut = new List<CardObject>();
@@ -81,6 +93,13 @@ public class AIControl : MonoBehaviour {
     {
         enable = true;
         index = 0;
+
+        // SPAWNING
+        SpawnTiles = AISpawner.CheckTilesAround();
+        int randomTile = Random.Range( 0, SpawnTiles.Count - 1);
+        int randomCard = Random.Range(0, enmyCardObjects.Length - 1);
+        SpawnTiles[randomTile].OnItemMake(enmyCardObjects[randomCard]);
+
         cardsObjectsOut = FindObjectsOfType<CardObject>();
         foreach (CardObject cardObject in cardsObjectsOut)
         {
