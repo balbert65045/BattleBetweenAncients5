@@ -8,9 +8,11 @@ public class CardCreator : MonoBehaviour {
     // Use this for initialization
     CameraRaycaster cameraRaycaster;
     EnviromentTile Tile;
-    PlayerObjectHolder playerObjectHolder;
+    CardHand cardHand;
     CreatorButton[] creatorButtons;
     EnviromentTile OldTileOver;
+    Spawner playerSpawner;
+    public List<EnviromentTile> SpawnTiles;
     
 
     public bool ActiveImage = false;
@@ -25,7 +27,13 @@ public class CardCreator : MonoBehaviour {
 	void Start () {
         cameraRaycaster = FindObjectOfType<CameraRaycaster>();
         cameraRaycaster.layerChangeObservers += OnItemCreateImage;
-        playerObjectHolder = FindObjectOfType<PlayerObjectHolder>();
+        cardHand = FindObjectOfType<CardHand>();
+        Spawner[] spawners = FindObjectsOfType<Spawner>();
+        foreach (Spawner spawner in spawners)
+        {
+            if (spawner.cardType == CardType.Player) { playerSpawner = spawner; }
+        }
+
     }
 
     // Update is called once per frame
@@ -72,14 +80,20 @@ public class CardCreator : MonoBehaviour {
         {
             if (ActiveImage)
             {
+                SpawnTiles = playerSpawner.CheckTilesAround();
+                foreach (EnviromentTile tile in SpawnTiles)
+                {
+                    Debug.Log("ColorTiles");
+                    tile.ChangeColor(Color.cyan);
+                }
                 Tile = newTransform.GetComponent<EnviromentTile>();
-                GameObject newItem = playerObjectHolder.ReadyImage;
+                GameObject newItem = cardHand.ReadyImage;
 
                 if (OldTileOver != null)
                 {
                     OldTileOver.DestroyImage();
                 }
-                if (Tile.cardType == CardType.Open)
+                if (SpawnTiles.Contains(Tile))
                 {
                     Tile.OnItemMake(newItem);
                     OldTileOver = Tile;
@@ -95,11 +109,17 @@ public class CardCreator : MonoBehaviour {
             if (OldTileOver != null)
             {
             OldTileOver.DestroyImage();
-            if (Tile.cardType == CardType.Open)
+            if (SpawnTiles.Contains(Tile))
+            {
+                foreach (EnviromentTile tile in SpawnTiles)
                 {
-                    GameObject newItem = playerObjectHolder.ReadyObject;
+                    Debug.Log("resetTiles");
+                    tile.ChangeColor(tile.MatColorOriginal);
+                }
+
+                GameObject newItem = cardHand.ReadyObject;
                     OldTileOver.OnItemMake(newItem);
-                    playerObjectHolder.DestroyCardUsed();
+                    cardHand.DestroyCardUsed();
                     turnUsed = true;
                 }
             }

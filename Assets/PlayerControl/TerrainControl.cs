@@ -18,6 +18,31 @@ public class TerrainControl : MonoBehaviour {
 
 
 
+    public List<EnviromentTile> FindTilesOpenAround(EnviromentTile CurrentTile)
+    {
+        // x x x
+        // x 0 x
+        // x x x
+        int Xhigh = Mathf.Clamp(CurrentTile.X + 1, 0, xGridLength - 1);
+        int Xlow = Mathf.Clamp(CurrentTile.X - 1, 0, xGridLength - 1);
+        int Zhigh = Mathf.Clamp(CurrentTile.Z + 1, 0, zGridLength - 1);
+        int Zlow = Mathf.Clamp(CurrentTile.Z - 1, 0, zGridLength - 1);
+        List<EnviromentTile> TilesAround = new List<EnviromentTile>();
+
+        for (int i = Xlow; i <= Xhigh; i++)
+        {
+            for (int j = Zlow; j <= Zhigh; j++)
+            {
+                if (GridTiles[i, j].cardType == CardType.Open)
+                {
+                    TilesAround.Add(GridTiles[i, j]);
+                }
+            }
+        }
+
+        return TilesAround;
+    }
+
     //Returns the position of the Tile in the path 
     //If not in path returns -1
     public int CheckPathPosition(EnviromentTile CurrentTile, List<EnviromentTile> path)

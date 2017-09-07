@@ -8,12 +8,12 @@ public class CreatorButton : MonoBehaviour {
     //public int type;
     public GameObject Object;
     public GameObject ImageObject;
-    private PlayerObjectHolder OBJHolder;
+    private CardHand OBJHolder;
     public int type; 
     public bool active;
 	// Use this for initialization
 	void Start () {
-        OBJHolder = GetComponentInParent<PlayerObjectHolder>();
+        OBJHolder = GetComponentInParent<CardHand>();
       
     }
 	
