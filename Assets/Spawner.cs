@@ -2,15 +2,34 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Spawner : MonoBehaviour {
+public class Spawner : MonoBehaviour, IDamageable
+{
 
 
     public CardType cardType;
     public EnviromentTile TileOn;
     TerrainControl terrainControl;
     public List<EnviromentTile> TilesNear;
-	// Use this for initialization
-	void Start () {
+
+    [SerializeField]
+    int maxHealthPoints = 100;
+    public int currentHealthPoints;
+
+    public float getCurrentHealth { get { return (float)currentHealthPoints; } }
+
+    public void TakeDamage(int Damage, Transform attackerTransform)
+    {
+        BroadcastMessage("DamageDealt", Damage);
+        currentHealthPoints = Mathf.Clamp(currentHealthPoints - Damage, 0, maxHealthPoints);
+        if (currentHealthPoints <= 0)
+        {
+            Debug.Log("GAME OVER");
+        }
+    }
+
+        // Use this for initialization
+        void Start () {
+        currentHealthPoints = maxHealthPoints;
         terrainControl = FindObjectOfType<TerrainControl>();
         EnviromentTile[] Tiles = FindObjectsOfType<EnviromentTile>();
         foreach(EnviromentTile tile in Tiles)

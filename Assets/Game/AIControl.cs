@@ -4,8 +4,8 @@ using UnityEngine;
 
 public class AIControl : MonoBehaviour {
 
-     static int xGridLength = 7;
-     static int zGridLength = 7;
+     public int xGridLength = 10;
+     public int zGridLength = 10;
 
     TurnSystem turnSystem;
 

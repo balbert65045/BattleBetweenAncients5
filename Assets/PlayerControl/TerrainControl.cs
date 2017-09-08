@@ -6,8 +6,8 @@ public class TerrainControl : MonoBehaviour {
 
 
     //Grid size (Note: may want to change to automatically update with new map)
-    public static int xGridLength = 7;
-    public static int zGridLength = 7;
+    public int xGridLength = 10;
+    public int zGridLength = 10;
 
     private EnviromentTile[] TilesTotal;
     public EnviromentTile[,] GridTiles;

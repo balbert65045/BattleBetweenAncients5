@@ -3,7 +3,7 @@
 // Add a UI Socket transform to your enemy
 // Attack this script to the socket
 // Link to a canvas prefab that contains NPC UI
-public class CardObjectUI : MonoBehaviour {
+public class ObjectUI : MonoBehaviour {
 
     // Works around Unity 5.5's lack of nested prefabs
     [Tooltip("The UI canvas prefab")]
