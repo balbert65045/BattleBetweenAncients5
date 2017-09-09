@@ -17,6 +17,53 @@ public class AStar : MonoBehaviour {
     private List<Node> ClosedNodes;
 
 
+    public List<Node> ShowPathDistance(Node Begin, Node End, Node[,] Map)
+    {
+        // Initialize values and nodes
+        startNode = Begin;
+        endNode = End;
+        nodes = Map;
+        foreach (Node node in nodes)
+        {
+            node.CalculateG(startNode.Location);
+            node.CalculateH(endNode.Location);
+            node.State = NodeState.Untested;
+            node.ParentNode = null;
+
+            if (node.GetComponent<EnviromentTile>().cardType == CardType.Open || node == endNode)
+            {
+                node.IsWalkable = true;
+            }
+            else
+            {
+                node.IsWalkable = false;
+            }
+
+        }
+        OpenNodes = new List<Node>();
+        ClosedNodes = new List<Node>();
+        List<Node> path = new List<Node>();
+
+        // Add Starting point into list to become closed
+        OpenNodes.Add(startNode);
+        // Search for a path between start point and end point and return true if possible 
+        bool success = Search(startNode);
+        if (success)
+        {
+            // Reverse the path list for path from start to end
+            Node node = this.endNode;
+            while (node.ParentNode != null)
+            {
+                path.Add(node);
+                node = node.ParentNode;
+            }
+            path.Reverse();
+        }
+        return path;
+    }
+
+
+
     // Finds a path between Tile A and B using the A* algorithm
     public List<Node> FindPath(Node Begin, Node End, Node[,] Map)
     {

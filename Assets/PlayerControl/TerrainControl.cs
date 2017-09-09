@@ -216,6 +216,7 @@ public class TerrainControl : MonoBehaviour {
         // Add rest of tiles
         if (PathNodes.Count > 0)
         {
+            //Debug.Log(PathNodes.Count);
             if (PathNodes.Count < MaxDistance)
             {
                 for (int i = 1; i <= PathNodes.Count; i++)
@@ -236,6 +237,42 @@ public class TerrainControl : MonoBehaviour {
         return Path;
 
     }
+
+
+    public List<EnviromentTile> FindTileDistance(EnviromentTile TileStart, EnviromentTile TileEnd)
+    {
+
+        List<Node> PathNodes = new List<Node>();
+        PathNodes = astar.ShowPathDistance(TileStart.GetComponent<Node>(), TileEnd.GetComponent<Node>(), GridNodes);
+
+        List<EnviromentTile> Path = new List<EnviromentTile>();
+        //// Add Tile currently standing on
+        Path.Add(TileStart);
+
+        // Add rest of tiles
+        if (PathNodes.Count > 0)
+        {
+                for (int i = 1; i <= PathNodes.Count; i++)
+                {
+                    Path.Add(PathNodes[i - 1].GetComponent<EnviromentTile>());
+                }
+        }
+
+        return Path;
+
+    }
+
+
+    public bool CheckIfPathAvailable(EnviromentTile TileStart, EnviromentTile TileEnd)
+    {
+        List<Node> PathNodes = new List<Node>();
+        PathNodes = astar.ShowPathDistance(TileStart.GetComponent<Node>(), TileEnd.GetComponent<Node>(), GridNodes);
+        if (PathNodes.Count > 0) { return true; }
+        return false;
+    }
+
+
+
 
     void Start () {
 

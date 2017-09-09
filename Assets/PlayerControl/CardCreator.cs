@@ -83,7 +83,7 @@ public class CardCreator : MonoBehaviour {
                 SpawnTiles = playerSpawner.CheckTilesAround();
                 foreach (EnviromentTile tile in SpawnTiles)
                 {
-                    Debug.Log("ColorTiles");
+                   // Debug.Log("ColorTiles");
                     tile.ChangeColor(Color.cyan);
                 }
                 Tile = newTransform.GetComponent<EnviromentTile>();
@@ -113,7 +113,7 @@ public class CardCreator : MonoBehaviour {
             {
                 foreach (EnviromentTile tile in SpawnTiles)
                 {
-                    Debug.Log("resetTiles");
+                   // Debug.Log("resetTiles");
                     tile.ChangeColor(tile.MatColorOriginal);
                 }
 

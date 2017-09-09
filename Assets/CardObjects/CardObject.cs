@@ -58,6 +58,7 @@ public class CardObject : MonoBehaviour, IDamageable
     private GameObject ObjectAttacking;
 
     private List<EnviromentTile> pathTaking;
+    //public List<EnviromentTile> pathFollowing;
 
     // DAMAGE and HEEALTH
     [SerializeField]
@@ -138,8 +139,15 @@ public class CardObject : MonoBehaviour, IDamageable
 
     public List<EnviromentTile> FindTilesAround( int distance) { return (terrainControl.FindMoveRange(CurrentTile, distance)); }
     //Note 100 is expected max possible path. adjust if something moves past 100 tiles
-    public int FindTileDistance(EnviromentTile Endtile) { return (terrainControl.FindTilesBetween(CurrentTile, Endtile, 100).Count); }
+    public int FindTileDistance(EnviromentTile Endtile) {
+        //pathFollowing = terrainControl.FindTileDistance(CurrentTile, Endtile);
+        //Debug.Log(pathFollowing.Count);
+        return (terrainControl.FindTileDistance(CurrentTile, Endtile).Count); }
 
+    public bool CheckIfPathAvailable(EnviromentTile Endtile)
+    {
+        return (terrainControl.CheckIfPathAvailable(CurrentTile, Endtile));
+    }
 
 
     public void SelectedObject()

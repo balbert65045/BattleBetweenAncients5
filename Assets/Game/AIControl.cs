@@ -25,7 +25,7 @@ public class AIControl : MonoBehaviour {
     private List<CardObject> enemyCardObjectsOut;
     private List<CardObject> playerCardObjectsOut;
 
-    private List<EnviromentTile> Path;
+    public List<EnviromentTile> Path;
     private List<EnviromentTile> AttackArea;
     private List<EnviromentTile> Range;
 
@@ -144,38 +144,50 @@ public class AIControl : MonoBehaviour {
         if (playerCardObjectsOut.Count > 0)
         {
             // Find the closest player Object to attack
-            CardObject ClosestPlayerCardObject = playerCardObjectsOut[0];
-            int minDistance = cardObject.FindTileDistance(ClosestPlayerCardObject.GetCurrentTile);
+            CardObject ClosestPlayerCardObject = null;
+            int minDistance = 100;
+
             foreach (CardObject cardObjectplayer in playerCardObjectsOut)
             {
-                int Distance = cardObject.FindTileDistance(cardObjectplayer.GetCurrentTile);
-                if (Distance < minDistance) {
-                    minDistance = Distance;
-                    ClosestPlayerCardObject = cardObjectplayer;
+
+                // This needs to be adjusted for enviroment tiles 
+                //   Debug.Log(cardObject.CheckIfPathAvailable(cardObjectplayer.GetCurrentTile));
+                if (cardObject.CheckIfPathAvailable(cardObjectplayer.GetCurrentTile))
+                {
+                    int Distance = cardObject.FindTileDistance(cardObjectplayer.GetCurrentTile);
+                    if (Distance < minDistance)
+                    {
+                        minDistance = Distance;
+                        ClosestPlayerCardObject = cardObjectplayer;
+                    }
                 }
             }
 
-            //Dont move if already in attacking distance
-            if (!cardObject.FindAttackRange().Contains(ClosestPlayerCardObject.GetCurrentTile))
+            // If there is no path to an available object to attack dont move 
+            if (ClosestPlayerCardObject != null)
             {
-                Debug.Log("Finding tiles around " + ClosestPlayerCardObject);
-                AttackArea = ClosestPlayerCardObject.FindTilesAround(cardObject.MaxAttackDistance);
-                if (AttackArea.Count > 0)
+                //Dont move if already in attacking distance
+                if (!cardObject.FindAttackRange().Contains(ClosestPlayerCardObject.GetCurrentTile))
                 {
+                    //Find the Available spaces around the object
+                AttackArea = ClosestPlayerCardObject.FindTilesAround(cardObject.MaxAttackDistance);
+                // Check each available tile around and see if there there is a path to it and which is the fastest path
+                    EnviromentTile MoveTile = null;
+                    minDistance = 100;
+                    foreach (EnviromentTile tile in AttackArea)
                     {
-                        EnviromentTile MoveTile = AttackArea[0];
-                        minDistance = cardObject.FindTileDistance(MoveTile);
-                        foreach (EnviromentTile tile in AttackArea)
+                        if (cardObject.CheckIfPathAvailable(tile))
                         {
                             int Distance = cardObject.FindTileDistance(tile);
-                            if (Distance < minDistance) {
+                            if (Distance < minDistance)
+                            {
                                 minDistance = Distance;
                                 MoveTile = tile;
                             }
                         }
-                        Path = cardObject.MakePath(MoveTile);
-                        cardObject.enableMovement(Path);
                     }
+                    Path = cardObject.MakePath(MoveTile);
+                    cardObject.enableMovement(Path);
                 }
             }
         }
