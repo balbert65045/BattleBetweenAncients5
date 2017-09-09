@@ -8,8 +8,15 @@ public class Spawner : MonoBehaviour, IDamageable
 
     public CardType cardType;
     public EnviromentTile TileOn;
+
+    public EnviromentTile GetCurrentTile { get { return TileOn; } }
+    public List<EnviromentTile> FindTilesAround(int distance) { return (terrainControl.FindMoveRange(TileOn, distance)); }
+
+
     TerrainControl terrainControl;
     public List<EnviromentTile> TilesNear;
+    LoseScreen loseScreen;
+    WinScreen winScreen;
 
     [SerializeField]
     int maxHealthPoints = 100;
@@ -23,19 +30,43 @@ public class Spawner : MonoBehaviour, IDamageable
         currentHealthPoints = Mathf.Clamp(currentHealthPoints - Damage, 0, maxHealthPoints);
         if (currentHealthPoints <= 0)
         {
-            Debug.Log("GAME OVER");
+            if (cardType == CardType.Player)
+            {
+                loseScreen.gameObject.SetActive(true);
+            }
+            else if (cardType == CardType.Enemy)
+            {
+                winScreen.gameObject.SetActive(true);
+            }
+
+              //  Debug.Log("GAME OVER");
         }
     }
+
+
 
         // Use this for initialization
         void Start () {
         currentHealthPoints = maxHealthPoints;
         terrainControl = FindObjectOfType<TerrainControl>();
         EnviromentTile[] Tiles = FindObjectsOfType<EnviromentTile>();
-        foreach(EnviromentTile tile in Tiles)
+        foreach (EnviromentTile tile in Tiles)
         {
             if (tile.ObjectHeld == this.gameObject) { TileOn = tile; }
         }
+        if (cardType == CardType.Player)
+        {
+            loseScreen = FindObjectOfType<LoseScreen>();
+            Debug.Log(loseScreen);
+            loseScreen.gameObject.SetActive(false);
+        }
+        else if (cardType == CardType.Enemy)
+        {
+            winScreen = FindObjectOfType<WinScreen>();
+            Debug.Log(winScreen);
+            winScreen.gameObject.SetActive(false);
+        }
+
 
     }
 

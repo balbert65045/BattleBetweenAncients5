@@ -13,6 +13,7 @@ public class AIControl : MonoBehaviour {
      GameObject[] enmyCardObjects;
 
     Spawner AISpawner;
+    Spawner playerSpawner;
     public List<EnviromentTile> SpawnTiles;
 
 
@@ -27,6 +28,8 @@ public class AIControl : MonoBehaviour {
     private List<EnviromentTile> Path;
     private List<EnviromentTile> AttackArea;
     private List<EnviromentTile> Range;
+
+    
 
     bool enable = false;
     bool TurnOver = false;
@@ -47,6 +50,7 @@ public class AIControl : MonoBehaviour {
         foreach (Spawner spawner in spawners)
         {
             if (spawner.cardType == CardType.Enemy) { AISpawner = spawner; }
+            else if (spawner.cardType == CardType.Player) { playerSpawner = spawner; }
         }
 
         TilesTotal = FindObjectsOfType<EnviromentTile>();
@@ -168,11 +172,35 @@ public class AIControl : MonoBehaviour {
                     }
                 }
             }
-            else
+        }
+        // If no player is found then go for the spawner
+        else
+        {
+            if (!cardObject.FindAttackRange().Contains(playerSpawner.GetCurrentTile))
             {
-            //    Debug.Log("Waiting...");
-                TimeObjectStopedMoving = Time.time;
+               // Debug.Log("Finding tiles around " + ClosestPlayerCardObject);
+                AttackArea = playerSpawner.FindTilesAround(cardObject.MaxAttackDistance);
+                if (AttackArea.Count > 0)
+                {
+                    {
+                        EnviromentTile MoveTile = AttackArea[0];
+                        int minDistance = cardObject.FindTileDistance(MoveTile);
+                        foreach (EnviromentTile tile in AttackArea)
+                        {
+                            int Distance = cardObject.FindTileDistance(tile);
+                            if (Distance < minDistance) { MoveTile = tile; }
+                        }
+                        Path = cardObject.MakePath(MoveTile);
+                        cardObject.enableMovement(Path);
+                    }
+                }
             }
+            //else
+            //{
+            //    //    Debug.Log("Waiting...");
+            //    TimeObjectStopedMoving = Time.time;
+            //}
+        
         }
 
        
