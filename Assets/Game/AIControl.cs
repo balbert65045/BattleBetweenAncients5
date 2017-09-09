@@ -145,11 +145,14 @@ public class AIControl : MonoBehaviour {
         {
             // Find the closest player Object to attack
             CardObject ClosestPlayerCardObject = playerCardObjectsOut[0];
+            int minDistance = cardObject.FindTileDistance(ClosestPlayerCardObject.GetCurrentTile);
             foreach (CardObject cardObjectplayer in playerCardObjectsOut)
             {
-                float MinDistance = (ClosestPlayerCardObject.transform.position - cardObject.transform.position).magnitude;
-                float Distance = (cardObjectplayer.transform.position - cardObject.transform.position).magnitude;
-                if (Distance < MinDistance) { ClosestPlayerCardObject = cardObjectplayer; }
+                int Distance = cardObject.FindTileDistance(cardObjectplayer.GetCurrentTile);
+                if (Distance < minDistance) {
+                    minDistance = Distance;
+                    ClosestPlayerCardObject = cardObjectplayer;
+                }
             }
 
             //Dont move if already in attacking distance
@@ -161,11 +164,14 @@ public class AIControl : MonoBehaviour {
                 {
                     {
                         EnviromentTile MoveTile = AttackArea[0];
-                        int minDistance = cardObject.FindTileDistance(MoveTile);
+                        minDistance = cardObject.FindTileDistance(MoveTile);
                         foreach (EnviromentTile tile in AttackArea)
                         {
                             int Distance = cardObject.FindTileDistance(tile);
-                            if (Distance < minDistance) { MoveTile = tile; }
+                            if (Distance < minDistance) {
+                                minDistance = Distance;
+                                MoveTile = tile;
+                            }
                         }
                         Path = cardObject.MakePath(MoveTile);
                         cardObject.enableMovement(Path);

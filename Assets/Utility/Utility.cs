@@ -8,6 +8,7 @@ public enum CardType
     Open = 1,
     Player = 2,
     Enemy = 3,
+    Terrain = 4,
 }
 
 public enum CardState
