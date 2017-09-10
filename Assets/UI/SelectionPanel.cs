@@ -10,6 +10,11 @@ public class SelectionPanel : MonoBehaviour {
     public Image MoveIcon;
     public Image AttackIcon;
 
+    public Text DamageOfSelected;
+    public Text MoveofSelected;
+    public Text RangeofSelected;
+    public Text HealthofSelected;
+
     private CardObject selectedCardObject;
 	// Use this for initialization
 
@@ -22,6 +27,12 @@ public class SelectionPanel : MonoBehaviour {
             selectedCardObject.StateChangeObservers += StateChange;
             objectImage.sprite = cardObject.CardImage;
             objectName.GetComponent<Text>().text = cardObject.gameObject.name;
+            DamageOfSelected.GetComponent<Text>().text = cardObject.getDamagMin.ToString() + " - " + cardObject.getDamageMax.ToString();
+            MoveofSelected.GetComponent<Text>().text = cardObject.MaxMoveDistance.ToString();
+            RangeofSelected.GetComponent<Text>().text = cardObject.MaxAttackDistance.ToString();
+            HealthofSelected.GetComponent<Text>().text = cardObject.getCurrentHealth.ToString();
+
+
 
             // Starts in Move state
             MoveIcon.color = Color.blue;

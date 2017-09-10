@@ -43,7 +43,13 @@ public class Spawner : MonoBehaviour, IDamageable
         }
     }
 
-
+    public void ResetTiles()
+    {
+        foreach (EnviromentTile tile in TilesNear)
+        {
+            tile.ChangeColor(tile.MatColorOriginal);
+        }
+    }
 
         // Use this for initialization
         void Start () {

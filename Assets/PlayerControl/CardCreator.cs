@@ -63,6 +63,11 @@ public class CardCreator : MonoBehaviour {
             {
                 if (OldTileOver != null)
                 {
+                    SpawnTiles = playerSpawner.CheckTilesAround();
+                    foreach (EnviromentTile tile in SpawnTiles)
+                    {
+                        tile.ChangeColor(tile.MatColorOriginal);
+                    }
                     ActiveImage = false;
                     OldTileOver.DestroyImage();
                     OldTileOver = null;

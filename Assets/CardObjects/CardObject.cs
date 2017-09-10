@@ -17,8 +17,12 @@ public class CardObject : MonoBehaviour, IDamageable
     int initialMaxAttackDistance = 1;
     [SerializeField]
     int AttackDamageMin = 2;
+    public int getDamagMin { get { return AttackDamageMin; } }
+
     [SerializeField]
     int AttackDamageMax = 8;
+    public int getDamageMax { get { return AttackDamageMax; } }
+
     [SerializeField]
     CardCharacter CardCharacter;
 
