@@ -13,15 +13,11 @@ public class CardCreator : MonoBehaviour {
     EnviromentTile OldTileOver;
     Spawner playerSpawner;
     public List<EnviromentTile> SpawnTiles;
+    PowerCounter powerCounter;
     
 
     public bool ActiveImage = false;
-    bool turnUsed = false;
 
-    public void ResetTurn()
-    {
-        turnUsed = false;
-    }
 
 
 	void Start () {
@@ -29,6 +25,7 @@ public class CardCreator : MonoBehaviour {
         cameraRaycaster.layerChangeObservers += OnItemCreateImage;
         cardHand = FindObjectOfType<CardHand>();
         Spawner[] spawners = FindObjectsOfType<Spawner>();
+        powerCounter = FindObjectOfType<PowerCounter>();
         foreach (Spawner spawner in spawners)
         {
             if (spawner.cardType == CardType.Player) { playerSpawner = spawner; }
@@ -39,41 +36,39 @@ public class CardCreator : MonoBehaviour {
     // Update is called once per frame
     void Update()
     {
-        if (!turnUsed)
+
+        if (CrossPlatformInputManager.GetButtonDown("pointer1"))
         {
-            if (CrossPlatformInputManager.GetButtonDown("pointer1"))
+            creatorButtons = FindObjectsOfType<CreatorButton>();
+            foreach (CreatorButton CB in creatorButtons)
             {
-                creatorButtons = FindObjectsOfType<CreatorButton>();
-                foreach (CreatorButton CB in creatorButtons)
-                {
-                    ActiveImage = ActiveImage || CB.CheckMousePositionOnButton();
-
-                }
-
+                if (powerCounter.PowerQuery(CB.GetPowerAmount)) { ActiveImage = ActiveImage || CB.CheckMousePositionOnButton(); }
             }
-            else if (CrossPlatformInputManager.GetButtonUp("pointer1"))
+
+        }
+        else if (CrossPlatformInputManager.GetButtonUp("pointer1"))
+        {
+            ActiveImage = false;
+            OnItemCreate();
+            OldTileOver = null;
+        }
+
+        //Cancel Object to spawn
+        if (CrossPlatformInputManager.GetButtonDown("Cancel"))
+        {
+            if (OldTileOver != null)
             {
+                SpawnTiles = playerSpawner.CheckTilesAround();
+                foreach (EnviromentTile tile in SpawnTiles)
+                {
+                    tile.ChangeColor(tile.MatColorOriginal);
+                }
                 ActiveImage = false;
-                OnItemCreate();
+                OldTileOver.DestroyImage();
                 OldTileOver = null;
             }
-
-            //Cancel Object to spawn
-            if (CrossPlatformInputManager.GetButtonDown("Cancel"))
-            {
-                if (OldTileOver != null)
-                {
-                    SpawnTiles = playerSpawner.CheckTilesAround();
-                    foreach (EnviromentTile tile in SpawnTiles)
-                    {
-                        tile.ChangeColor(tile.MatColorOriginal);
-                    }
-                    ActiveImage = false;
-                    OldTileOver.DestroyImage();
-                    OldTileOver = null;
-                }
-            }
         }
+        
     }
 
 
@@ -83,6 +78,7 @@ public class CardCreator : MonoBehaviour {
         
         if (newTransform.GetComponent<EnviromentTile>() != null)
         {
+           
             if (ActiveImage)
             {
                 SpawnTiles = playerSpawner.CheckTilesAround();
@@ -121,11 +117,11 @@ public class CardCreator : MonoBehaviour {
                    // Debug.Log("resetTiles");
                     tile.ChangeColor(tile.MatColorOriginal);
                 }
-
-                GameObject newItem = cardHand.ReadyObject;
+                    powerCounter.RemovePower(cardHand.CardUsing.GetPowerAmount);
+                    GameObject newItem = cardHand.ReadyObject;
                     OldTileOver.OnItemMake(newItem);
                     cardHand.DestroyCardUsed();
-                    turnUsed = true;
+                   
                 }
             }
         }

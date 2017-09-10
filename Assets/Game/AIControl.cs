@@ -166,13 +166,10 @@ public class AIControl : MonoBehaviour {
             {
                 Debug.Log("Moving towards player");
                 AttackArea = playerSpawner.FindTilesAround(cardObject.MaxAttackDistance);
-                EnviromentTile MoveTile = null;
                 int minDistanceSpawner = 100;
                 foreach (EnviromentTile tile in AttackArea)
                 {
                     int Distance = cardObject.FindTileDistance(tile);
-                    Debug.Log(Distance);
-                    Debug.Log(minDistanceSpawner);
                     if (Distance < minDistanceSpawner)
                     {
                         minDistanceSpawner = Distance;
@@ -183,12 +180,10 @@ public class AIControl : MonoBehaviour {
                 Debug.Log(minDistancePlayer);
                 if (minDistancePlayer < minDistanceSpawner)
                 {
-                    Debug.Log("Moving towards player");
                     MovetoClosestTileinAttackRange(cardObject, ClosestPlayerCardObject.GetCurrentTile);
                 }
                 else
                 {
-                    Debug.Log("Moving towards Spawner");
                     MovetoClosestTileinAttackRange(cardObject, playerSpawner.GetCurrentTile);
                 }
 
@@ -198,7 +193,6 @@ public class AIControl : MonoBehaviour {
             // if no path available to the player objects go for the flag/spawner
             else
             {
-                Debug.Log("Moving towards Spawner");
                 MovetoClosestTileinAttackRange(cardObject, playerSpawner.GetCurrentTile);
             }
         }

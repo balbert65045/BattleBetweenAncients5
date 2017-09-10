@@ -11,6 +11,13 @@ public class CreatorButton : MonoBehaviour {
     private CardHand OBJHolder;
     public int type; 
     public bool active;
+
+    [SerializeField]
+    int PowerAmount = 1;
+    public int GetPowerAmount { get { return (PowerAmount); } }
+
+
+
 	// Use this for initialization
 	void Start () {
         OBJHolder = GetComponentInParent<CardHand>();
