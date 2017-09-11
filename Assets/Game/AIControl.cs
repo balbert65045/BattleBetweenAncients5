@@ -100,8 +100,9 @@ public class AIControl : MonoBehaviour {
 
         // SPAWNING
         SpawnTiles = AISpawner.CheckTilesAround();
-        int randomTile = Random.Range( 0, SpawnTiles.Count - 1);
-        int randomCard = Random.Range(0, enmyCardObjects.Length - 1);
+        int randomTile = Random.Range( 0, SpawnTiles.Count);
+        int randomCard = Random.Range(0, enmyCardObjects.Length);
+        Debug.Log(randomCard);
         SpawnTiles[randomTile].OnItemMake(enmyCardObjects[randomCard]);
 
         cardsObjectsOut = FindObjectsOfType<CardObject>();
@@ -164,7 +165,6 @@ public class AIControl : MonoBehaviour {
             // If there is no path to an available object to attack dont move 
             if (ClosestPlayerCardObject != null)
             {
-                Debug.Log("Moving towards player");
                 AttackArea = playerSpawner.FindTilesAround(cardObject.MaxAttackDistance);
                 int minDistanceSpawner = 100;
                 foreach (EnviromentTile tile in AttackArea)
@@ -176,8 +176,6 @@ public class AIControl : MonoBehaviour {
                     }
                 }
 
-                Debug.Log(minDistanceSpawner);
-                Debug.Log(minDistancePlayer);
                 if (minDistancePlayer < minDistanceSpawner)
                 {
                     MovetoClosestTileinAttackRange(cardObject, ClosestPlayerCardObject.GetCurrentTile);
