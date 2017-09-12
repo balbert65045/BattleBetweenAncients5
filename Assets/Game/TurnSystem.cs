@@ -5,23 +5,25 @@ using UnityEngine.UI;
 
 public class TurnSystem : MonoBehaviour {
 
-    // Use this for initialization
+
+    public GameType gameType;
+    public int MaxTurns = 15; 
+
     public Text buttonText;
     public Button button;
-    float AITimeTurn = 3f;
-    float TimeWhenPressed;
-    bool pressed = false;
 
     public int TurnCount = 0;
+
+
+    private bool PlayerTurn = true;
+    private bool AITurn = false;
 
     PlayerController playerController;
     CardHand cardHand;
     CardCreator cardCreator;
     AIControl aiControl;
     PowerCounter powerCounter;
-
-    private bool PlayerTurn = true;
-    private bool AITurn = false;
+    WinScreen winScreen;
 
     public void EndTurn(int player)
     {
@@ -42,26 +44,33 @@ public class TurnSystem : MonoBehaviour {
         {
             PlayerTurn = true;
             playerController.ResetTools();
+
             cardHand.Redraw();
             cardCreator.enabled = true;
-            TurnCount += 1;
 
             powerCounter.AddPower(1);
             button.interactable = true;
             buttonText.text = "End Turn";
 
             AITurn = false;
+
+            TurnCount += 1;
+            if (TurnCount >= MaxTurns)
+            {
+                winScreen.gameObject.SetActive(true);
+            }
         }
 
     }
 
-    private void Start()
+    private void Awake()
     {
         playerController = FindObjectOfType<PlayerController>();
         aiControl = FindObjectOfType<AIControl>();
         cardHand = FindObjectOfType<CardHand>();
         cardCreator = FindObjectOfType<CardCreator>();
         powerCounter = FindObjectOfType<PowerCounter>();
+        winScreen = FindObjectOfType<WinScreen>();
     }
 
 

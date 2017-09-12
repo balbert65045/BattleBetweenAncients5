@@ -99,11 +99,13 @@ public class AIControl : MonoBehaviour {
         index = 0;
 
         // SPAWNING
+
         SpawnTiles = AISpawner.CheckTilesAround();
-        int randomTile = Random.Range( 0, SpawnTiles.Count);
+        int randomTile = Random.Range(0, SpawnTiles.Count);
         int randomCard = Random.Range(0, enmyCardObjects.Length);
         Debug.Log(randomCard);
         SpawnTiles[randomTile].OnItemMake(enmyCardObjects[randomCard]);
+
 
         cardsObjectsOut = FindObjectsOfType<CardObject>();
         foreach (CardObject cardObject in cardsObjectsOut)

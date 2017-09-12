@@ -23,4 +23,10 @@ public enum CardCharacter
     TwoHandSword = 2,
 }
 
+public enum GameType
+{
+    Defense = 1,
+    Attack = 2, 
+}
+
 
