@@ -44,7 +44,7 @@ public class PlayerController : MonoBehaviour
 
 
     // Listens to Current Card Object for Movement Calls
-    public void SelectedObjectMoveStateChange(bool Moving)
+    public void SelectedObjectMoveStateChange(bool Moving, CardObject cardObject)
     {
 
         if (Moving)

@@ -32,6 +32,9 @@ public class CardObject : MonoBehaviour, IDamageable
 
     public Sprite CardImage;
 
+    [SerializeField]
+    float cardStoppingDistance = .4f;
+
     public bool Selected { get; private set; }
     public bool Moving { get; private set; }
 
@@ -42,9 +45,9 @@ public class CardObject : MonoBehaviour, IDamageable
     ObjectController objectController;
     CameraRaycaster cameraRaycaster;
     TerrainControl terrainControl;
-    private float RemainingDistance;
+    public float RemainingDistance;
 
-    public delegate void OnMoveChange(bool inMoveState); // declare delegate type
+    public delegate void OnMoveChange(bool inMoveState, CardObject cardObject); // declare delegate type
     public event OnMoveChange MoveChangeObservers; //instantiate an observer set
 
     public delegate void OnStateChange(CardState state);
@@ -142,16 +145,8 @@ public class CardObject : MonoBehaviour, IDamageable
     }
 
     public List<EnviromentTile> FindTilesAround( int distance) { return (terrainControl.FindMoveRange(CurrentTile, distance)); }
-    //Note 100 is expected max possible path. adjust if something moves past 100 tiles
-    public int FindTileDistance(EnviromentTile Endtile) {
-        //pathFollowing = terrainControl.FindTileDistance(CurrentTile, Endtile);
-        //Debug.Log(pathFollowing.Count);
-        return (terrainControl.FindTileDistance(CurrentTile, Endtile).Count); }
-
-    public bool CheckIfPathAvailable(EnviromentTile Endtile)
-    {
-        return (terrainControl.CheckIfPathAvailable(CurrentTile, Endtile));
-    }
+    public int FindTileDistance(EnviromentTile Endtile) { return (terrainControl.FindTileDistance(CurrentTile, Endtile).Count); }
+    public bool CheckIfPathAvailable(EnviromentTile Endtile){return (terrainControl.CheckIfPathAvailable(CurrentTile, Endtile));}
 
 
     public void SelectedObject()
@@ -172,8 +167,8 @@ public class CardObject : MonoBehaviour, IDamageable
         MaxMoveDistance = 0;
         pathTaking = path;
         m_Rigidbody.constraints = RigidbodyConstraints.FreezeRotationX | RigidbodyConstraints.FreezeRotationY | RigidbodyConstraints.FreezeRotationZ;
-        aiCharacterControl.agent.stoppingDistance = .2f;
-        if (MoveChangeObservers != null) MoveChangeObservers(Moving);
+        aiCharacterControl.agent.stoppingDistance = cardStoppingDistance;
+        if (MoveChangeObservers != null) MoveChangeObservers(Moving, this);
     }
 
     public void StateChange(CardState State)
@@ -211,6 +206,7 @@ public class CardObject : MonoBehaviour, IDamageable
         MaxAttackDistance = initialMaxAttackDistance;
     }
 
+
     // Update is called once per frame
     void Update()
     {
@@ -235,7 +231,7 @@ public class CardObject : MonoBehaviour, IDamageable
                 {
                     //Once reaching destination Stop moving and send message to observers 
                     Moving = false;
-                    if (MoveChangeObservers != null) MoveChangeObservers(Moving);
+                    if (MoveChangeObservers != null) MoveChangeObservers(Moving, this);
                 }
             }
         }

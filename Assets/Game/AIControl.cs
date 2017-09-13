@@ -20,7 +20,6 @@ public class AIControl : MonoBehaviour {
     private EnviromentTile[] TilesTotal;
     private EnviromentTile[,] GridTiles;
 
-    private CardObject SelectedCardObject;
     private CardObject[] cardsObjectsOut;
     private List<CardObject> enemyCardObjectsOut;
     private List<CardObject> playerCardObjectsOut;
@@ -29,11 +28,8 @@ public class AIControl : MonoBehaviour {
     private List<EnviromentTile> AttackArea;
     private List<EnviromentTile> Range;
 
-    
-
     bool enable = false;
     bool TurnOver = false;
-    bool ObjectMoving = false;
     private int index;
 
     
@@ -62,26 +58,18 @@ public class AIControl : MonoBehaviour {
         }
         
 
-      //  GridTiles[5, 5].OnItemMake(enmyCardObjects[0]);
-
         playerCardObjectsOut = new List<CardObject>();
         enemyCardObjectsOut = new List<CardObject>();
     }
 
-    public void SelectedObjectMoveStateChange(bool Moving)
+    public void SelectedObjectMoveStateChange(bool Moving, CardObject cardObject)
     {
-
-        if (Moving)
-        {
-            ObjectMoving = true;
-
+        if (!Moving)
+        { 
+            // Look for something to attack 
+            CheckforAttackAvailable(cardObject);
+            cardObject.MoveChangeObservers -= SelectedObjectMoveStateChange;
         }
-        else
-        {
-            ObjectMoving = false;
-            SelectedCardObject.MoveChangeObservers -= SelectedObjectMoveStateChange;
-        }
-
     }
 
     public void DeathChange(CardObject cardObject)
@@ -92,21 +80,19 @@ public class AIControl : MonoBehaviour {
     }
 
 
-    // TODO NEED tell turnController turn is over when out of objects 
+   // Once AI Control has recognized it is its turn
     public void Active()
     {
         enable = true;
         index = 0;
 
-        // SPAWNING
-
+        // SPAWN Units
         SpawnTiles = AISpawner.CheckTilesAround();
         int randomTile = Random.Range(0, SpawnTiles.Count);
         int randomCard = Random.Range(0, enmyCardObjects.Length);
-        Debug.Log(randomCard);
         SpawnTiles[randomTile].OnItemMake(enmyCardObjects[randomCard]);
 
-
+        // Add Spawn Units to characters to control list
         cardsObjectsOut = FindObjectsOfType<CardObject>();
         foreach (CardObject cardObject in cardsObjectsOut)
         {
@@ -118,28 +104,30 @@ public class AIControl : MonoBehaviour {
                 }
             }
 
-
+        // Add Player Units to characters to control list
             else if (cardObject.cardType == CardType.Player) {
                 if (!playerCardObjectsOut.Contains(cardObject)) {
                     playerCardObjectsOut.Add(cardObject);
                     cardObject.DeathChangeObservers += DeathChange;
-
                 }
             }
         }
 
+        // Reset Every Card Movement and Attack 
         foreach(CardObject cardObject in enemyCardObjectsOut)
         {
             cardObject.ResetAbilities();
         }
 
+        //Begin to Control all enemy Objects 
         if (enemyCardObjectsOut.Count > 0) { SelectObject(enemyCardObjectsOut[index]); }
 
     }
 	
+    // Control the card object to attack the closest object thats attackable
     void SelectObject(CardObject cardObject)
     {
-        SelectedCardObject = cardObject;
+        //SelectedCardObject = cardObject;
         cardObject.MoveChangeObservers += SelectedObjectMoveStateChange;
         Range = cardObject.FindMoveRange();
 
@@ -165,6 +153,7 @@ public class AIControl : MonoBehaviour {
             }
 
             // If there is no path to an available object to attack dont move 
+
             if (ClosestPlayerCardObject != null)
             {
                 AttackArea = playerSpawner.FindTilesAround(cardObject.MaxAttackDistance);
@@ -181,35 +170,21 @@ public class AIControl : MonoBehaviour {
                 if (minDistancePlayer < minDistanceSpawner)
                 {
                     MovetoClosestTileinAttackRange(cardObject, ClosestPlayerCardObject.GetCurrentTile);
+                    return;
                 }
-                else
-                {
-                    MovetoClosestTileinAttackRange(cardObject, playerSpawner.GetCurrentTile);
-                }
-
-              
-            }
-
-            // if no path available to the player objects go for the flag/spawner
-            else
-            {
-                MovetoClosestTileinAttackRange(cardObject, playerSpawner.GetCurrentTile);
             }
         }
+        // if no path available to the player objects go for the flag/spawner
         // If no player is found then go for the spawner
-        else
-        {
-            Debug.Log("Moving towards Spawner");
-            MovetoClosestTileinAttackRange(cardObject, playerSpawner.GetCurrentTile);
-        }
+     MovetoClosestTileinAttackRange(cardObject, playerSpawner.GetCurrentTile);
 
     }
 
 
-
+    // TODO Find movement to Spawner Bug
     void MovetoClosestTileinAttackRange(CardObject cardObject, EnviromentTile TileofObject)
     {
-        // Dont move if in attack range
+        // Dont move if in attack range, just attack 
         if (!cardObject.FindAttackRange().Contains(TileofObject))
         {
             if (TileofObject.ObjectHeld.GetComponent<CardObject>() == null)
@@ -236,11 +211,13 @@ public class AIControl : MonoBehaviour {
             Path = cardObject.MakePath(MoveTile);
             cardObject.enableMovement(Path);
         }
+        // Look for something to attack 
+        else { CheckforAttackAvailable(cardObject); }
     } 
 
 
-
-    void CheckforAttackAvailable()
+    // Look for Something to attack 
+    void CheckforAttackAvailable(CardObject SelectedCardObject)
     {
         Range = SelectedCardObject.FindAttackRange();
         if (Range.Count > 0)
@@ -266,18 +243,16 @@ public class AIControl : MonoBehaviour {
 	void Update () {
       if (enable)
         {
-            if (!ObjectMoving && !TurnOver)
-            {
-                    CheckforAttackAvailable();
-            }
             if (Time.time > TimeObjectStopedMoving + TimeBetweenNextObject && TurnOver)
             {
                 TurnOver = false;
                 index++;
+                // Select next object available 
                 if (index <= enemyCardObjectsOut.Count - 1)
                 {
                     SelectObject(enemyCardObjectsOut[index]);
                 }
+                // If no next object available end turn 
                 else
                 {
                     turnSystem.EndTurn(2);
