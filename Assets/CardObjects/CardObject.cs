@@ -160,7 +160,7 @@ public class CardObject : MonoBehaviour, IDamageable
         BroadcastMessage("DamageDealt", damageTakeninCombat);
         currentHealthPoints = Mathf.Clamp(currentHealthPoints - damageTakeninCombat, 0, maxHealthPoints);
         damageTakeninCombat = 0;
-        if (CombatChangeObservers != null) { CombatChangeObservers(false, this); }
+       
         if (currentHealthPoints <= 0)
         {
             GetComponent<ThirdPersonCharacter>().Dead(ObjectAgainst.transform);
@@ -168,6 +168,10 @@ public class CardObject : MonoBehaviour, IDamageable
             dead = true;
             CurrentTile.ObjectMovedOffTile();
             if (DeathChangeObservers != null) DeathChangeObservers(this);
+        }
+        else
+        {
+            if (CombatChangeObservers != null) { CombatChangeObservers(false, this); }
         }
     }
 

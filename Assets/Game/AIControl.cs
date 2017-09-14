@@ -21,23 +21,17 @@ public class AIControl : MonoBehaviour {
     private EnviromentTile[,] GridTiles;
 
     private CardObject[] cardsObjectsOut;
-    private List<CardObject> enemyCardObjectsOut;
+    public List<CardObject> enemyCardObjectsOut;
     private List<CardObject> playerCardObjectsOut;
+    private CardObject SelectedCardObject;
 
     public List<EnviromentTile> Path;
     private List<EnviromentTile> AttackArea;
     private List<EnviromentTile> Range;
 
-    bool enable = false;
-    bool TurnOver = false;
     private int index;
 
-    
-
-    [SerializeField]
-    float TimeBetweenNextObject = 1f;
-
-    float TimeObjectStopedMoving;
+    //TODO BUG find why turn does not end (Happened when object hit by one move then killed by the next and in attack distance..)
 
     // Use this for initialization
     void Start () {
@@ -65,10 +59,12 @@ public class AIControl : MonoBehaviour {
     public void SelectedObjectMoveStateChange(bool Moving, CardObject cardObject)
     {
         if (!Moving)
-        { 
-            // Look for something to attack 
-            CheckforAttackAvailable(cardObject);
-            cardObject.MoveChangeObservers -= SelectedObjectMoveStateChange;
+        {
+            if (SelectedCardObject == cardObject)
+            {
+                // Look for something to attack 
+                CheckforAttackAvailable(cardObject);
+            }
         }
     }
 
@@ -77,14 +73,23 @@ public class AIControl : MonoBehaviour {
         if (playerCardObjectsOut.Contains(cardObject)) { playerCardObjectsOut.Remove(cardObject); }
         if (enemyCardObjectsOut.Contains(cardObject)) { enemyCardObjectsOut.Remove(cardObject); }
         cardObject.DeathChangeObservers -= DeathChange;
+        if (cardObject == SelectedCardObject) {
+            // Decrease the index since the size has now changed
+            // Select a new object
+            index--;
+            SelectNextObject(); }
     }
 
     public void SelectedObjectCombatChange(bool inCombat, CardObject cardObject)
     {
+
         if (!inCombat)
         {
-            TurnOver = true;
-            cardObject.CombatChangeObservers -= SelectedObjectCombatChange;
+            if (SelectedCardObject == cardObject)
+            {
+                // Find Next Object after attacking
+                SelectNextObject();
+            }
         }
     }
 
@@ -92,7 +97,6 @@ public class AIControl : MonoBehaviour {
    // Once AI Control has recognized it is its turn
     public void Active()
     {
-        enable = true;
         index = 0;
 
         // SPAWN Units
@@ -136,7 +140,7 @@ public class AIControl : MonoBehaviour {
     // Control the card object to attack the closest object thats attackable
     void SelectObject(CardObject cardObject)
     {
-        //SelectedCardObject = cardObject;
+        SelectedCardObject = cardObject;
         cardObject.MoveChangeObservers += SelectedObjectMoveStateChange;
         cardObject.CombatChangeObservers += SelectedObjectCombatChange;
 
@@ -223,7 +227,9 @@ public class AIControl : MonoBehaviour {
             cardObject.enableMovement(Path);
         }
         // Look for something to attack 
-        else { CheckforAttackAvailable(cardObject); }
+        else {
+            CheckforAttackAvailable(cardObject);
+        }
     } 
 
 
@@ -244,41 +250,28 @@ public class AIControl : MonoBehaviour {
             if (TileToAttack != null)
             {
                 SelectedCardObject.EngageCombat(CombatType.Attack, TileToAttack.ObjectHeld);
-                TurnOver = false;
-                TimeObjectStopedMoving = Time.time;
                 return;
             }
         }
-        TimeObjectStopedMoving = Time.time;
-        TurnOver = true;
+        SelectNextObject();
     }
 
 
-
-
-	// Need to handle moving to next Card Object at apporpriate time 
-    // BUG where multiple objects move at the same time 
-	void Update () {
-      if (enable)
+    void SelectNextObject()
+    {
+        SelectedCardObject.CombatChangeObservers -= SelectedObjectCombatChange;
+        SelectedCardObject.MoveChangeObservers -= SelectedObjectMoveStateChange;
+        index++;
+        // Select next object available 
+        if (index <= enemyCardObjectsOut.Count - 1)
         {
-            if (Time.time > TimeObjectStopedMoving + TimeBetweenNextObject && TurnOver)
-            {
-                TurnOver = false;
-                index++;
-                // Select next object available 
-                if (index <= enemyCardObjectsOut.Count - 1)
-                {
-                    SelectObject(enemyCardObjectsOut[index]);
-                }
-                // If no next object available end turn 
-                else
-                {
-                    turnSystem.EndTurn(2);
-                    enable = false;
-                }
-            }
-
+            SelectObject(enemyCardObjectsOut[index]);
         }
-
+        // If no next object available end turn 
+        else
+        {
+            turnSystem.EndTurn(2);
+        }
     }
+
 }
