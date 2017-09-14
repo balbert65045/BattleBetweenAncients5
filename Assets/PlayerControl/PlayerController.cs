@@ -268,9 +268,9 @@ public class PlayerController : MonoBehaviour
                 if (m_hit.transform.GetComponent<EnviromentTile>().cardType == CardType.Enemy)
                 {
                     if (selectedCardObject.CheckAttackInRange(m_hit.transform.GetComponent<EnviromentTile>(), Range))
-                    { selectedCardObject.AttackObject(m_hit.transform.GetComponent<EnviromentTile>().ObjectHeld);
-                      ResetTiles();
-                       
+                    {
+                        selectedCardObject.EngageCombat(CombatType.Attack, m_hit.transform.GetComponent<EnviromentTile>().ObjectHeld);
+                         ResetTiles();
                     }
                 }
             }

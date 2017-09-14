@@ -28,6 +28,7 @@ public class Spawner : MonoBehaviour, IDamageable
     {
         BroadcastMessage("DamageDealt", Damage);
         currentHealthPoints = Mathf.Clamp(currentHealthPoints - Damage, 0, maxHealthPoints);
+        if (attackerTransform.GetComponent<CardObject>() != null) { attackerTransform.GetComponent<CardObject>().CombatOver(); }
         if (currentHealthPoints <= 0)
         {
             if (cardType == CardType.Player)
@@ -38,8 +39,6 @@ public class Spawner : MonoBehaviour, IDamageable
             {
                 winScreen.gameObject.SetActive(true);
             }
-
-              //  Debug.Log("GAME OVER");
         }
     }
 

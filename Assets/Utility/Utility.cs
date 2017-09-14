@@ -29,4 +29,11 @@ public enum GameType
     Attack = 2, 
 }
 
+public enum CombatType
+{
+    Defend = 1,
+    Attack = 2,
+    OutOfCombat = 3,
+}
+
 

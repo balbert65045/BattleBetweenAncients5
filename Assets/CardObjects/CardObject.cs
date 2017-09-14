@@ -53,16 +53,21 @@ public class CardObject : MonoBehaviour, IDamageable
     public delegate void OnStateChange(CardState state);
     public event OnStateChange StateChangeObservers;
 
+    public delegate void OnCombatChange(bool inCombatState, CardObject cardObject); // declare delegate type
+    public event OnCombatChange CombatChangeObservers; //instantiate an observer set
+
     public delegate void OnDeathChange(CardObject cardObject);
     public event OnDeathChange DeathChangeObservers;
 
-
+    public CombatType CurrentCommbatState;
     private Rigidbody m_Rigidbody;
 
     EnviromentTile CurrentTile;
     public EnviromentTile GetCurrentTile { get { return CurrentTile; } }
 
     private GameObject ObjectAttacking;
+    private GameObject ObjectAgainst;
+    int damageTakeninCombat;
 
     private List<EnviromentTile> pathTaking;
     //public List<EnviromentTile> pathFollowing;
@@ -88,20 +93,16 @@ public class CardObject : MonoBehaviour, IDamageable
         MaxMoveDistance = initialMaxMoveDistance;
     }
 
-    public void TakeDamage(int Damage, Transform attackerTransform)
+    public void EngageCombat(CombatType combatType, GameObject obj)
     {
-        BroadcastMessage("DamageDealt", Damage);
-        currentHealthPoints = Mathf.Clamp(currentHealthPoints - Damage, 0, maxHealthPoints);
-        if (currentHealthPoints <= 0) {
-            GetComponent<ThirdPersonCharacter>().Dead(attackerTransform);
-            MomentDead = Time.time;
-            dead = true;
-            CurrentTile.ObjectMovedOffTile();
-            if (DeathChangeObservers != null) DeathChangeObservers(this);
-        }
-        else
+        CurrentCommbatState = combatType;
+        ObjectAgainst = obj;
+        // if the object attacking is another card tell it to defend
+       
+        if (CurrentCommbatState == CombatType.Attack)
         {
-            GetComponent<ThirdPersonCharacter>().Hit(attackerTransform);
+            if (ObjectAgainst.GetComponent<CardObject>() != null) { ObjectAgainst.GetComponent<CardObject>().EngageCombat(CombatType.Defend, gameObject); }
+            AttackObject(obj);
         }
     }
 
@@ -115,14 +116,12 @@ public class CardObject : MonoBehaviour, IDamageable
         ObjectAttacking = obj;
         m_Rigidbody.constraints = RigidbodyConstraints.FreezeAll;
         transform.LookAt(ObjectAttacking.transform);
-        this.GetComponent<ThirdPersonCharacter>().Attack(); 
-       
-    }
+        this.GetComponent<ThirdPersonCharacter>().Attack();
 
+    }
 
     public void DealDamage()
     {
-
         Component damageableComponent = ObjectAttacking.GetComponent(typeof(IDamageable));
         if (damageableComponent)
         {
@@ -130,6 +129,53 @@ public class CardObject : MonoBehaviour, IDamageable
             (damageableComponent as IDamageable).TakeDamage(damage, this.transform);
         }
     }
+
+    public void TakeDamage(int Damage, Transform attackerTransform)
+    {
+        damageTakeninCombat = Damage;
+        GetComponent<ThirdPersonCharacter>().Hit(attackerTransform);
+
+    }
+
+
+    public void Retalliate()
+    {
+        if (CurrentCommbatState == CombatType.Defend)
+        {
+            //Only retaliate if in range
+            if (terrainControl.FindEnemyInAttackRange(ObjectAgainst.GetComponent<CardObject>().GetCurrentTile, terrainControl.FindAttackRange(CurrentTile, initialMaxAttackDistance)))
+            {
+                AttackObject(ObjectAgainst);
+                return;
+            }
+        }
+        ObjectAgainst.GetComponent<CardObject>().CombatOver();
+        CombatOver();
+        
+    }
+
+    public void CombatOver()
+    {
+        CurrentCommbatState = CombatType.OutOfCombat;
+        BroadcastMessage("DamageDealt", damageTakeninCombat);
+        currentHealthPoints = Mathf.Clamp(currentHealthPoints - damageTakeninCombat, 0, maxHealthPoints);
+        damageTakeninCombat = 0;
+        if (CombatChangeObservers != null) { CombatChangeObservers(false, this); }
+        if (currentHealthPoints <= 0)
+        {
+            GetComponent<ThirdPersonCharacter>().Dead(ObjectAgainst.transform);
+            MomentDead = Time.time;
+            dead = true;
+            CurrentTile.ObjectMovedOffTile();
+            if (DeathChangeObservers != null) DeathChangeObservers(this);
+        }
+    }
+
+
+
+
+
+
 
 
     // MOVEMENT
@@ -174,20 +220,6 @@ public class CardObject : MonoBehaviour, IDamageable
     public void StateChange(CardState State)
     {
         cardState = State;
-
-        switch (cardState)
-        {
-            case CardState.Move:
-               
-   //             CurrentTile.ChangeColor(Color.blue);
-                break;
-            case CardState.Attack:
-               
-  //              CurrentTile.ChangeColor(Color.red);
-                break;
-            default:
-                return;
-        }
         if (StateChangeObservers != null) StateChangeObservers(cardState);
     }
 
@@ -204,6 +236,7 @@ public class CardObject : MonoBehaviour, IDamageable
         m_Rigidbody = GetComponent<Rigidbody>();
         MaxMoveDistance = initialMaxMoveDistance;
         MaxAttackDistance = initialMaxAttackDistance;
+        CurrentCommbatState = CombatType.OutOfCombat;
     }
 
 

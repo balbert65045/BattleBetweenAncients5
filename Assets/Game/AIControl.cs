@@ -79,6 +79,15 @@ public class AIControl : MonoBehaviour {
         cardObject.DeathChangeObservers -= DeathChange;
     }
 
+    public void SelectedObjectCombatChange(bool inCombat, CardObject cardObject)
+    {
+        if (!inCombat)
+        {
+            TurnOver = true;
+            cardObject.CombatChangeObservers -= SelectedObjectCombatChange;
+        }
+    }
+
 
    // Once AI Control has recognized it is its turn
     public void Active()
@@ -129,6 +138,8 @@ public class AIControl : MonoBehaviour {
     {
         //SelectedCardObject = cardObject;
         cardObject.MoveChangeObservers += SelectedObjectMoveStateChange;
+        cardObject.CombatChangeObservers += SelectedObjectCombatChange;
+
         Range = cardObject.FindMoveRange();
 
         // check if there are any player objects out on the field
@@ -230,7 +241,13 @@ public class AIControl : MonoBehaviour {
                     TileToAttack = tile;
                 }
             }
-            if (TileToAttack != null) { SelectedCardObject.AttackObject(TileToAttack.ObjectHeld); }
+            if (TileToAttack != null)
+            {
+                SelectedCardObject.EngageCombat(CombatType.Attack, TileToAttack.ObjectHeld);
+                TurnOver = false;
+                TimeObjectStopedMoving = Time.time;
+                return;
+            }
         }
         TimeObjectStopedMoving = Time.time;
         TurnOver = true;
@@ -240,6 +257,7 @@ public class AIControl : MonoBehaviour {
 
 
 	// Need to handle moving to next Card Object at apporpriate time 
+    // BUG where multiple objects move at the same time 
 	void Update () {
       if (enable)
         {
