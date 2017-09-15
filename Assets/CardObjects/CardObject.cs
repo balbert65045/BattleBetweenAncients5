@@ -87,6 +87,7 @@ public class CardObject : MonoBehaviour, IDamageable
     // Reset Moving and Attacking ability
     public void ResetAbilities()
     {
+        Debug.Log(this + " Reset Abilities");
         MoveTurnUsed = false;
         AttackTurnUsed = false;
         MaxAttackDistance = initialMaxAttackDistance;

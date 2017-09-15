@@ -15,8 +15,8 @@ public class TurnSystem : MonoBehaviour {
     public int TurnCount = 0;
 
 
-    private bool PlayerTurn = true;
-    private bool AITurn = false;
+    public bool PlayerTurn = true;
+    public bool AITurn = false;
 
     PlayerController playerController;
     CardHand cardHand;
@@ -25,43 +25,64 @@ public class TurnSystem : MonoBehaviour {
     PowerCounter powerCounter;
     WinScreen winScreen;
 
+    public bool buttonOn = true;
+
     public void EndTurn(int player)
     {
         if (player == 1)
         {
-            PlayerTurn = false;
-            playerController.DisableTools();
-
-            AITurn = true;
-            aiControl.Active();
-
-            cardCreator.enabled = false;
-
-            button.interactable = false;
-            buttonText.text = "Waiting for Enemy turn";
+            StartCoroutine(PlayerTurnOver());
         }
         else if (player == 2)
         {
-            PlayerTurn = true;
-            playerController.ResetTools();
-
-            cardHand.Redraw();
-            cardCreator.enabled = true;
-
-            powerCounter.AddPower(1);
-            button.interactable = true;
-            buttonText.text = "End Turn";
-
-            AITurn = false;
-
-            TurnCount += 1;
-            if (TurnCount >= MaxTurns)
-            {
-                winScreen.gameObject.SetActive(true);
-            }
+            StartCoroutine(AITurnOver());
         }
 
     }
+
+    IEnumerator PlayerTurnOver()
+    {
+        yield return new WaitForSeconds(.1f);
+        PlayerTurn = false;
+        playerController.DisableTools();
+
+        AITurn = true;
+
+        aiControl.Active();
+
+        cardCreator.enabled = false;
+        Debug.Log("Button Off");
+        buttonOn = false;
+        buttonText.text = "Waiting for Enemy turn";
+     
+    }
+
+        IEnumerator AITurnOver()
+    {
+        yield return new WaitForSeconds(.1f);
+        PlayerTurn = true;
+        playerController.ResetTools();
+
+        cardHand.Redraw();
+        cardCreator.enabled = true;
+
+
+
+        powerCounter.AddPower(1);
+        Debug.Log("Button On");
+        buttonOn = true;
+        buttonText.text = "End Turn";
+
+        AITurn = false;
+
+        TurnCount += 1;
+        if (TurnCount >= MaxTurns)
+        {
+            winScreen.gameObject.SetActive(true);
+        }
+       
+    }
+
 
     private void Awake()
     {
@@ -74,4 +95,8 @@ public class TurnSystem : MonoBehaviour {
     }
 
 
+    private void Update()
+    {
+        button.interactable = buttonOn;
+    }
 }
