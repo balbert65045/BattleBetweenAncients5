@@ -11,6 +11,7 @@ public class Spawner : MonoBehaviour, IDamageable
 
     public EnviromentTile GetCurrentTile { get { return TileOn; } }
     public List<EnviromentTile> FindTilesAround(int distance) { return (terrainControl.FindMoveRange(TileOn, distance)); }
+    public List<EnviromentTile> FindAttackRangeAround(EnviromentTile AttackTile, int AttackDistance) { return (terrainControl.FindAttackRange(AttackTile, AttackDistance)); }
 
 
     TerrainControl terrainControl;

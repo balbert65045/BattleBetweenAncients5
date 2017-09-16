@@ -87,7 +87,6 @@ public class CardObject : MonoBehaviour, IDamageable
     // Reset Moving and Attacking ability
     public void ResetAbilities()
     {
-        Debug.Log(this + " Reset Abilities");
         MoveTurnUsed = false;
         AttackTurnUsed = false;
         MaxAttackDistance = initialMaxAttackDistance;
@@ -189,6 +188,7 @@ public class CardObject : MonoBehaviour, IDamageable
     public List<EnviromentTile> MakePath(EnviromentTile EndTile){ return (terrainControl.FindTilesBetween(CurrentTile, EndTile, MaxMoveDistance));}
     public List<EnviromentTile> FindMoveRange() { return (terrainControl.FindMoveRange(CurrentTile, MaxMoveDistance)); }
     public List<EnviromentTile> FindAttackRange() {return (terrainControl.FindAttackRange(CurrentTile, MaxAttackDistance));}
+    public List<EnviromentTile> FindAttackRangeAround(EnviromentTile AttackTile, int AttackDistance) { return(terrainControl.FindAttackRange(AttackTile, AttackDistance)); }
     public bool CheckAttackInRange(EnviromentTile AttackTile, List<EnviromentTile> AttackRange)
     {
         if (terrainControl.FindEnemyInAttackRange(AttackTile, AttackRange)) {return true;}

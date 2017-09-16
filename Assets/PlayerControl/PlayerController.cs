@@ -31,7 +31,6 @@ public class PlayerController : MonoBehaviour
 
     public void ResetTools()
     {
-        Debug.Log("ResetTools happened");
         selectionTool.enabled = true;
         cardCreator.enabled = true;
         allowPathChange = true;

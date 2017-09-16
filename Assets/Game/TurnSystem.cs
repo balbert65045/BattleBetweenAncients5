@@ -25,7 +25,6 @@ public class TurnSystem : MonoBehaviour {
     PowerCounter powerCounter;
     WinScreen winScreen;
 
-    public bool buttonOn = true;
 
     public void EndTurn(int player)
     {
@@ -51,8 +50,8 @@ public class TurnSystem : MonoBehaviour {
         aiControl.Active();
 
         cardCreator.enabled = false;
-        Debug.Log("Button Off");
-        buttonOn = false;
+
+        button.interactable = false;
         buttonText.text = "Waiting for Enemy turn";
      
     }
@@ -70,7 +69,7 @@ public class TurnSystem : MonoBehaviour {
 
         powerCounter.AddPower(1);
         Debug.Log("Button On");
-        buttonOn = true;
+        button.interactable = true;
         buttonText.text = "End Turn";
 
         AITurn = false;
@@ -94,9 +93,4 @@ public class TurnSystem : MonoBehaviour {
         winScreen = FindObjectOfType<WinScreen>();
     }
 
-
-    private void Update()
-    {
-        button.interactable = buttonOn;
-    }
 }

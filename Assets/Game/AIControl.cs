@@ -27,7 +27,8 @@ public class AIControl : MonoBehaviour {
 
     private List<EnviromentTile> Path;
     public List<EnviromentTile> AttackArea;
-    private List<EnviromentTile> Range;
+    public List<EnviromentTile> AttackAreaAroundPlayer;
+    public List<EnviromentTile> Range;
 
     public int index;
     bool spawn = false;
@@ -163,50 +164,65 @@ public class AIControl : MonoBehaviour {
 
         Range = cardObject.FindMoveRange();
 
+        EnviromentTile ClosestPlayerTile = null;
+        EnviromentTile ClosestSpawnerTile = null;
+
+        // if in attack range of the spawner attack it
+        AttackArea = playerSpawner.FindAttackRangeAround(playerSpawner.GetCurrentTile, cardObject.MaxAttackDistance);
+        if (AttackArea.Contains(cardObject.GetCurrentTile))
+        {
+            CheckforAttackAvailable(cardObject);
+            return;
+        }
+
+
         // check if there are any player objects out on the field
         if (playerCardObjectsOut.Count > 0)
         {
             // Find the closest player Object to attack
-            CardObject ClosestPlayerCardObject = null;
             int minDistancePlayer = 100;
-            EnviromentTile ClosestPlayerTile = null;
 
             foreach (CardObject cardObjectplayer in playerCardObjectsOut)
             {
-                AttackArea = cardObjectplayer.FindTilesAround(cardObject.MaxAttackDistance);
-                Debug.Log("Looking at attack area");
-                foreach (EnviromentTile tile in AttackArea)
+                AttackArea = cardObjectplayer.FindAttackRangeAround(cardObjectplayer.GetCurrentTile, cardObject.MaxAttackDistance);
+                AttackAreaAroundPlayer = AttackArea;
+
+                // CheckforPlayerinAttackArea
+                if (AttackArea.Contains(cardObject.GetCurrentTile))
                 {
-                        int Distance = cardObject.FindTileDistance(tile);
-                        if (Distance < minDistancePlayer)
-                        {
-                            minDistancePlayer = Distance;
-                            ClosestPlayerCardObject = cardObjectplayer;
-                            ClosestPlayerTile = tile;
-                        }
+                    CheckforAttackAvailable(cardObject);
+                    return;
+                }
+
+                int Distance = 100;
+                EnviromentTile tile = FindClosestTileforCard(cardObject, cardObjectplayer);
+                //Make sure a tile is available to make a path 
+                if (tile != null) { Distance = cardObject.FindTileDistance(tile); }
+                if (Distance < minDistancePlayer)
+                {
+                    //Set new minDistance and new closest tile 
+                    minDistancePlayer = Distance;
+                    ClosestPlayerTile = tile;
                 }
             }
             Debug.Log(ClosestPlayerTile);
             Debug.Log(minDistancePlayer);
-
             // If there is no path to an available object to attack dont move 
 
-            if (ClosestPlayerCardObject != null)
+            if (ClosestPlayerTile != null)
             {
-                AttackArea = playerSpawner.FindTilesAround(cardObject.MaxAttackDistance);
                 int minDistanceSpawner = 100;
-                foreach (EnviromentTile tile in AttackArea)
-                {
-                    int Distance = cardObject.FindTileDistance(tile);
-                    if (Distance < minDistanceSpawner)
-                    {
-                        minDistanceSpawner = Distance;
-                    }
-                }
-
+                ClosestSpawnerTile = FindClosestTileforSpawner(cardObject, playerSpawner);
+                //Make sure a tile is available to make a path 
+                if (ClosestSpawnerTile != null) { minDistanceSpawner = cardObject.FindTileDistance(ClosestSpawnerTile); }
                 if (minDistancePlayer < minDistanceSpawner)
                 {
-                    MoveToTile(cardObject, ClosestPlayerTile, ClosestPlayerCardObject);
+                    MoveToTile(cardObject, ClosestPlayerTile);
+                    return;
+                }
+                else
+                {
+                    MoveToTile(cardObject, ClosestSpawnerTile);
                     return;
                 }
             }
@@ -214,69 +230,69 @@ public class AIControl : MonoBehaviour {
         }
         // if no path available to the player objects go for the flag/spawner
         // If no player is found then go for the spawner
+        ClosestSpawnerTile = FindClosestTileforSpawner(cardObject, playerSpawner);
+        if (ClosestSpawnerTile != null) { MoveToTile(cardObject, ClosestSpawnerTile); }
+        else { SelectNextObject(); }
 
-     MovetoClosestTileinAttackRange(cardObject, playerSpawner.GetCurrentTile);
+    }
 
+    EnviromentTile FindClosestTileforSpawner(CardObject cardObject, Spawner spawner)
+    {
+        AttackArea = spawner.FindAttackRangeAround(spawner.GetCurrentTile, cardObject.MaxAttackDistance);
+        int minDistancePlayer = 100;
+        EnviromentTile ClosestSpawnerrTile = null;
+        foreach (EnviromentTile tile in AttackArea)
+        {
+            if (tile.cardType == CardType.Open)
+            {
+                int Distance = cardObject.FindTileDistance(tile);
+                if (Distance < minDistancePlayer)
+                {
+                    minDistancePlayer = Distance;
+                    ClosestSpawnerrTile = tile;
+                }
+            }
+        }
+        return (ClosestSpawnerrTile);
     }
 
 
 
-    void MoveToTile(CardObject cardObject, EnviromentTile tileToMove, CardObject ClosestPlayer)
+    EnviromentTile FindClosestTileforCard(CardObject cardObject, CardObject cardObjectAgainst)
     {
-        Debug.Log("Looking for movement");
-        if (!cardObject.FindAttackRange().Contains(ClosestPlayer.GetCurrentTile))
+        AttackArea = cardObjectAgainst.FindAttackRangeAround(cardObjectAgainst.GetCurrentTile, cardObject.MaxAttackDistance);
+        int minDistancePlayer = 100;
+        EnviromentTile ClosestPlayerTile = null;
+        foreach (EnviromentTile tile in AttackArea)
         {
+            if (tile.cardType == CardType.Open)
+            {
+                int Distance = cardObject.FindTileDistance(tile);
+                if (Distance < minDistancePlayer)
+                {
+                    minDistancePlayer = Distance;
+                    ClosestPlayerTile = tile;
+                }
+            }
+        }
+        return (ClosestPlayerTile);
+    } 
+
+
+    void MoveToTile(CardObject cardObject, EnviromentTile tileToMove)
+    {
             Debug.Log("Moving");
             Path = cardObject.MakePath(tileToMove);
             cardObject.enableMovement(Path);
             return;
-        }
-        Debug.Log("Attacking");
-        CheckforAttackAvailable(cardObject);
     }
-
-    // TODO Find movement to Spawner Bug
-    void MovetoClosestTileinAttackRange(CardObject cardObject, EnviromentTile TileofObject)
-    {
-        // Dont move if in attack range, just attack 
-        if (!cardObject.FindAttackRange().Contains(TileofObject))
-        {
-            if (TileofObject.ObjectHeld.GetComponent<CardObject>() == null)
-            { AttackArea = TileofObject.ObjectHeld.GetComponent<Spawner>().FindTilesAround(cardObject.MaxAttackDistance); }
-            else
-            {
-                AttackArea = TileofObject.ObjectHeld.GetComponent<CardObject>().FindTilesAround(cardObject.MaxAttackDistance);
-            }
-         
-            EnviromentTile MoveTile = null;
-            int minDistance = 100;
-            foreach (EnviromentTile tile in AttackArea)
-            {
-                if (cardObject.CheckIfPathAvailable(tile))
-                {
-                    int Distance = cardObject.FindTileDistance(tile);
-                    if (Distance < minDistance)
-                    {
-                        minDistance = Distance;
-                        MoveTile = tile;
-                    }
-                }
-            }
-            Debug.Log("Moving");
-            Path = cardObject.MakePath(MoveTile);
-            cardObject.enableMovement(Path);
-        }
-        // Look for something to attack 
-        else {
-            CheckforAttackAvailable(cardObject);
-        }
-    } 
 
 
     // Look for Something to attack 
-    void CheckforAttackAvailable(CardObject SelectedCardObject)
+    void CheckforAttackAvailable(CardObject cardObject)
     {
-        Range = SelectedCardObject.FindAttackRange();
+        Range = cardObject.FindAttackRange();
+        Debug.Log(Range.Count);
         if (Range.Count > 0)
         {
             EnviromentTile TileToAttack = null;
@@ -287,10 +303,11 @@ public class AIControl : MonoBehaviour {
                     TileToAttack = tile;
                 }
             }
+            Debug.Log(TileToAttack);
             if (TileToAttack != null)
             {
                 Debug.Log("InCombat");
-                SelectedCardObject.EngageCombat(CombatType.Attack, TileToAttack.ObjectHeld);
+                cardObject.EngageCombat(CombatType.Attack, TileToAttack.ObjectHeld);
                 return;
             }
         }
