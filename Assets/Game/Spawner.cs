@@ -60,18 +60,15 @@ public class Spawner : MonoBehaviour, IDamageable
         {
             if (tile.ObjectHeld == this.gameObject) { TileOn = tile; }
         }
-        if (cardType == CardType.Player)
-        {
-            loseScreen = FindObjectOfType<LoseScreen>();
-            Debug.Log(loseScreen);
-            loseScreen.gameObject.SetActive(false);
-        }
-        else if (cardType == CardType.Enemy)
-        {
-            winScreen = FindObjectOfType<WinScreen>();
-            Debug.Log(winScreen);
-            winScreen.gameObject.SetActive(false);
-        }
+      
+
+        loseScreen = FindObjectOfType<LoseScreen>();
+        winScreen = FindObjectOfType<WinScreen>();
+        if (loseScreen != null) { loseScreen.gameObject.SetActive(false); }
+        if (winScreen != null) { winScreen.gameObject.SetActive(false); }
+
+       
+
 
 
     }

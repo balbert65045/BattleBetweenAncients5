@@ -14,7 +14,7 @@ public class AIControl : MonoBehaviour {
 
 
     Spawner AISpawner;
-    AISpawnSystem aiSpawnSystem;
+    AISpawnSystem[] aiSpawnSystem;
     Spawner playerSpawner;
     public List<EnviromentTile> SpawnTiles;
 
@@ -40,11 +40,13 @@ public class AIControl : MonoBehaviour {
     void Start () {
 
         Spawner[] spawners = FindObjectsOfType<Spawner>();
+       
         foreach (Spawner spawner in spawners)
         {
             if (spawner.cardType == CardType.Enemy) { AISpawner = spawner; }
             else if (spawner.cardType == CardType.Player) { playerSpawner = spawner; }
         }
+        aiSpawnSystem = FindObjectsOfType<AISpawnSystem>();
 
         TilesTotal = FindObjectsOfType<EnviromentTile>();
         turnSystem = FindObjectOfType<TurnSystem>();
@@ -151,24 +153,33 @@ public class AIControl : MonoBehaviour {
     private void SpawnUnit()
     {
         // SPAWN Units
-        //SpawnTiles = AISpawner.CheckTilesAround();
-        //int randomTile = Random.Range(0, SpawnTiles.Count);
-        //int randomCard = Random.Range(0, enmyCardObjects.Length);
-        aiSpawnSystem = AISpawner.GetComponent<AISpawnSystem>();
-        for(int i = 0; i < aiSpawnSystem.SpawnTurns.Length; i++)
+
+        // Check for Enemy Base Flag
+        if (AISpawner != null)
         {
-            if (aiSpawnSystem.SpawnTurns[i] == turnSystem.TurnCount)
+            SpawnTiles = AISpawner.CheckTilesAround();
+            int randomTile = Random.Range(0, SpawnTiles.Count);
+            int randomCard = Random.Range(0, enmyCardObjects.Length);
+            SpawnTiles[randomTile].OnItemMake(enmyCardObjects[randomCard]);
+        }
+
+        // Check for Spawn Points
+        foreach (AISpawnSystem SpawnPoint in aiSpawnSystem)
+        {
+            for (int i = 0; i < SpawnPoint.Spawns.Length; i++)
             {
-                foreach (GameObject SpawnObject in aiSpawnSystem.SpawnObjects)
+                if (SpawnPoint.Spawns[i].Time == turnSystem.TurnCount)
                 {
-                    SpawnTiles = AISpawner.CheckTilesAround();
-                    int randomTile = Random.Range(0, SpawnTiles.Count);
-                    int randomCard = Random.Range(0, enmyCardObjects.Length);
-                    SpawnTiles[randomTile].OnItemMake(SpawnObject);
+                    foreach (GameObject SpawnObject in SpawnPoint.Spawns[i].Objects)
+                    {
+                        SpawnTiles = SpawnPoint.CheckTilesAround();
+                        int randomTile = Random.Range(0, SpawnTiles.Count);
+                        int randomCard = Random.Range(0, enmyCardObjects.Length);
+                        SpawnTiles[randomTile].OnItemMake(SpawnObject);
+                    }
                 }
             }
         }
-      //  SpawnTiles[randomTile].OnItemMake(enmyCardObjects[randomCard]);
     }
 
     // Control the card object to attack the closest object thats attackable

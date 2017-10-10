@@ -5,20 +5,35 @@ using UnityEngine;
 public class AISpawnSystem : MonoBehaviour {
 
     
-    public int[] SpawnTurns;
-   // public ArrayTurn[] SpawnObjects;
-    public List<GameObject> SpawnObjects;
-   // public ArrayLayout SpawnObjects;
+    public Spawns[] Spawns;
+    public EnviromentTile TileOn;
+    TerrainControl terrainControl;
 
-	// Use this for initialization
+    private void Start()
+    {
+        terrainControl = FindObjectOfType<TerrainControl>();
+        int layerMask = 1 << (int)Layer.LevelTerrain;
+        RaycastHit hit;
+        bool hasHit = Physics.Raycast(transform.position + Vector3.up, Vector3.down, out hit, 3f, layerMask);
+        if (hasHit)
+        {
+            TileOn = hit.transform.GetComponent<EnviromentTile>();
+        }
+        else
+        {
+            Debug.LogWarning("Spawner not over an enviroment tile");
+        }
+    }
 
+    public List<EnviromentTile> CheckTilesAround()
+    {
+        return (terrainControl.FindTilesOpenAround(TileOn));
+    }
 
-	void Start () {
-		
-	}
-	
-	// Update is called once per frame
-	void Update () {
-		
-	}
+    private void OnDrawGizmos()
+    {
+        Gizmos.color = Color.red;
+        Gizmos.DrawCube(transform.position + Vector3.up, new Vector3(2, 2, 2));
+        
+    }
 }
