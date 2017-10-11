@@ -6,17 +6,32 @@ using UnityStandardAssets.CrossPlatformInput;
 public class CameraMove : MonoBehaviour {
 
     private CardObject cardObjectSelected;
+    private Spawner playerSpawner;
 
     [SerializeField]
     float TransitionTime = 20f;
     [SerializeField]
     float zoomSensitivity = 10f;
     [SerializeField]
-    float ZOffset = 10f;
+    float InitZOffset = 10f;
+    [SerializeField]
+    float InnitYOffset = 20f;
 
-    
+
     // NOTE possibly add a snap to object ability in future
-   
+    private void Start()
+    {
+        Spawner[] spawners = FindObjectsOfType<Spawner>();
+        foreach (Spawner spawner in spawners)
+        {
+            if (spawner.cardType == CardType.Player)
+            {
+                playerSpawner = spawner;
+            }
+        }
+
+        transform.position = new Vector3(playerSpawner.transform.position.x, playerSpawner.transform.position.y + InnitYOffset, playerSpawner.transform.position.z - InitZOffset);
+    }
 
     // Update is called once per frame
     void LateUpdate () {
