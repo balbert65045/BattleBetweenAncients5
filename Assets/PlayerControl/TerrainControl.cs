@@ -241,13 +241,17 @@ public class TerrainControl : MonoBehaviour {
 
     public List<EnviromentTile> FindTileDistance(EnviromentTile TileStart, EnviromentTile TileEnd)
     {
+        List<EnviromentTile> Path = new List<EnviromentTile>();
+        if (!astar.PathAvailable(TileStart.GetComponent<Node>(), TileEnd.GetComponent<Node>(), GridNodes))
+        {
+            return Path;
+        }
 
         List<Node> PathNodes = new List<Node>();
         PathNodes = astar.ShowPathDistance(TileStart.GetComponent<Node>(), TileEnd.GetComponent<Node>(), GridNodes);
 
-        List<EnviromentTile> Path = new List<EnviromentTile>();
-        //// Add Tile currently standing on
-        Path.Add(TileStart);
+            //// Add Tile currently standing on
+            Path.Add(TileStart);
 
         // Add rest of tiles
         if (PathNodes.Count > 0)

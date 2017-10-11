@@ -187,6 +187,7 @@ public class AIControl : MonoBehaviour {
     {
         index++;
         SelectedCardObject = cardObject;
+        Debug.Log("Selected " + SelectedCardObject.name + " " + index);
         cardObject.MoveChangeObservers += SelectedObjectMoveStateChange;
         cardObject.CombatChangeObservers += SelectedObjectCombatChange;
 
@@ -224,6 +225,7 @@ public class AIControl : MonoBehaviour {
 
                 int Distance = 100;
                 EnviromentTile tile = FindClosestTileforCard(cardObject, cardObjectplayer);
+                Debug.Log(tile);
                 //Make sure a tile is available to make a path 
                 if (tile != null) { Distance = cardObject.FindTileDistance(tile); }
                 if (Distance < minDistancePlayer)
@@ -274,7 +276,8 @@ public class AIControl : MonoBehaviour {
             if (tile.cardType == CardType.Open)
             {
                 int Distance = cardObject.FindTileDistance(tile);
-                if (Distance < minDistancePlayer)
+                // If Distance is 0 then a path is not available
+                if (Distance < minDistancePlayer && Distance > 0)
                 {
                     minDistancePlayer = Distance;
                     ClosestSpawnerrTile = tile;
@@ -296,7 +299,8 @@ public class AIControl : MonoBehaviour {
             if (tile.cardType == CardType.Open)
             {
                 int Distance = cardObject.FindTileDistance(tile);
-                if (Distance < minDistancePlayer)
+                // If Distance is 0 then a path is not available
+                if (Distance < minDistancePlayer && Distance > 0)
                 {
                     minDistancePlayer = Distance;
                     ClosestPlayerTile = tile;
@@ -310,6 +314,7 @@ public class AIControl : MonoBehaviour {
     void MoveToTile(CardObject cardObject, EnviromentTile tileToMove)
     {
             Debug.Log("Moving");
+        Debug.Log(tileToMove);
             Path = cardObject.MakePath(tileToMove);
             cardObject.enableMovement(Path);
             return;

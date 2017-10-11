@@ -48,10 +48,8 @@ public class EnviromentTile : MonoBehaviour {
         RaycastHit hit;
         bool hasHit = Physics.Raycast(transform.position, Vector3.up, out hit, 3f);
         Debug.DrawLine(transform.position, new Vector3(transform.position.x, transform.position.y + 3, transform.position.z));
-        Debug.Log(hasHit);
         if (hasHit)
         {
-            Debug.Log(hit.transform);
             if (hit.transform.GetComponent<Spawner>() != null)
             {
                 ObjectHeld = hit.transform.gameObject;
