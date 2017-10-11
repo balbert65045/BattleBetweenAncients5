@@ -43,7 +43,29 @@ public class EnviromentTile : MonoBehaviour {
         X = Mathf.RoundToInt(transform.position.x / SnapDistance);
         Z = Mathf.RoundToInt(transform.position.z / SnapDistance);
 
+
+        //Finds what objects have been placed on top of each tile at start
+        RaycastHit hit;
+        bool hasHit = Physics.Raycast(transform.position, Vector3.up, out hit, 3f);
+        Debug.DrawLine(transform.position, new Vector3(transform.position.x, transform.position.y + 3, transform.position.z));
+        Debug.Log(hasHit);
+        if (hasHit)
+        {
+            Debug.Log(hit.transform);
+            if (hit.transform.GetComponent<Spawner>() != null)
+            {
+                ObjectHeld = hit.transform.gameObject;
+                cardType = hit.transform.GetComponent<Spawner>().cardType;
+            }
+            else if (hit.transform.GetComponent<rock>() != null)
+            {
+                ObjectHeld = hit.transform.gameObject;
+                cardType = CardType.Terrain;
+            }
+        }
+
     }
+
 
 
     public void OnItemMake(GameObject newItem)
