@@ -3,13 +3,15 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityStandardAssets.CrossPlatformInput;
 
-public class CreatorButton : MonoBehaviour {
+public class Card : MonoBehaviour {
+
+    public CardUse cardUse;
 
     //public int type;
     public GameObject Object;
     public GameObject ImageObject;
-    private CardHand OBJHolder;
-    public int type; 
+
+    private CardHand cardHand;
     public bool active;
 
     [SerializeField]
@@ -20,7 +22,7 @@ public class CreatorButton : MonoBehaviour {
 
 	// Use this for initialization
 	void Start () {
-        OBJHolder = GetComponentInParent<CardHand>();
+        cardHand = GetComponentInParent<CardHand>();
       
     }
 	
@@ -49,8 +51,8 @@ public class CreatorButton : MonoBehaviour {
     {
         
         active = true;
-        OBJHolder.ActiveObject(Object, ImageObject, this);
-        OBJHolder.DeactivateotherButton(type);
+        cardHand.ActiveObject(Object, ImageObject, this);
+        cardHand.DeactivateotherButton(this);
 
     }
 

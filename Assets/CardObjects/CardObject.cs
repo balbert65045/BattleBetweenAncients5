@@ -23,8 +23,6 @@ public class CardObject : MonoBehaviour, IDamageable
     int AttackDamageMax = 8;
     public int getDamageMax { get { return AttackDamageMax; } }
 
-    [SerializeField]
-    CardCharacter CardCharacter;
 
 
     public CardType cardType;

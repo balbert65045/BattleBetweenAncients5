@@ -9,7 +9,7 @@ public class PlayerController : MonoBehaviour
     // Use this for initialization
     SelectionTool selectionTool;
     CardObject selectedCardObject;
-    CardCreator cardCreator;
+    CardSelector cardCreator;
     public List<EnviromentTile> Path;
     public List<EnviromentTile> Range;
     CameraRaycaster cameraRaycaster;
@@ -216,7 +216,7 @@ public class PlayerController : MonoBehaviour
     void Start()
     {
         selectionTool = FindObjectOfType<SelectionTool>();
-        cardCreator = FindObjectOfType<CardCreator>();
+        cardCreator = FindObjectOfType<CardSelector>();
         selectionPanel = FindObjectOfType<SelectionPanel>();
         selectionPanel.gameObject.SetActive(false);
         cameraRaycaster = FindObjectOfType<CameraRaycaster>();

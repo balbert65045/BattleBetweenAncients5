@@ -6,11 +6,11 @@ using UnityEngine.UI;
 public class CardPowerDisplay : MonoBehaviour {
 
     // Use this for initialization
-    CreatorButton creatorButton;
+    Card creatorButton;
     Text text;
 
 	void Start () {
-        creatorButton = GetComponentInParent<CreatorButton>();
+        creatorButton = GetComponentInParent<Card>();
         text = GetComponent<Text>();
         text.text = creatorButton.GetPowerAmount.ToString();
 

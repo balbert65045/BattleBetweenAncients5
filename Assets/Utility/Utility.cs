@@ -11,17 +11,18 @@ public enum CardType
     Terrain = 4,
 }
 
+public enum CardUse
+{
+    Object = 1,
+    Spell = 2,
+}
+
 public enum CardState
 {
     Move = 1,
     Attack = 2,
 }
 
-public enum CardCharacter
-{
-    Unnarmed = 1,
-    TwoHandSword = 2,
-}
 
 public enum GameType
 {

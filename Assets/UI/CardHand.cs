@@ -4,10 +4,10 @@ using UnityEngine;
 
 public class CardHand : MonoBehaviour {
 
-    public CreatorButton[] PlayerObjects;
+    public Card[] cards;
     public GameObject ReadyObject;
     public GameObject ReadyImage;
-    public CreatorButton CardUsing;
+    public Card CardUsing;
 
     public GameObject[] CardPositions;
     private CardDeck cardDeck;
@@ -15,7 +15,7 @@ public class CardHand : MonoBehaviour {
     // Use this for initialization
     void Start()
     {
-        PlayerObjects = GetComponentsInChildren<CreatorButton>();
+        cards = GetComponentsInChildren<Card>();
         cardDeck = FindObjectOfType<CardDeck>();
         Redraw();
 
@@ -28,7 +28,7 @@ public class CardHand : MonoBehaviour {
             // Make sure there is a card to draw 
             if (cardDeck.CardsLeft > 0)
             {
-                if (cardPostion.GetComponentInChildren<CreatorButton>() == null)
+                if (cardPostion.GetComponentInChildren<Card>() == null)
                 {
                     GameObject newCard = cardDeck.PickCard();
                     GameObject CardinHand = Instantiate(newCard, cardPostion.transform);
@@ -46,26 +46,28 @@ public class CardHand : MonoBehaviour {
         ReadyImage = null;
     }
 
-    public void DeactivateotherButton(int type)
+    public void DeactivateotherButton(Card ActiveCard)
     {
-        foreach (CreatorButton card in PlayerObjects){
-            if (card.type != type)
+        foreach (Card card in cards){
+            if (card != ActiveCard)
             {
                 card.Deactivate();
             }
         }
     }
 
-    public void ActiveObject(GameObject Obj, GameObject ObjImage, CreatorButton card)
+    public void ActiveObject(GameObject Obj, GameObject ObjImage, Card card)
     {
         CardUsing = card;
         ReadyObject = Obj;
         ReadyImage = ObjImage;
     }
 
-    public void ClearObject()
+    public void Clear()
     {
         ReadyObject = null;
+        ReadyImage = null;
+        CardUsing = null;
     }
 
 

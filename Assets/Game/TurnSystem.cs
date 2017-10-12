@@ -20,7 +20,7 @@ public class TurnSystem : MonoBehaviour {
 
     PlayerController playerController;
     CardHand cardHand;
-    CardCreator cardCreator;
+    CardSelector cardCreator;
     AIControl aiControl;
     PowerCounter powerCounter;
     WinScreen winScreen;
@@ -88,7 +88,7 @@ public class TurnSystem : MonoBehaviour {
         playerController = FindObjectOfType<PlayerController>();
         aiControl = FindObjectOfType<AIControl>();
         cardHand = FindObjectOfType<CardHand>();
-        cardCreator = FindObjectOfType<CardCreator>();
+        cardCreator = FindObjectOfType<CardSelector>();
         powerCounter = FindObjectOfType<PowerCounter>();
         winScreen = FindObjectOfType<WinScreen>();
     }
