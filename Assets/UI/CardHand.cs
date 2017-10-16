@@ -63,6 +63,11 @@ public class CardHand : MonoBehaviour {
         ReadyImage = ObjImage;
     }
 
+    public void ActiveSpell(Card card)
+    {
+        CardUsing = card;
+    }
+
     public void Clear()
     {
         ReadyObject = null;

@@ -16,7 +16,7 @@ public class CardUser : MonoBehaviour {
     // Use this for initialization
     void Start () {
         cameraRaycaster = FindObjectOfType<CameraRaycaster>();
-        cameraRaycaster.layerChangeObservers += OnItemCreateImage;
+        cameraRaycaster.layerChangeObservers += CardShowUse;
         cardHand = FindObjectOfType<CardHand>();
         powerCounter = FindObjectOfType<PowerCounter>();
         Spawner[] spawners = FindObjectsOfType<Spawner>();
@@ -52,48 +52,61 @@ public class CardUser : MonoBehaviour {
         }
     }
 
+    void CardShowUse(Transform newTransform)
+    {
+      //  Debug.Log("new tile " + newTransform.GetComponent<EnviromentTile>());
+      //  Debug.Log("old tile " + OldTileOver);
+
+      //  Debug.Log(cardHand.CardUsing);
+        if (cardHand.CardUsing != null)
+        {
+            if (cardHand.CardUsing.GetComponent<CardSummon>() != null)
+            {
+               // Debug.Log("CreatingImage");
+                OnItemCreateImage(newTransform);
+            }
+               
+        }
+        
+    }
+
     void OnItemCreateImage(Transform newTransform)
     {
 
-        if (newTransform.GetComponent<EnviromentTile>() != null)
+        SpawnTiles = playerSpawner.CheckTilesAround();
+        foreach (EnviromentTile tile in SpawnTiles)
         {
-
-            if (cardHand.ReadyImage != null)
-            {
-                SpawnTiles = playerSpawner.CheckTilesAround();
-                foreach (EnviromentTile tile in SpawnTiles)
-                {
-                    // Debug.Log("ColorTiles");
-                    tile.ChangeColor(Color.cyan);
-                }
-                Tile = newTransform.GetComponent<EnviromentTile>();
-                GameObject newItem = cardHand.ReadyImage;
-
-                if (OldTileOver != null)
-                {
-                    OldTileOver.DestroyImage();
-                }
-                if (SpawnTiles.Contains(Tile))
-                {
-                    Tile.OnItemMake(newItem);
-                    OldTileOver = Tile;
-                }
-
-            }
+            // Debug.Log("ColorTiles");
+            tile.ChangeColor(Color.cyan);
         }
+        Tile = newTransform.GetComponent<EnviromentTile>();
+        GameObject newItem = cardHand.CardUsing.GetComponent<CardSummon>().SummonImageObject;
+
+        if (OldTileOver != null)
+        {
+        //    Debug.Log("DestroyedObject");
+            OldTileOver.DestroyImage();
+        }
+        if (SpawnTiles.Contains(Tile))
+        {
+       //     Debug.Log("Tile In Spawn Area");
+            Tile.OnItemMake(newItem);
+            OldTileOver = Tile;
+        }
+     
     }
 
 
     void OnItemCreate()
     {
-        if (cardHand.ReadyImage)
+        if (cardHand.CardUsing)
         {
             OldTileOver.DestroyImage();
             if (SpawnTiles.Contains(Tile))
             {
 
                 powerCounter.RemovePower(cardHand.CardUsing.GetPowerAmount);
-                GameObject newItem = cardHand.ReadyObject;
+                GameObject newItem = cardHand.CardUsing.GetComponent<CardSummon>().SummonObject;
                 OldTileOver.OnItemMake(newItem);
                 cardHand.DestroyCardUsed();
 
@@ -104,8 +117,10 @@ public class CardUser : MonoBehaviour {
                 tile.ChangeColor(tile.MatColorOriginal);
             }
         }
+        OldTileOver = null;
 
-       
+
+
     }
 
 }

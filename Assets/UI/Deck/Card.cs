@@ -7,10 +7,6 @@ public class Card : MonoBehaviour {
 
     public CardUse cardUse;
 
-    //public int type;
-    public GameObject Object;
-    public GameObject ImageObject;
-
     private CardHand cardHand;
     public bool active;
 
@@ -40,21 +36,48 @@ public class Card : MonoBehaviour {
         if (Input.mousePosition.x > (Xpos - deltaX/2) && Input.mousePosition.x < (Xpos + deltaX / 2) && 
             Input.mousePosition.y > (Ypos - deltaY/ 2) && Input.mousePosition.y < (Ypos + deltaY / 2))
             {
-            GrabObject();
+            SelectCard();
             return true;
             }
         return false;
     }
 
+    void SelectCard()
+    {
+        if (GetComponent<CardSummon>() != null)
+        {
+            GrabObject(GetComponent<CardSummon>());
+        }
+       else if (GetComponent<CardSpell>() != null)
+        {
+            GrabSpell(GetComponent<CardSpell>());
+        }
+        else
+        {
+            Debug.LogWarning("Card has no component to use. ex: Spell or Summon");
+        }
+    }
+
+
     //Grabs the object refference 
-    public void GrabObject()
+     void GrabObject(CardSummon SummonComponent)
     {
         
         active = true;
+        GameObject Object = SummonComponent.SummonObject;
+        GameObject ImageObject = SummonComponent.SummonImageObject;
         cardHand.ActiveObject(Object, ImageObject, this);
         cardHand.DeactivateotherButton(this);
 
     }
+
+    void GrabSpell(CardSpell SpellComponent)
+    {
+        active = true;
+        cardHand.ActiveSpell(this);
+        cardHand.DeactivateotherButton(this);
+    }
+
 
     // Deactivates Object Reference
     public void Deactivate()

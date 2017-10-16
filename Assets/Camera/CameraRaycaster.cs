@@ -63,7 +63,7 @@ public class CameraRaycaster : MonoBehaviour
             if (hit.HasValue)
             {
                 m_hit = hit.Value;
-              
+               // Debug.Log(m_hit.transform);
                 if (m_hit.transform != m_Transform)
                 {
 
@@ -75,13 +75,14 @@ public class CameraRaycaster : MonoBehaviour
                     switch (m_layerHit)
                         {
                             case Layer.LevelTerrain:
-                           // Debug.Log(m_layerHit + "" + m_hit.transform);
+                          
                             m_layerHit = layer;
                                 m_Transform = m_hit.transform;
                                 if (layerChangeObservers != null) layerChangeObservers(m_Transform);
                                 break;
                             case Layer.RaycastEndStop:
-                                break;
+
+                            break;
 
                             //Took this out to fix beggining problem 
                             //default:
@@ -92,9 +93,11 @@ public class CameraRaycaster : MonoBehaviour
                 m_layerHit = layer;
                 return;
             }
+           // else { Debug.Log("Hit Nothing"); }
         }
 
         // Otherwise return background hit
+        m_Transform = null;
         m_hit.distance = distanceToBackground;
         m_layerHit = Layer.RaycastEndStop;
     }
