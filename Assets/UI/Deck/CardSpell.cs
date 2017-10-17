@@ -4,6 +4,8 @@ using UnityEngine;
 
 public class CardSpell : MonoBehaviour {
 
+    public SpellType spellType;
+
 	// Use this for initialization
 	void Start () {
 		
@@ -13,4 +15,9 @@ public class CardSpell : MonoBehaviour {
 	void Update () {
 		
 	}
+    public void GiveBuff(CardObject cardObject)
+    {
+        cardObject.ChangeMoveDistance(1);
+    }
+
 }

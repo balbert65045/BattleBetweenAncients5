@@ -5,7 +5,6 @@ using UnityStandardAssets.CrossPlatformInput;
 
 public class Card : MonoBehaviour {
 
-    public CardUse cardUse;
 
     private CardHand cardHand;
     public bool active;

@@ -11,12 +11,6 @@ public enum CardType
     Terrain = 4,
 }
 
-public enum CardUse
-{
-    Object = 1,
-    Spell = 2,
-}
-
 public enum CardState
 {
     Move = 1,
@@ -35,6 +29,13 @@ public enum CombatType
     Defend = 1,
     Attack = 2,
     OutOfCombat = 3,
+}
+
+public enum SpellType
+{
+    Buff = 1,
+    DeBuff = 2,
+
 }
 
 

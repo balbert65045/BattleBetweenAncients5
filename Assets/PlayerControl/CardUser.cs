@@ -29,14 +29,25 @@ public class CardUser : MonoBehaviour {
 	// Update is called once per frame
 	void Update ()
     {
-	  if (CrossPlatformInputManager.GetButtonUp("pointer1"))
+        if (cardHand.CardUsing)
         {
-            OnItemCreate();
-            OldTileOver = null;
-        }
-        if (CrossPlatformInputManager.GetButtonDown("Cancel"))
-        {
-            if (cardHand.ReadyImage)
+            if (CrossPlatformInputManager.GetButtonUp("pointer1"))
+            {
+                if (cardHand.CardUsing.GetComponent<CardSummon>() != null)
+                {
+                    OnItemCreate();
+                    OldTileOver = null;
+                }
+                else if (cardHand.CardUsing.GetComponent<CardSpell>() != null)
+                {
+                    if (OldTileOver != null)
+                    {
+                        onSpellUse();
+                    }
+                    OldTileOver = null;
+                }
+            }
+            if (CrossPlatformInputManager.GetButtonDown("Cancel"))
             {
                 if (OldTileOver != null)
                 {
@@ -48,16 +59,13 @@ public class CardUser : MonoBehaviour {
                 {
                     tile.ChangeColor(tile.MatColorOriginal);
                 }
+
             }
         }
     }
 
     void CardShowUse(Transform newTransform)
     {
-      //  Debug.Log("new tile " + newTransform.GetComponent<EnviromentTile>());
-      //  Debug.Log("old tile " + OldTileOver);
-
-      //  Debug.Log(cardHand.CardUsing);
         if (cardHand.CardUsing != null)
         {
             if (cardHand.CardUsing.GetComponent<CardSummon>() != null)
@@ -65,9 +73,35 @@ public class CardUser : MonoBehaviour {
                // Debug.Log("CreatingImage");
                 OnItemCreateImage(newTransform);
             }
-               
+            else if (cardHand.CardUsing.GetComponent<CardSpell>() != null)
+            {
+                OnSpellShowUse(newTransform);
+            }
         }
-        
+    }
+
+    void OnSpellShowUse(Transform newTranform)
+    {
+        Debug.Log("Showing Spell Use");
+        CardSpell Spell = cardHand.CardUsing.GetComponent<CardSpell>();
+        EnviromentTile NewTile = newTranform.GetComponent<EnviromentTile>();
+        switch (Spell.spellType)
+        {
+            case SpellType.Buff:
+                if (OldTileOver != null) { OldTileOver.ChangeColor(OldTileOver.MatColorOriginal); }
+                if (NewTile.cardType == CardType.Player && NewTile.ObjectHeld.GetComponent<CardObject>() != null)
+                {
+                    NewTile.ChangeColor(Color.cyan);
+                }
+                    break;
+            case SpellType.DeBuff:
+                break;
+            default:
+                Debug.LogWarning("No Spell Type attached to Spell");
+                return;
+        }
+        OldTileOver = NewTile;
+
     }
 
     void OnItemCreateImage(Transform newTransform)
@@ -96,6 +130,28 @@ public class CardUser : MonoBehaviour {
      
     }
 
+    void onSpellUse()
+    {
+        CardSpell Spell = cardHand.CardUsing.GetComponent<CardSpell>();
+       
+        if (OldTileOver != null) { OldTileOver.ChangeColor(OldTileOver.MatColorOriginal); }
+        switch (Spell.spellType)
+        {
+            case SpellType.Buff:
+                if (OldTileOver.cardType == CardType.Player && OldTileOver.ObjectHeld.GetComponent<CardObject>() != null)
+                {
+                    Spell.GiveBuff(OldTileOver.ObjectHeld.GetComponent<CardObject>());
+                    powerCounter.RemovePower(cardHand.CardUsing.GetPowerAmount);
+                    cardHand.DestroyCardUsed();
+                }
+                break;
+            case SpellType.DeBuff:
+                break;
+            default:
+                Debug.LogWarning("No Spell Type attached to Spell");
+                return;
+        }
+    }
 
     void OnItemCreate()
     {
@@ -117,10 +173,6 @@ public class CardUser : MonoBehaviour {
                 tile.ChangeColor(tile.MatColorOriginal);
             }
         }
-        OldTileOver = null;
-
-
-
     }
 
 }

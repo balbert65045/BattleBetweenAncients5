@@ -9,10 +9,11 @@ public class CardObject : MonoBehaviour, IDamageable
 {
 
     public int MaxMoveDistance { get; private set; }
-    public int MaxAttackDistance { get; private set; }
-
     [SerializeField]
     int initialMaxMoveDistance = 4;
+    public void ChangeMoveDistance(int amount) { MaxMoveDistance += amount; }
+
+    public int MaxAttackDistance { get; private set; }
     [SerializeField]
     int initialMaxAttackDistance = 1;
     [SerializeField]
