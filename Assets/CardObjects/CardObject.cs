@@ -11,11 +11,32 @@ public class CardObject : MonoBehaviour, IDamageable
     public int MaxMoveDistance { get; private set; }
     [SerializeField]
     int initialMaxMoveDistance = 4;
-    public void ChangeMoveDistance(int amount) { MaxMoveDistance += amount; }
+    public int GetMoveDistance { get { return initialMaxMoveDistance; } }
+    int MoveModifier = 0;
+    int MoveModifierDuration = 0;
+    public int GetMoveModifier { get { return MoveModifier; } }
+    public void ChangeMoveDistance(int amount, int duration)
+    {
+        MoveModifier = amount;
+        MoveModifierDuration = duration;
+        if (!MoveTurnUsed) { MaxMoveDistance = initialMaxMoveDistance + MoveModifier; }
+    }
 
     public int MaxAttackDistance { get; private set; }
     [SerializeField]
     int initialMaxAttackDistance = 1;
+    public int GetAttackDistance { get { return initialMaxAttackDistance; } }
+    int AttackDistanceModifier = 0;
+    public int AttackDistanceModifierDuration = 0;
+    public int GetAttackDistanceModifier { get { return AttackDistanceModifier; } }
+    public void ChangeAttackDistance(int amount, int duration)
+    {
+        AttackDistanceModifier = amount;
+        AttackDistanceModifierDuration = duration;
+        if (!AttackTurnUsed) { MaxAttackDistance = initialMaxAttackDistance + AttackDistanceModifier; }
+    }
+
+
     [SerializeField]
     int AttackDamageMin = 2;
     public int getDamagMin { get { return AttackDamageMin; } }
@@ -88,8 +109,24 @@ public class CardObject : MonoBehaviour, IDamageable
     {
         MoveTurnUsed = false;
         AttackTurnUsed = false;
-        MaxAttackDistance = initialMaxAttackDistance;
-        MaxMoveDistance = initialMaxMoveDistance;
+
+        MoveModifierDuration -= 1;
+        if (MoveModifierDuration <= 0)
+        {
+            MoveModifier = 0;
+            MoveModifierDuration = 0;
+        }
+
+        AttackDistanceModifierDuration -= 1;
+        if (AttackDistanceModifierDuration <= 0)
+        {
+            AttackDistanceModifier = 0;
+            AttackDistanceModifierDuration = 0;
+        }
+
+        MaxAttackDistance = initialMaxAttackDistance + AttackDistanceModifier;
+        MaxMoveDistance = initialMaxMoveDistance + MoveModifier;
+
     }
 
     public void EngageCombat(CombatType combatType, GameObject obj)

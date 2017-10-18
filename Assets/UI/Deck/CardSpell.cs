@@ -17,7 +17,8 @@ public class CardSpell : MonoBehaviour {
 	}
     public void GiveBuff(CardObject cardObject)
     {
-        cardObject.ChangeMoveDistance(1);
+        //cardObject.ChangeMoveDistance(1,1);
+        cardObject.ChangeAttackDistance(1,1);
     }
 
 }

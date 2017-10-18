@@ -11,9 +11,13 @@ public class SelectionPanel : MonoBehaviour {
     public Image AttackIcon;
 
     public Text DamageOfSelected;
+    public Text DamageModifier;
     public Text MoveofSelected;
+    public Text MoveModifier;
     public Text RangeofSelected;
+    public Text RangeModifier;
     public Text HealthofSelected;
+    public Text HealthModifier;
 
     private CardObject selectedCardObject;
 	// Use this for initialization
@@ -28,8 +32,33 @@ public class SelectionPanel : MonoBehaviour {
             objectImage.sprite = cardObject.CardImage;
             objectName.GetComponent<Text>().text = cardObject.gameObject.name;
             DamageOfSelected.GetComponent<Text>().text = cardObject.getDamagMin.ToString() + " - " + cardObject.getDamageMax.ToString();
-            MoveofSelected.GetComponent<Text>().text = cardObject.MaxMoveDistance.ToString();
-            RangeofSelected.GetComponent<Text>().text = cardObject.MaxAttackDistance.ToString();
+
+            MoveofSelected.GetComponent<Text>().text = cardObject.GetMoveDistance.ToString();
+            if (cardObject.GetMoveModifier > 0)
+            {
+                MoveModifier.GetComponent<Text>().text = "+" + cardObject.GetMoveModifier.ToString();
+                MoveModifier.GetComponent<Text>().color = Color.green;
+            }
+            else if (cardObject.GetMoveModifier < 0)
+            {
+                MoveModifier.GetComponent<Text>().text = cardObject.GetMoveModifier.ToString();
+                MoveModifier.GetComponent<Text>().color = Color.red;
+            }
+            else { MoveModifier.GetComponent<Text>().text = ""; }
+            
+            RangeofSelected.GetComponent<Text>().text = cardObject.GetAttackDistance.ToString();
+            if (cardObject.GetAttackDistanceModifier > 0)
+            {
+                RangeModifier.GetComponent<Text>().text = "+" + cardObject.GetAttackDistanceModifier.ToString();
+                RangeModifier.GetComponent<Text>().color = Color.green;
+            }
+            else if (cardObject.GetAttackDistanceModifier < 0)
+            {
+                RangeModifier.GetComponent<Text>().text = cardObject.GetAttackDistanceModifier.ToString();
+                RangeModifier.GetComponent<Text>().color = Color.red;
+            }
+            else { RangeModifier.GetComponent<Text>().text = ""; }
+
             HealthofSelected.GetComponent<Text>().text = cardObject.getCurrentHealth.ToString();
 
 
