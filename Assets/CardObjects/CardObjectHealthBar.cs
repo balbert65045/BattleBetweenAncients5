@@ -33,6 +33,16 @@ public class CardObjectHealthBar : MonoBehaviour
         healthBarRawImage.uvRect = new Rect(xValue, 0f, 0.5f, 1f);
     }
 
+    public void Heal(int amount)
+    {
+        currentHealth = cardObject.getCurrentHealth;
+
+        float HealthasPercentage = (currentHealth + (float)amount) / MaxHealth;
+
+        float xValue = Mathf.Clamp(((HealthasPercentage / 2f) - 0.5f), -.5f, 0);
+        healthBarRawImage.uvRect = new Rect(xValue, 0f, 0.5f, 1f);
+    }
+
     // Update is called once per frame
     void Update()
     {

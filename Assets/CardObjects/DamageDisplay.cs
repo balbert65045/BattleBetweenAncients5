@@ -13,6 +13,7 @@ public class DamageDisplay : MonoBehaviour {
     float TimeShown;
 
     private int damageTaken;
+    private int healTaken;
     private Text text;
 
 	void Start () {
@@ -26,14 +27,27 @@ public class DamageDisplay : MonoBehaviour {
         damageTaken = damage;
     }
 
+    public void Heal(int amount)
+    {
+        healTaken = amount;
+    }
 
-    // Update is called once per frame
-    void Update () {
+
+        // Update is called once per frame
+        void Update () {
 		if (damageTaken != 0)
         {
             TimeShown = Time.time;
             text.text = "-" + damageTaken.ToString();
+            text.color = Color.red;
             damageTaken = 0;
+        }
+        else if (healTaken != 0)
+        {
+            TimeShown = Time.time;
+            text.text = "+" + healTaken.ToString();
+            text.color = Color.green;
+            healTaken = 0;
         }
 
         if (Time.time > TimeShown + TextDuration)

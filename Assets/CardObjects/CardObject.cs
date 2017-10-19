@@ -19,7 +19,11 @@ public class CardObject : MonoBehaviour, IDamageable
     {
         MoveModifier = amount;
         MoveModifierDuration = duration;
-        if (!MoveTurnUsed) { MaxMoveDistance = initialMaxMoveDistance + MoveModifier; }
+        if (!MoveTurnUsed)
+        {
+            MaxMoveDistance = initialMaxMoveDistance + MoveModifier;
+            if (MaxMoveDistance < 0) { MaxMoveDistance = 0; }
+        }
     }
 
     // Attack Range
@@ -34,7 +38,11 @@ public class CardObject : MonoBehaviour, IDamageable
     {
         AttackDistanceModifier = amount;
         AttackDistanceModifierDuration = duration;
-        if (!AttackTurnUsed) { MaxAttackDistance = initialMaxAttackDistance + AttackDistanceModifier; }
+        if (!AttackTurnUsed)
+        {
+            MaxAttackDistance = initialMaxAttackDistance + AttackDistanceModifier;
+            if (MaxAttackDistance < 0) { MaxAttackDistance = 0; }
+        }
     }
 
     // Damage
@@ -56,7 +64,9 @@ public class CardObject : MonoBehaviour, IDamageable
         DamageModifier = amount;
         DamageModifierDuration = duration;
         AttackDamageMin = initAttackDamageMin + DamageModifier;
+        if (AttackDamageMin < 0) { AttackDamageMin = 0; }
         AttackDamageMax = initAttackDamageMax + DamageModifier;
+        if (AttackDamageMax < 0) { AttackDamageMax = 0; }
     }
 
 
@@ -109,12 +119,25 @@ public class CardObject : MonoBehaviour, IDamageable
     [SerializeField]
     int maxHealthPoints = 100;
     public int currentHealthPoints;
+    public float getCurrentHealth { get { return (float)currentHealthPoints; } }
+
+    public void HealObject(int amount)
+    {
+        BroadcastMessage("Heal", amount);
+        currentHealthPoints += amount;
+        if (currentHealthPoints > maxHealthPoints)
+        {
+            currentHealthPoints = maxHealthPoints;
+        }
+    }
+
+
     bool dead = false;
     [SerializeField]
     float deadDestroyTime = 1f;
     float MomentDead;
 
-    public float getCurrentHealth { get { return (float)currentHealthPoints; } }
+   
 
 
     // Reset Moving and Attacking ability
@@ -130,6 +153,7 @@ public class CardObject : MonoBehaviour, IDamageable
             MoveModifierDuration = 0;
         }
         MaxMoveDistance = initialMaxMoveDistance + MoveModifier;
+        if (MaxMoveDistance < 0) { MaxMoveDistance = 0; }
 
         AttackDistanceModifierDuration -= 1;
         if (AttackDistanceModifierDuration <= 0)
@@ -138,6 +162,7 @@ public class CardObject : MonoBehaviour, IDamageable
             AttackDistanceModifierDuration = 0;
         }
         MaxAttackDistance = initialMaxAttackDistance + AttackDistanceModifier;
+        if (MaxAttackDistance < 0) { MaxAttackDistance = 0; }
 
         DamageModifierDuration -= 1;
         if (DamageModifierDuration <= 0)
@@ -146,7 +171,9 @@ public class CardObject : MonoBehaviour, IDamageable
             DamageModifierDuration = 0;
         }
         AttackDamageMin = initAttackDamageMin + DamageModifier;
+        if (AttackDamageMin < 0) { AttackDamageMin = 0; }
         AttackDamageMax = initAttackDamageMax + DamageModifier;
+        if (AttackDamageMax < 0) { AttackDamageMax = 0; }
 
 
 
