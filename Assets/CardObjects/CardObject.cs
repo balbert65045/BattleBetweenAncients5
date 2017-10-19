@@ -221,7 +221,6 @@ public class CardObject : MonoBehaviour, IDamageable
     {
         damageTakeninCombat = Damage;
         GetComponent<ThirdPersonCharacter>().Hit(attackerTransform);
-
     }
 
 
