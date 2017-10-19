@@ -31,17 +31,16 @@ public class SelectionPanel : MonoBehaviour {
             selectedCardObject.StateChangeObservers += StateChange;
             objectImage.sprite = cardObject.CardImage;
             objectName.GetComponent<Text>().text = cardObject.gameObject.name;
-            DamageOfSelected.GetComponent<Text>().text = cardObject.getDamagMin.ToString() + " - " + cardObject.getDamageMax.ToString();
-
+          
             MoveofSelected.GetComponent<Text>().text = cardObject.GetMoveDistance.ToString();
             if (cardObject.GetMoveModifier > 0)
             {
-                MoveModifier.GetComponent<Text>().text = "+" + cardObject.GetMoveModifier.ToString();
+                MoveModifier.GetComponent<Text>().text = "(+" + cardObject.GetMoveModifier.ToString() +")";
                 MoveModifier.GetComponent<Text>().color = Color.green;
             }
             else if (cardObject.GetMoveModifier < 0)
             {
-                MoveModifier.GetComponent<Text>().text = cardObject.GetMoveModifier.ToString();
+                MoveModifier.GetComponent<Text>().text = "(" + cardObject.GetMoveModifier.ToString() + ")";
                 MoveModifier.GetComponent<Text>().color = Color.red;
             }
             else { MoveModifier.GetComponent<Text>().text = ""; }
@@ -49,15 +48,29 @@ public class SelectionPanel : MonoBehaviour {
             RangeofSelected.GetComponent<Text>().text = cardObject.GetAttackDistance.ToString();
             if (cardObject.GetAttackDistanceModifier > 0)
             {
-                RangeModifier.GetComponent<Text>().text = "+" + cardObject.GetAttackDistanceModifier.ToString();
+                RangeModifier.GetComponent<Text>().text = "(+" + cardObject.GetAttackDistanceModifier.ToString() + ")";
                 RangeModifier.GetComponent<Text>().color = Color.green;
             }
             else if (cardObject.GetAttackDistanceModifier < 0)
             {
-                RangeModifier.GetComponent<Text>().text = cardObject.GetAttackDistanceModifier.ToString();
+                RangeModifier.GetComponent<Text>().text = "(" + cardObject.GetAttackDistanceModifier.ToString() + ")";
                 RangeModifier.GetComponent<Text>().color = Color.red;
             }
             else { RangeModifier.GetComponent<Text>().text = ""; }
+
+            DamageOfSelected.GetComponent<Text>().text = cardObject.getDamagMin.ToString() + " - " + cardObject.getDamageMax.ToString();
+            if (cardObject.GetDamageModifier > 0)
+            {
+                DamageModifier.GetComponent<Text>().text = "(+" + cardObject.GetDamageModifier.ToString() + ")";
+                DamageModifier.GetComponent<Text>().color = Color.green;
+            }
+            else if(cardObject.GetDamageModifier < 0)
+            {
+                DamageModifier.GetComponent<Text>().text = "(" + cardObject.GetDamageModifier.ToString() + ")";
+                DamageModifier.GetComponent<Text>().color = Color.red;
+            }
+            else { DamageModifier.GetComponent<Text>().text = "" ; }
+
 
             HealthofSelected.GetComponent<Text>().text = cardObject.getCurrentHealth.ToString();
 

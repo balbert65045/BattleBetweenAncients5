@@ -7,11 +7,11 @@ using UnityStandardAssets.CrossPlatformInput;
 
 public class CardObject : MonoBehaviour, IDamageable
 {
-
+    // Movement 
     public int MaxMoveDistance { get; private set; }
     [SerializeField]
     int initialMaxMoveDistance = 4;
-    public int GetMoveDistance { get { return initialMaxMoveDistance; } }
+    public int GetMoveDistance { get { return MaxMoveDistance; } }
     int MoveModifier = 0;
     int MoveModifierDuration = 0;
     public int GetMoveModifier { get { return MoveModifier; } }
@@ -22,12 +22,13 @@ public class CardObject : MonoBehaviour, IDamageable
         if (!MoveTurnUsed) { MaxMoveDistance = initialMaxMoveDistance + MoveModifier; }
     }
 
+    // Attack Range
     public int MaxAttackDistance { get; private set; }
     [SerializeField]
     int initialMaxAttackDistance = 1;
-    public int GetAttackDistance { get { return initialMaxAttackDistance; } }
+    public int GetAttackDistance { get { return MaxAttackDistance; } }
     int AttackDistanceModifier = 0;
-    public int AttackDistanceModifierDuration = 0;
+    int AttackDistanceModifierDuration = 0;
     public int GetAttackDistanceModifier { get { return AttackDistanceModifier; } }
     public void ChangeAttackDistance(int amount, int duration)
     {
@@ -36,15 +37,27 @@ public class CardObject : MonoBehaviour, IDamageable
         if (!AttackTurnUsed) { MaxAttackDistance = initialMaxAttackDistance + AttackDistanceModifier; }
     }
 
-
+    // Damage
+    public int AttackDamageMin;
     [SerializeField]
-    int AttackDamageMin = 2;
+    int initAttackDamageMin = 2;
     public int getDamagMin { get { return AttackDamageMin; } }
 
+    int AttackDamageMax;
     [SerializeField]
-    int AttackDamageMax = 8;
+    int initAttackDamageMax = 8;
     public int getDamageMax { get { return AttackDamageMax; } }
 
+    int DamageModifier = 0;
+    public int DamageModifierDuration = 0;
+    public int GetDamageModifier { get { return DamageModifier; } }
+    public void ChangeAttackDamage(int amount, int duration)
+    {
+        DamageModifier = amount;
+        DamageModifierDuration = duration;
+        AttackDamageMin = initAttackDamageMin + DamageModifier;
+        AttackDamageMax = initAttackDamageMax + DamageModifier;
+    }
 
 
     public CardType cardType;
@@ -116,6 +129,7 @@ public class CardObject : MonoBehaviour, IDamageable
             MoveModifier = 0;
             MoveModifierDuration = 0;
         }
+        MaxMoveDistance = initialMaxMoveDistance + MoveModifier;
 
         AttackDistanceModifierDuration -= 1;
         if (AttackDistanceModifierDuration <= 0)
@@ -123,9 +137,19 @@ public class CardObject : MonoBehaviour, IDamageable
             AttackDistanceModifier = 0;
             AttackDistanceModifierDuration = 0;
         }
-
         MaxAttackDistance = initialMaxAttackDistance + AttackDistanceModifier;
-        MaxMoveDistance = initialMaxMoveDistance + MoveModifier;
+
+        DamageModifierDuration -= 1;
+        if (DamageModifierDuration <= 0)
+        {
+            DamageModifier = 0;
+            DamageModifierDuration = 0;
+        }
+        AttackDamageMin = initAttackDamageMin + DamageModifier;
+        AttackDamageMax = initAttackDamageMax + DamageModifier;
+
+
+
 
     }
 
@@ -277,6 +301,8 @@ public class CardObject : MonoBehaviour, IDamageable
         m_Rigidbody = GetComponent<Rigidbody>();
         MaxMoveDistance = initialMaxMoveDistance;
         MaxAttackDistance = initialMaxAttackDistance;
+        AttackDamageMin = initAttackDamageMin;
+        AttackDamageMax = initAttackDamageMax;
         CurrentCommbatState = CombatType.OutOfCombat;
     }
 
