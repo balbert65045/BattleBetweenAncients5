@@ -55,6 +55,7 @@ public class EnviromentTile : MonoBehaviour {
                 ObjectHeld = hit.transform.gameObject;
                 cardType = hit.transform.GetComponent<Spawner>().cardType;
             }
+
             else if (hit.transform.GetComponent<rock>() != null)
             {
                 ObjectHeld = hit.transform.gameObject;
@@ -62,6 +63,19 @@ public class EnviromentTile : MonoBehaviour {
             }
         }
 
+    }
+
+    private void Start()
+    {
+        if (ObjectHeld != null)
+        {
+            CenterObject();
+        }
+    }
+
+    void CenterObject()
+    {
+        ObjectHeld.transform.position = new Vector3(transform.position.x, ObjectHeld.transform.position.y, transform.position.z);
     }
 
 
@@ -110,4 +124,17 @@ public class EnviromentTile : MonoBehaviour {
         Destroy(ObjectHeld);
     }
 
+    private void OnCollisionEnter(Collision collision)
+    {
+        if (ObjectHeld == null)
+        {
+            if (collision.transform.GetComponent<CardObject>())
+            {
+                ObjectHeld = collision.transform.gameObject;
+                cardType = collision.transform.GetComponent<CardObject>().cardType;
+                ObjectHeld.GetComponent<CardObject>().OnCurrentTile(this);
+                CenterObject();
+            }
+        }
+    }
 }

@@ -86,7 +86,7 @@ public class CardObject : MonoBehaviour, IDamageable
 
     AICharacterControl aiCharacterControl;
     ObjectController objectController;
-    CameraRaycaster cameraRaycaster;
+    private Rigidbody m_Rigidbody;
     TerrainControl terrainControl;
     public float RemainingDistance;
 
@@ -103,16 +103,18 @@ public class CardObject : MonoBehaviour, IDamageable
     public event OnDeathChange DeathChangeObservers;
 
     public CombatType CurrentCommbatState;
-    private Rigidbody m_Rigidbody;
+    
 
-    EnviromentTile CurrentTile;
+    public EnviromentTile CurrentTile;
     public EnviromentTile GetCurrentTile { get { return CurrentTile; } }
+    private List<EnviromentTile> pathTaking;
+
 
     private GameObject ObjectAttacking;
     private GameObject ObjectAgainst;
     int damageTakeninCombat;
 
-    private List<EnviromentTile> pathTaking;
+    
     //public List<EnviromentTile> pathFollowing;
 
     // DAMAGE and HEEALTH
@@ -321,7 +323,6 @@ public class CardObject : MonoBehaviour, IDamageable
     void Awake()
     {
         aiCharacterControl = GetComponent<AICharacterControl>();
-        cameraRaycaster = FindObjectOfType<CameraRaycaster>();
         terrainControl = FindObjectOfType<TerrainControl>();
         currentHealthPoints = maxHealthPoints;
         m_Rigidbody = GetComponent<Rigidbody>();
@@ -333,6 +334,8 @@ public class CardObject : MonoBehaviour, IDamageable
     }
 
 
+
+
     // Update is called once per frame
     void Update()
     {
@@ -342,7 +345,7 @@ public class CardObject : MonoBehaviour, IDamageable
             RemainingDistance = (transform.position - CurrentTile.transform.position).magnitude;
             if (RemainingDistance < aiCharacterControl.agent.stoppingDistance)
             {
-
+                Debug.Log("Destination reached");
                 int CurrentPathLength = pathTaking.Count - 1;
                 int CurrentTileIndex = terrainControl.CheckPathPosition(CurrentTile, pathTaking);
                 if (CurrentTileIndex == -1) { Debug.LogError("CurrentPathIndex not in Path of pathBuilder"); }
@@ -366,6 +369,7 @@ public class CardObject : MonoBehaviour, IDamageable
         {
             if (Time.time > deadDestroyTime + MomentDead)
             {
+                if (GetComponent<Mage>()) { GetComponent<Mage>().Death(); }
                 Destroy(gameObject);
             }
         }

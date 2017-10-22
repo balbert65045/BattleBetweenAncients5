@@ -15,7 +15,8 @@ public class AIControl : MonoBehaviour {
 
     Spawner AISpawner;
     AISpawnSystem[] aiSpawnSystem;
-    Spawner playerSpawner;
+    //Spawner playerSpawner;
+    Mage mageSpawner;
     public List<EnviromentTile> SpawnTiles;
 
 
@@ -44,8 +45,11 @@ public class AIControl : MonoBehaviour {
         foreach (Spawner spawner in spawners)
         {
             if (spawner.cardType == CardType.Enemy) { AISpawner = spawner; }
-            else if (spawner.cardType == CardType.Player) { playerSpawner = spawner; }
+          //  else if (spawner.cardType == CardType.Player) { playerSpawner = spawner; }
         }
+
+        mageSpawner = FindObjectOfType<Mage>();
+
         aiSpawnSystem = FindObjectsOfType<AISpawnSystem>();
 
         TilesTotal = FindObjectsOfType<EnviromentTile>();
@@ -197,7 +201,7 @@ public class AIControl : MonoBehaviour {
         EnviromentTile ClosestSpawnerTile = null;
 
         // if in attack range of the spawner attack it
-        AttackArea = playerSpawner.FindAttackRangeAround(playerSpawner.GetCurrentTile, cardObject.MaxAttackDistance);
+        AttackArea = mageSpawner.FindAttackRangeAround(mageSpawner.GetCurrentTile, cardObject.MaxAttackDistance);
         if (AttackArea.Contains(cardObject.GetCurrentTile))
         {
             CheckforAttackAvailable(cardObject);
@@ -235,14 +239,14 @@ public class AIControl : MonoBehaviour {
                     ClosestPlayerTile = tile;
                 }
             }
-            Debug.Log(ClosestPlayerTile);
-            Debug.Log(minDistancePlayer);
+          //  Debug.Log(ClosestPlayerTile);
+         //   Debug.Log(minDistancePlayer);
             // If there is no path to an available object to attack dont move 
 
             if (ClosestPlayerTile != null)
             {
                 int minDistanceSpawner = 100;
-                ClosestSpawnerTile = FindClosestTileforSpawner(cardObject, playerSpawner);
+                ClosestSpawnerTile = FindClosestTileforSpawner(cardObject, mageSpawner);
                 //Make sure a tile is available to make a path 
                 if (ClosestSpawnerTile != null) { minDistanceSpawner = cardObject.FindTileDistance(ClosestSpawnerTile); }
                 if (minDistancePlayer < minDistanceSpawner)
@@ -260,15 +264,15 @@ public class AIControl : MonoBehaviour {
         }
         // if no path available to the player objects go for the flag/spawner
         // If no player is found then go for the spawner
-        ClosestSpawnerTile = FindClosestTileforSpawner(cardObject, playerSpawner);
+        ClosestSpawnerTile = FindClosestTileforSpawner(cardObject, mageSpawner);
         if (ClosestSpawnerTile != null) { MoveToTile(cardObject, ClosestSpawnerTile); }
         else { SelectNextObject(); }
 
     }
 
-    EnviromentTile FindClosestTileforSpawner(CardObject cardObject, Spawner spawner)
+    EnviromentTile FindClosestTileforSpawner(CardObject cardObject, Mage mageSpawner)
     {
-        AttackArea = spawner.FindAttackRangeAround(spawner.GetCurrentTile, cardObject.MaxAttackDistance);
+        AttackArea = mageSpawner.FindAttackRangeAround(mageSpawner.GetCurrentTile, cardObject.MaxAttackDistance);
         int minDistancePlayer = 100;
         EnviromentTile ClosestSpawnerrTile = null;
         foreach (EnviromentTile tile in AttackArea)
@@ -313,8 +317,8 @@ public class AIControl : MonoBehaviour {
 
     void MoveToTile(CardObject cardObject, EnviromentTile tileToMove)
     {
-            Debug.Log("Moving");
-        Debug.Log(tileToMove);
+         //   Debug.Log("Moving");
+      //  Debug.Log(tileToMove);
             Path = cardObject.MakePath(tileToMove);
             cardObject.enableMovement(Path);
             return;

@@ -9,7 +9,8 @@ public class CardUser : MonoBehaviour {
     EnviromentTile Tile;
     CardHand cardHand;
     EnviromentTile OldTileOver;
-    Spawner playerSpawner;
+    //Mage playerSpawner;
+    Mage mageSpawner;
     public List<EnviromentTile> SpawnTiles;
     PowerCounter powerCounter;
 
@@ -19,11 +20,12 @@ public class CardUser : MonoBehaviour {
         cameraRaycaster.layerChangeObservers += CardShowUse;
         cardHand = FindObjectOfType<CardHand>();
         powerCounter = FindObjectOfType<PowerCounter>();
-        Spawner[] spawners = FindObjectsOfType<Spawner>();
-        foreach (Spawner spawner in spawners)
-        {
-            if (spawner.cardType == CardType.Player) { playerSpawner = spawner; }
-        }
+        //Spawner[] spawners = FindObjectsOfType<Spawner>();
+        //foreach (Spawner spawner in spawners)
+        //{
+        //    if (spawner.cardType == CardType.Player) { playerSpawner = spawner; }
+        //}
+        mageSpawner = FindObjectOfType<Mage>();
     }
 	
 	// Update is called once per frame
@@ -54,7 +56,7 @@ public class CardUser : MonoBehaviour {
                     OldTileOver.DestroyImage();
                     OldTileOver = null;
                 }
-                SpawnTiles = playerSpawner.CheckTilesAround();
+                SpawnTiles = mageSpawner.CheckTilesAround();
                 foreach (EnviromentTile tile in SpawnTiles)
                 {
                     tile.ChangeColor(tile.MatColorOriginal);
@@ -107,7 +109,7 @@ public class CardUser : MonoBehaviour {
     void OnItemCreateImage(Transform newTransform)
     {
 
-        SpawnTiles = playerSpawner.CheckTilesAround();
+        SpawnTiles = mageSpawner.CheckTilesAround();
         foreach (EnviromentTile tile in SpawnTiles)
         {
             // Debug.Log("ColorTiles");

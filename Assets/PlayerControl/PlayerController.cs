@@ -289,6 +289,7 @@ public class PlayerController : MonoBehaviour
                 if (m_hit.transform.GetComponent<EnviromentTile>().cardType == CardType.Open)
                 {
                     //Tell Observers object moving
+                   
                     selectedCardObject.enableMovement(Path);
                     ResetTiles();
                 }

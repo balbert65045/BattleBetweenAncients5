@@ -28,6 +28,7 @@ public class Spawner : MonoBehaviour, IDamageable
     public void TakeDamage(int Damage, Transform attackerTransform)
     {
         BroadcastMessage("DamageDealt", Damage);
+      
         currentHealthPoints = Mathf.Clamp(currentHealthPoints - Damage, 0, maxHealthPoints);
         if (attackerTransform.GetComponent<CardObject>() != null) { attackerTransform.GetComponent<CardObject>().CombatOver(); }
         if (currentHealthPoints <= 0)
