@@ -79,7 +79,6 @@ public class EnviromentTile : MonoBehaviour {
     }
 
 
-
     public void OnItemMake(GameObject newItem)
     {
         if (newItem.GetComponent<CardObject>() == null)

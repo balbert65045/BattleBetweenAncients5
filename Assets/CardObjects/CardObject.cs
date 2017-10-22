@@ -46,7 +46,7 @@ public class CardObject : MonoBehaviour, IDamageable
     }
 
     // Damage
-    public int AttackDamageMin;
+    int AttackDamageMin;
     [SerializeField]
     int initAttackDamageMin = 2;
     public int getDamagMin { get { return AttackDamageMin; } }
@@ -57,7 +57,7 @@ public class CardObject : MonoBehaviour, IDamageable
     public int getDamageMax { get { return AttackDamageMax; } }
 
     int DamageModifier = 0;
-    public int DamageModifierDuration = 0;
+    int DamageModifierDuration = 0;
     public int GetDamageModifier { get { return DamageModifier; } }
     public void ChangeAttackDamage(int amount, int duration)
     {
@@ -75,9 +75,6 @@ public class CardObject : MonoBehaviour, IDamageable
 
     public Sprite CardImage;
 
-    [SerializeField]
-    float cardStoppingDistance = .4f;
-
     public bool Selected { get; private set; }
     public bool Moving { get; private set; }
 
@@ -88,7 +85,7 @@ public class CardObject : MonoBehaviour, IDamageable
     ObjectController objectController;
     private Rigidbody m_Rigidbody;
     TerrainControl terrainControl;
-    public float RemainingDistance;
+    float RemainingDistance;
 
     public delegate void OnMoveChange(bool inMoveState, CardObject cardObject); // declare delegate type
     public event OnMoveChange MoveChangeObservers; //instantiate an observer set
@@ -105,7 +102,7 @@ public class CardObject : MonoBehaviour, IDamageable
     public CombatType CurrentCommbatState;
     
 
-    public EnviromentTile CurrentTile;
+    private EnviromentTile CurrentTile;
     public EnviromentTile GetCurrentTile { get { return CurrentTile; } }
     private List<EnviromentTile> pathTaking;
 
@@ -120,7 +117,7 @@ public class CardObject : MonoBehaviour, IDamageable
     // DAMAGE and HEEALTH
     [SerializeField]
     int maxHealthPoints = 100;
-    public int currentHealthPoints;
+    int currentHealthPoints;
     public float getCurrentHealth { get { return (float)currentHealthPoints; } }
 
     public void HealObject(int amount)
@@ -306,7 +303,7 @@ public class CardObject : MonoBehaviour, IDamageable
         MaxMoveDistance = 0;
         pathTaking = path;
         m_Rigidbody.constraints = RigidbodyConstraints.FreezeRotationX | RigidbodyConstraints.FreezeRotationY | RigidbodyConstraints.FreezeRotationZ;
-        aiCharacterControl.agent.stoppingDistance = cardStoppingDistance;
+     //   aiCharacterControl.agent.stoppingDistance = cardStoppingDistance;
         if (MoveChangeObservers != null) MoveChangeObservers(Moving, this);
     }
 
