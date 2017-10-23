@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityStandardAssets.CrossPlatformInput;
+using UnityEngine.UI;
 
 public class SelectionTool : MonoBehaviour {
 
@@ -10,8 +11,11 @@ public class SelectionTool : MonoBehaviour {
     EnviromentTile playerObjectCreatorSelected;
     public CardObject cardObjectSelected;
     RaycastHit m_hit;
-    TerrainControl pathBuilder;
+
     PlayerController gameController;
+
+    RectTransform CardAreaRect;
+
 
     
 
@@ -19,7 +23,7 @@ public class SelectionTool : MonoBehaviour {
 
     void Start () {
         cameraRaycaster = FindObjectOfType<CameraRaycaster>();
-        pathBuilder = FindObjectOfType<TerrainControl>();
+        CardAreaRect = FindObjectOfType<CardHand>().transform.parent.GetComponent<RectTransform>();
         gameController = FindObjectOfType<PlayerController>();
     }
 
@@ -30,21 +34,23 @@ public class SelectionTool : MonoBehaviour {
     {
         if (CrossPlatformInputManager.GetButtonDown("pointer1"))
         {
-
-            var hit = cameraRaycaster.RaycastForLayer(Layer.LevelTerrain);
-            if (hit.HasValue)
+            if (Input.mousePosition.y > CardAreaRect.position.y + (CardAreaRect.sizeDelta.y / 2))
             {
-                m_hit = hit.Value;
-                OnItemSelect(m_hit.transform);
-            }
-            else
-            {
-                if (playerObjectCreatorSelected != null)
+                var hit = cameraRaycaster.RaycastForLayer(Layer.LevelTerrain);
+                if (hit.HasValue)
                 {
-                    cardObjectSelected = null;
-                    gameController.SelectObject(null);
+                    m_hit = hit.Value;
+                    OnItemSelect(m_hit.transform);
+                    return;
                 }
             }
+
+            if (playerObjectCreatorSelected != null)
+            {
+                cardObjectSelected = null;
+                gameController.SelectObject(null);
+            }
+            
         }
     }
 
