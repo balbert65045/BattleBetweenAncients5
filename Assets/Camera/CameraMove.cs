@@ -6,6 +6,8 @@ using UnityStandardAssets.CrossPlatformInput;
 public class CameraMove : MonoBehaviour {
 
     private CardObject cardObjectSelected;
+    private TurnSystem turnSystem;
+    private AIControl aiControl;
     //    private Spawner playerSpawner;
     private Mage mageSpawner;
 
@@ -22,8 +24,8 @@ public class CameraMove : MonoBehaviour {
     // NOTE possibly add a snap to object ability in future
     private void Start()
     {
- 
-        Spawner[] spawners = FindObjectsOfType<Spawner>();
+
+        //Spawner[] spawners = FindObjectsOfType<Spawner>();
         //foreach (Spawner spawner in spawners)
         //{
         //    if (spawner.cardType == CardType.Player)
@@ -31,6 +33,9 @@ public class CameraMove : MonoBehaviour {
         //        playerSpawner = spawner;
         //    }
         //}
+
+        turnSystem = FindObjectOfType<TurnSystem>();
+        aiControl = FindObjectOfType<AIControl>();
         mageSpawner = FindObjectOfType<Mage>();
         transform.position = new Vector3(mageSpawner.transform.position.x, mageSpawner.transform.position.y + InnitYOffset, mageSpawner.transform.position.z - InitZOffset);
     }
@@ -39,14 +44,22 @@ public class CameraMove : MonoBehaviour {
     void LateUpdate () {
 
         {
-            float h = CrossPlatformInputManager.GetAxis("Horizontal");
-            float v = CrossPlatformInputManager.GetAxis("Vertical");
-            float z = CrossPlatformInputManager.GetAxis("Mouse ScrollWheel");
+            if (turnSystem.AITurn)
+            {
+                Vector3 AIObjectPosition = aiControl.SelectedCardObject.transform.position;
+                Vector3 newPosition = new Vector3(AIObjectPosition.x, transform.position.y, AIObjectPosition.z - InitZOffset);
+                transform.position = Vector3.Lerp(transform.position, newPosition, TransitionTime * Time.deltaTime);
+            }
+            else
+            {
+                float h = CrossPlatformInputManager.GetAxis("Horizontal");
+                float v = CrossPlatformInputManager.GetAxis("Vertical");
+                float z = CrossPlatformInputManager.GetAxis("Mouse ScrollWheel");
 
-            float VerticalPosition = Mathf.Clamp(transform.position.y - z * zoomSensitivity, 10, 30);
-            Vector3 newPosition = new Vector3(transform.position.x + h, VerticalPosition, transform.position.z + v);
-            transform.position = Vector3.Lerp(transform.position, newPosition, TransitionTime * Time.deltaTime);
-
+                float VerticalPosition = Mathf.Clamp(transform.position.y - z * zoomSensitivity, 10, 30);
+                Vector3 newPosition = new Vector3(transform.position.x + h, VerticalPosition, transform.position.z + v);
+                transform.position = Vector3.Lerp(transform.position, newPosition, TransitionTime * Time.deltaTime);
+            }
         }
     }
 }
