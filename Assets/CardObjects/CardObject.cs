@@ -9,8 +9,9 @@ public class CardObject : MonoBehaviour, IDamageable
 {
     // Movement 
     public int MaxMoveDistance { get; private set; }
-    [SerializeField]
-    int initialMaxMoveDistance = 4;
+    //[SerializeField]
+    //int initialMaxMoveDistance = 4;
+    public int initialMaxMoveDistance = 4;
     public int GetMoveDistance { get { return MaxMoveDistance; } }
     int MoveModifier = 0;
     int MoveModifierDuration = 0;
@@ -28,8 +29,9 @@ public class CardObject : MonoBehaviour, IDamageable
 
     // Attack Range
     public int MaxAttackDistance { get; private set; }
-    [SerializeField]
-    int initialMaxAttackDistance = 1;
+    //[SerializeField]
+    //int initialMaxAttackDistance = 1;
+    public int initialMaxAttackDistance = 1;
     public int GetAttackDistance { get { return MaxAttackDistance; } }
     int AttackDistanceModifier = 0;
     int AttackDistanceModifierDuration = 0;
@@ -47,13 +49,15 @@ public class CardObject : MonoBehaviour, IDamageable
 
     // Damage
     int AttackDamageMin;
-    [SerializeField]
-    int initAttackDamageMin = 2;
+    //[SerializeField]
+    //int initAttackDamageMin = 2;
+    public int initAttackDamageMin = 2;
     public int getDamagMin { get { return AttackDamageMin; } }
 
     int AttackDamageMax;
-    [SerializeField]
-    int initAttackDamageMax = 8;
+    //[SerializeField]
+    //int initAttackDamageMax = 8;
+    public int initAttackDamageMax = 8;
     public int getDamageMax { get { return AttackDamageMax; } }
 
     int DamageModifier = 0;
@@ -115,8 +119,9 @@ public class CardObject : MonoBehaviour, IDamageable
     //public List<EnviromentTile> pathFollowing;
 
     // DAMAGE and HEEALTH
-    [SerializeField]
-    int maxHealthPoints = 100;
+    //[SerializeField]
+    //int maxHealthPoints = 100;
+    public int maxHealthPoints = 100;
     int currentHealthPoints;
     public float getCurrentHealth { get { return (float)currentHealthPoints; } }
 

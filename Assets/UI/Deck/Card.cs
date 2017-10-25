@@ -13,6 +13,8 @@ public class Card : MonoBehaviour {
     int PowerAmount = 1;
     public int GetPowerAmount { get { return (PowerAmount); } }
 
+   
+
 
 
 	// Use this for initialization

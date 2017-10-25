@@ -47,11 +47,14 @@ public class DeckHolder : MonoBehaviour {
         Debug.DrawLine(new Vector3(Input.mousePosition.x, Input.mousePosition.y, Input.mousePosition.z - 10), new Vector3(Input.mousePosition.x, Input.mousePosition.y, Input.mousePosition.z + 10));
     }
 
+
+    // TO DO make stop if reached max card amount 
     public void AddCard(Card card)
     {
         DeckCards.Add(card);
         CardPositionArray[Index].GetComponent<Text>().text = card.name;
         Index++;
+        card.GetComponent<DeckBuildInterface>().AdjustQuantity(-1);
     }
 
     public void RemoveCard(int indexR)
@@ -60,10 +63,11 @@ public class DeckHolder : MonoBehaviour {
         Debug.Log(indexR);
         if (DeckCards.Count > indexR)
         {
+            DeckCards[indexR].GetComponent<DeckBuildInterface>().AdjustQuantity(1);
             DeckCards.Remove(DeckCards[indexR]);
-            //    CardPositionArray[Index].GetComponent<Text>().text = "";
             ResetCards();
                 Index--;
+           
         }
     }
 

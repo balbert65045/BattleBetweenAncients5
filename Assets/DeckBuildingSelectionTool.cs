@@ -30,9 +30,14 @@ public class DeckBuildingSelectionTool : MonoBehaviour {
             {
                 if (card.CheckMousePositionOnButton())
                 {
-                    SelectedCard = card;
-                    SelectedCardObject = Instantiate(SelectedCard.gameObject, Input.mousePosition, Quaternion.identity);
-                    SelectedCardObject.transform.parent = ParentTransform;
+                    if (card.GetComponent<DeckBuildInterface>().GetQty > 0)
+                    {
+                        SelectedCard = card;
+                        SelectedCardObject = Instantiate(SelectedCard.gameObject, Input.mousePosition, Quaternion.identity);
+                        SelectedCardObject.transform.parent = ParentTransform;
+                        SelectedCardObject.GetComponentInChildren<Button>().gameObject.SetActive(false);
+                        SelectedCardObject.GetComponentInChildren<Quantity>().gameObject.SetActive(false);
+                    }
                 }
             }
         }
