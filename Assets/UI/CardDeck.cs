@@ -9,6 +9,16 @@ public class CardDeck : MonoBehaviour {
     public int CardsLeft { get { return (CardsInDeck.Count); } }
     public Text text;
 
+    void Awake()
+    {
+        CardsInDeck.Clear();
+    }
+
+    public void AddCardtoDeck(GameObject Card)
+    {
+        
+        CardsInDeck.Add(Card);
+    }
 
     public GameObject PickCard()
     {

@@ -11,13 +11,13 @@ public class DeckHolder : MonoBehaviour {
     int Index = 0;
     public List<Card> DeckCards;
     GraphicRaycaster myGraphicsRaycaster;
-
+    TotalPowerCount totalPowerCount;
     public CardPosition[] CardPositionArray;
 
 
     private void Start()
     {
-
+        totalPowerCount = FindObjectOfType<TotalPowerCount>();
         myGraphicsRaycaster = FindObjectOfType<GraphicRaycaster>();
         foreach (CardPosition CP in CardPositionArray)
         {
@@ -51,10 +51,17 @@ public class DeckHolder : MonoBehaviour {
     // TO DO make stop if reached max card amount 
     public void AddCard(Card card)
     {
-        DeckCards.Add(card);
-        CardPositionArray[Index].GetComponent<Text>().text = card.name;
-        Index++;
-        card.GetComponent<DeckBuildInterface>().AdjustQuantity(-1);
+        if (DeckCards.Count < CardPositionArray.Length)
+        {
+            DeckCards.Add(card);
+            CardPositionArray[Index].GetComponent<Text>().text = card.name;
+            Debug.Log(CardPositionArray[Index].GetComponentInChildren<PowerAmount>());
+            Debug.Log(card.GetComponentInChildren<Stats>());
+            CardPositionArray[Index].GetComponentInChildren<PowerAmount>().SetPower(card);
+            Index++;
+            card.GetComponent<DeckBuildInterface>().AdjustQuantity(-1);
+            totalPowerCount.UpdatePower();
+        }
     }
 
     public void RemoveCard(int indexR)
@@ -76,8 +83,11 @@ public class DeckHolder : MonoBehaviour {
         for (int i = 0; i < DeckCards.Count; i++)
         {
             CardPositionArray[i].GetComponent<Text>().text = DeckCards[i].name;
+            CardPositionArray[i].GetComponentInChildren<PowerAmount>().SetPower(DeckCards[i]);
         }
         CardPositionArray[DeckCards.Count].GetComponent<Text>().text = "";
+        CardPositionArray[DeckCards.Count].GetComponentInChildren<PowerAmount>().ResetPower();
+        totalPowerCount.UpdatePower();
 
         //if (indexR < DeckCards.Count - 1)
         //{
@@ -86,6 +96,24 @@ public class DeckHolder : MonoBehaviour {
         //      //  CardPositionArray[indexR].GetComponent<Text>().text = DeckCards[]
         //    }
         //}
+    }
+
+    public void SaveDeck()
+    {
+        if (DeckCards.Count < 20)
+        {
+            Debug.LogWarning("NOT ENOUGH CARDS IN DECK");
+        }
+        else
+        {
+            int[] CardNameArray = new int[20];
+            for (int i = 0; i < 20; i++)
+            {
+                CardNameArray[i] = (int)DeckCards[i].cardName;
+            }
+            PlayerPrefsManager.SetDeck(CardNameArray);
+            Debug.Log("Saved Deck");
+        }
     }
 
 }
