@@ -10,7 +10,7 @@ public class TotalPowerCount : MonoBehaviour {
     PowerAmount[] PowerAmountArray;
     
 
-	void Start () {
+	void Awake () {
         TotalPowerText = GetComponent<Text>();
         TotalPowerText.text = 0.ToString();
         PowerAmountArray = FindObjectsOfType<PowerAmount>();

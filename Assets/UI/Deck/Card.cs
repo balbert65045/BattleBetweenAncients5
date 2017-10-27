@@ -13,7 +13,6 @@ public class Card : MonoBehaviour {
     int PowerAmount = 1;
 
     public CardName cardName;
-
     public int GetPowerAmount { get { return (PowerAmount); } }
 
    
@@ -40,7 +39,11 @@ public class Card : MonoBehaviour {
         if (Input.mousePosition.x > (Xpos - deltaX/2) && Input.mousePosition.x < (Xpos + deltaX / 2) && 
             Input.mousePosition.y > (Ypos - deltaY/ 2) && Input.mousePosition.y < (Ypos + deltaY / 2))
             {
-            SelectCard();
+            //Determines if in Level or DeckBuilder scene
+            if (cardHand != null)
+            {
+                SelectCard();
+            }
             return true;
             }
         return false;
@@ -50,11 +53,11 @@ public class Card : MonoBehaviour {
     {
         if (GetComponent<CardSummon>() != null)
         {
-            GrabObject(GetComponent<CardSummon>());
+                GrabObject(GetComponent<CardSummon>());
         }
        else if (GetComponent<CardSpell>() != null)
         {
-            GrabSpell(GetComponent<CardSpell>());
+                GrabSpell(GetComponent<CardSpell>());
         }
         else
         {

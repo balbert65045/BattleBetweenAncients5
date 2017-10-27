@@ -9,13 +9,5 @@ public class CardSummon : MonoBehaviour {
 
     public GameObject SummonImageObject;
 
-    // Use this for initialization
-    void Start () {
-		
-	}
-	
-	// Update is called once per frame
-	void Update () {
-		
-	}
+
 }

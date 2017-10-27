@@ -9,9 +9,21 @@ public class CardDeck : MonoBehaviour {
     public int CardsLeft { get { return (CardsInDeck.Count); } }
     public Text text;
 
+    CardLUT cardLUT;
+
     void Awake()
     {
         CardsInDeck.Clear();
+        int[] CardsIndex = PlayerPrefsManager.ReturnDeck();
+        cardLUT = FindObjectOfType<CardLUT>();
+        for (int i = 0; i < CardsIndex.Length; i++)
+        {
+            int CardIndex = CardsIndex[i];
+            AddCardtoDeck(cardLUT.Cards[CardIndex]);
+        }
+
+
+       
     }
 
     public void AddCardtoDeck(GameObject Card)

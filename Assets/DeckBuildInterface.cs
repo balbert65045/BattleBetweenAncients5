@@ -12,30 +12,41 @@ public class DeckBuildInterface : MonoBehaviour {
 
     public int GetQty { get { return Qty; } }
     Button button;
-    Text QuantityText;
-
-    [SerializeField]
-     GameObject ObjectHolding;
+    public Text QuantityText;
     Stats stats;
 
     // Use this for initialization
-    void Start () {
-        if (GetComponentInChildren<Quantity>() != null)
-        {
-            QuantityText = GetComponentInChildren<Quantity>().GetComponent<Text>();
-            QuantityText.text = Qty.ToString();
-        }
+    public void SetUpCard () {
+        //if (GetComponentInChildren<Quantity>() != null)
+        //{
+        //    QuantityText = GetComponentInChildren<Quantity>().GetComponent<Text>();
+        //    QuantityText.text = Qty.ToString();
+        //}
+
+        QuantityText.text = Qty.ToString();
 
         button = GetComponentInChildren<Button>();
         if (GetComponentInChildren<Stats>())
         {
+
             stats = GetComponentInChildren<Stats>();
-            stats.SetStats(ObjectHolding.GetComponent<CardObject>(), GetComponent<Card>().GetPowerAmount);
+            stats.SetStats(GetComponent<CardSummon>().SummonObject.GetComponent<CardObject>(), GetComponent<Card>().GetPowerAmount);
         }
+
+
+        //Determines if in Level Scene or deck building scene
+        if (FindObjectOfType<CardHand>() != null)
+        {
+            QuantityText.gameObject.SetActive(false);
+            button.gameObject.SetActive(false);
+        }
+
     }
 	
     public void AdjustQuantity(int amount)
     {
+        Debug.Log(QuantityText);
+        Debug.Log(this.name);
         Qty += amount;
         QuantityText.text = Qty.ToString();
         if (Qty <= 0)

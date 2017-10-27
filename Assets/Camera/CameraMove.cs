@@ -46,9 +46,12 @@ public class CameraMove : MonoBehaviour {
         {
             if (turnSystem.AITurn)
             {
-                Vector3 AIObjectPosition = aiControl.SelectedCardObject.transform.position;
-                Vector3 newPosition = new Vector3(AIObjectPosition.x, transform.position.y, AIObjectPosition.z - InitZOffset);
-                transform.position = Vector3.Lerp(transform.position, newPosition, TransitionTime * Time.deltaTime);
+                if (aiControl.SelectedCardObject != null)
+                {
+                    Vector3 AIObjectPosition = aiControl.SelectedCardObject.transform.position;
+                    Vector3 newPosition = new Vector3(AIObjectPosition.x, transform.position.y, AIObjectPosition.z - InitZOffset);
+                    transform.position = Vector3.Lerp(transform.position, newPosition, TransitionTime * Time.deltaTime);
+                }
             }
             else
             {

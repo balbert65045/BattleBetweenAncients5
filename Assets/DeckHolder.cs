@@ -8,21 +8,55 @@ public class DeckHolder : MonoBehaviour {
 
     // Use this for initialization
 
+
+    public CardPosition[] CardPositionArray;
+
     int Index = 0;
     public List<Card> DeckCards;
     GraphicRaycaster myGraphicsRaycaster;
     TotalPowerCount totalPowerCount;
-    public CardPosition[] CardPositionArray;
+    CardLUT cardLUT;
 
+    Card[] cardsOut;
 
     private void Start()
     {
+        cardsOut = FindObjectsOfType<Card>();
         totalPowerCount = FindObjectOfType<TotalPowerCount>();
         myGraphicsRaycaster = FindObjectOfType<GraphicRaycaster>();
-        foreach (CardPosition CP in CardPositionArray)
+        cardLUT = FindObjectOfType<CardLUT>();
+
+        int[] CardsIndex = PlayerPrefsManager.ReturnDeck();
+
+        //TO DO find way to load cards into Deck on start
+
+        if (CardsIndex.Length == 20)
         {
-            CP.GetComponent<Text>().text = "";
+            for (int i = 0; i < CardsIndex.Length; i++)
+            {
+                GameObject CardFound = null;
+                GameObject card = cardLUT.Cards[CardsIndex[i]];
+                foreach (Card CardOut in cardsOut)
+                {
+                    if (CardOut.cardName == card.GetComponent<Card>().cardName)
+                    {
+                        CardFound = CardOut.gameObject;
+                    }
+                }
+
+                AddCard(CardFound.GetComponent<Card>());
+            }
         }
+        else
+        {
+            foreach (CardPosition CP in CardPositionArray)
+            {
+                CP.GetComponent<Text>().text = "";
+            }
+        }
+
+
+
     }
 
     public bool CheckMousePositionOnButton()
@@ -55,8 +89,7 @@ public class DeckHolder : MonoBehaviour {
         {
             DeckCards.Add(card);
             CardPositionArray[Index].GetComponent<Text>().text = card.name;
-            Debug.Log(CardPositionArray[Index].GetComponentInChildren<PowerAmount>());
-            Debug.Log(card.GetComponentInChildren<Stats>());
+
             CardPositionArray[Index].GetComponentInChildren<PowerAmount>().SetPower(card);
             Index++;
             card.GetComponent<DeckBuildInterface>().AdjustQuantity(-1);
@@ -88,14 +121,6 @@ public class DeckHolder : MonoBehaviour {
         CardPositionArray[DeckCards.Count].GetComponent<Text>().text = "";
         CardPositionArray[DeckCards.Count].GetComponentInChildren<PowerAmount>().ResetPower();
         totalPowerCount.UpdatePower();
-
-        //if (indexR < DeckCards.Count - 1)
-        //{
-        //    for (int i = indexR; i < DeckCards.Count - 1; i++)
-        //    {
-        //      //  CardPositionArray[indexR].GetComponent<Text>().text = DeckCards[]
-        //    }
-        //}
     }
 
     public void SaveDeck()

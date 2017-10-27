@@ -9,7 +9,7 @@ public class PowerAmount : MonoBehaviour {
     public int Power;
    
 
-    private void Start()
+    private void Awake()
     {
         powerText = GetComponent<Text>();
         powerText.text = "";

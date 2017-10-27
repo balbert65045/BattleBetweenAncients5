@@ -12,8 +12,8 @@ public class CardInspector : MonoBehaviour {
 
 	void Start () {
         dropdown = GetComponent<Dropdown>();
-        CardFieldObjects.SetActive(false);
-        CardFieldSpells.SetActive(false);
+       // CardFieldObjects.SetActive(false);
+       // CardFieldSpells.SetActive(false);
     }
 	
 	// Update is called once per frame
