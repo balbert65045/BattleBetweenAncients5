@@ -17,16 +17,17 @@ public class DeckHolder : MonoBehaviour {
     TotalPowerCount totalPowerCount;
     CardLUT cardLUT;
 
-    Card[] cardsOut;
 
     private void Start()
     {
-        cardsOut = FindObjectsOfType<Card>();
+        CardSummon[] summonCardsOut = FindObjectsOfType<CardSummon>();
+        CardSpell[] spellCardsOut = FindObjectsOfType<CardSpell>();
         totalPowerCount = FindObjectOfType<TotalPowerCount>();
         myGraphicsRaycaster = FindObjectOfType<GraphicRaycaster>();
         cardLUT = FindObjectOfType<CardLUT>();
 
-        int[] CardsIndex = PlayerPrefsManager.ReturnDeck();
+        int[] CardsIndex = PlayerPrefsManager.ReturnDeckIndex();
+        string[] CardsType = PlayerPrefsManager.ReturnDeckType();
 
         //TO DO find way to load cards into Deck on start
 
@@ -35,14 +36,33 @@ public class DeckHolder : MonoBehaviour {
             for (int i = 0; i < CardsIndex.Length; i++)
             {
                 GameObject CardFound = null;
-                GameObject card = cardLUT.Cards[CardsIndex[i]];
-                foreach (Card CardOut in cardsOut)
+                if (CardsType[i] == "CardSummon")
                 {
-                    if (CardOut.cardName == card.GetComponent<Card>().cardName)
+                    GameObject card = cardLUT.SummonCards[CardsIndex[i]];
+                    foreach (CardSummon summonCardOut in summonCardsOut)
                     {
-                        CardFound = CardOut.gameObject;
+                        if (summonCardOut.cardSummonName == card.GetComponent<CardSummon>().cardSummonName)
+                        {
+                            CardFound = summonCardOut.gameObject;
+                        }
                     }
                 }
+                else if (CardsType[i] == "CardSpell")
+                {
+                    GameObject card = cardLUT.SpellCards[CardsIndex[i]];
+                    foreach (CardSpell spellCardOut in spellCardsOut)
+                    {
+                        if (spellCardOut.cardSpellName == card.GetComponent<CardSpell>().cardSpellName)
+                        {
+                            CardFound = spellCardOut.gameObject;
+                        }
+                    }
+                }
+                else
+                {
+                    Debug.LogError("Card Stored neither Summon nor spell");
+                }
+
                 AddCard(CardFound.GetComponent<Card>());
             }
         }
@@ -134,13 +154,15 @@ public class DeckHolder : MonoBehaviour {
             string[] cardType = new string[20];
             for (int i = 0; i < 20; i++)
             {
-                CardNameArray[i] = (int)DeckCards[i].cardName;
                 if (DeckCards[i].GetComponent<CardSummon>())
                 {
+                    Debug.Log((int)DeckCards[i].GetComponent<CardSummon>().cardSummonName);
+                    CardNameArray[i] = (int)DeckCards[i].GetComponent<CardSummon>().cardSummonName;
                     cardType[i] = "CardSummon";
                 }
                 else if (DeckCards[i].GetComponent<CardSpell>())
                 {
+                    CardNameArray[i] = (int)DeckCards[i].GetComponent<CardSpell>().cardSpellName;
                     cardType[i] = "CardSpell";
                 }
                 else

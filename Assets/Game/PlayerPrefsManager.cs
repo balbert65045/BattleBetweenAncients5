@@ -9,26 +9,46 @@ public class PlayerPrefsManager : MonoBehaviour {
     const string DIFFICULTY_KEY = "difficulty";
     const string LEVEL_KEY = "level_unlocked_";
 
-    const string CARD1_KEY = "card1";
-    const string CARD2_KEY = "card2";
-    const string CARD3_KEY = "card3";
-    const string CARD4_KEY = "card4";
-    const string CARD5_KEY = "card5";
-    const string CARD6_KEY = "card6";
-    const string CARD7_KEY = "card7";
-    const string CARD8_KEY = "card8";
-    const string CARD9_KEY = "card9";
-    const string CARD10_KEY = "card10";
-    const string CARD11_KEY = "card11";
-    const string CARD12_KEY = "card12";
-    const string CARD13_KEY = "card13";
-    const string CARD14_KEY = "card14";
-    const string CARD15_KEY = "card15";
-    const string CARD16_KEY = "card16";
-    const string CARD17_KEY = "card17";
-    const string CARD18_KEY = "card18";
-    const string CARD19_KEY = "card19";
-    const string CARD20_KEY = "card20";
+    const string CARD1_INEDEX_KEY = "card1_index";
+    const string CARD1_TYPE_KEY = "card1_type";
+    const string CARD2_INEDEX_KEY = "card2_index";
+    const string CARD2_TYPE_KEY = "card2_type";
+    const string CARD3_INEDEX_KEY = "card3_index";
+    const string CARD3_TYPE_KEY = "card3_type";
+    const string CARD4_INEDEX_KEY = "card4_index";
+    const string CARD4_TYPE_KEY = "card4_type";
+    const string CARD5_INEDEX_KEY = "card5_index";
+    const string CARD5_TYPE_KEY = "card5_type";
+    const string CARD6_INEDEX_KEY = "card6_index";
+    const string CARD6_TYPE_KEY = "card6_type";
+    const string CARD7_INEDEX_KEY = "card7_index";
+    const string CARD7_TYPE_KEY = "card7_type";
+    const string CARD8_INEDEX_KEY = "card8_index";
+    const string CARD8_TYPE_KEY = "card8_type";
+    const string CARD9_INEDEX_KEY = "card9_index";
+    const string CARD9_TYPE_KEY = "card9_type";
+    const string CARD10_INEDEX_KEY = "card10_index";
+    const string CARD10_TYPE_KEY = "card10_type";
+    const string CARD11_INEDEX_KEY = "card11_index";
+    const string CARD11_TYPE_KEY = "card11_type";
+    const string CARD12_INEDEX_KEY = "card12_index";
+    const string CARD12_TYPE_KEY = "card12_type";
+    const string CARD13_INEDEX_KEY = "card13_index";
+    const string CARD13_TYPE_KEY = "card13_type";
+    const string CARD14_INEDEX_KEY = "card14_index";
+    const string CARD14_TYPE_KEY = "card14_type";
+    const string CARD15_INEDEX_KEY = "card15_index";
+    const string CARD15_TYPE_KEY = "card15_type";
+    const string CARD16_INEDEX_KEY = "card16_index";
+    const string CARD16_TYPE_KEY = "card16_type";
+    const string CARD17_INEDEX_KEY = "card17_index";
+    const string CARD17_TYPE_KEY = "card17_type";
+    const string CARD18_INEDEX_KEY = "card18_index";
+    const string CARD18_TYPE_KEY = "card18_type";
+    const string CARD19_INEDEX_KEY = "card19_index";
+    const string CARD19_TYPE_KEY = "card19_type";
+    const string CARD20_INEDEX_KEY = "card20_index";
+    const string CARD20_TYPE_KEY = "card20_type";
 
 
     public static void SetMasterVolume(float volume)
@@ -49,10 +69,10 @@ public class PlayerPrefsManager : MonoBehaviour {
     {
         for (int i = 0; i < 20; i++)
         {
-            string Key = "CARD" + (i + 1).ToString() + "_KEY";
-            Debug.Log(Key);
-            PlayerPrefs.SetInt(Key, CardIndex[i]);
-            PlayerPrefs.SetString(Key, CardType[i]);
+            string Key_index = "CARD_INDEX" + (i + 1).ToString() + "_KEY";
+            string Key_type = "CARD_TYPE" + (i + 1).ToString() + "_KEY";
+            PlayerPrefs.SetInt(Key_index, CardIndex[i]);
+            PlayerPrefs.SetString(Key_type, CardType[i]);
         }
     }
 
@@ -89,16 +109,29 @@ public class PlayerPrefsManager : MonoBehaviour {
         }
     }
 
-    public static int[] ReturnDeck()
+    public static int[] ReturnDeckIndex()
     {
         int[] CardsIndex = new int[20];
         for (int i = 0; i < 20; i++)
         {
-            string Key = "CARD" + (i + 1).ToString() + "_KEY";
-            CardsIndex[i] = PlayerPrefs.GetInt(Key);
+
+            string Key_index = "CARD_INDEX" + (i + 1).ToString() + "_KEY";
+            CardsIndex[i] = PlayerPrefs.GetInt(Key_index);
         }
         return CardsIndex;
     }
+
+    public static string[] ReturnDeckType()
+    {
+        string[] CardsType = new string[20];
+        for (int i = 0; i < 20; i++)
+        {
+            string Key_type = "CARD_TYPE" + (i + 1).ToString() + "_KEY";
+            CardsType[i] = PlayerPrefs.GetString(Key_type);
+        }
+        return CardsType;
+    }
+
 
 
     public static float GetDifficulty()

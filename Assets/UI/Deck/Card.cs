@@ -12,7 +12,6 @@ public class Card : MonoBehaviour {
     [SerializeField]
     int PowerAmount = 1;
 
-    public CardName cardName;
     public int GetPowerAmount { get { return (PowerAmount); } }
 
    

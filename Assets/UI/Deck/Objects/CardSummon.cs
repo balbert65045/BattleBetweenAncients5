@@ -9,5 +9,6 @@ public class CardSummon : MonoBehaviour {
 
     public GameObject SummonImageObject;
 
+    public CardSummonName cardSummonName;
 
 }

@@ -40,19 +40,20 @@ public enum SpellType
 
 
 //Make a better way of working with this
-public enum CardName
+public enum CardSummonName
 {
     Peasant = 0,
     CrossBow_Soldier = 1,
     Warrior = 2,
     Knight = 3,
-    DamageBuff = 4,
-    Heal = 5,
-    MoveBuff = 6,
 
 }
 
-
-
+public enum CardSpellName
+{
+    DamageBuff = 0,
+    Heal = 1,
+    MoveBuff = 2,
+}
 
 

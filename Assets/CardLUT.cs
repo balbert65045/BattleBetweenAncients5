@@ -4,7 +4,8 @@ using UnityEngine;
 
 public class CardLUT : MonoBehaviour {
 
-    public GameObject[] Cards;
+    public GameObject[] SummonCards;
+    public GameObject[] SpellCards;
 
     private void Awake()
     {

@@ -14,7 +14,9 @@ public class SpellEditor : Editor
         ModifierDuration_Prop,
         HealAmount_Prop,
         spellType_Prop,
+        cardSpellName_Prop,
         SpellAtribute_Prop;
+
 
     CardSpell cardSpell;
 
@@ -26,6 +28,7 @@ public class SpellEditor : Editor
         HealAmount_Prop = serializedObject.FindProperty("HealAmount");
 
         spellType_Prop = serializedObject.FindProperty("spellType");
+        cardSpellName_Prop = serializedObject.FindProperty("cardSpellName");
         SpellAtribute_Prop = serializedObject.FindProperty("spellAtribute");
 
         cardSpell = (CardSpell)target;
@@ -41,6 +44,7 @@ public class SpellEditor : Editor
 
         EditorGUILayout.PropertyField(spellType_Prop);
         EditorGUILayout.PropertyField(SpellAtribute_Prop);
+        EditorGUILayout.PropertyField(cardSpellName_Prop);
         
 
         CardSpell.SpellAtribute spellAtribute = (CardSpell.SpellAtribute)SpellAtribute_Prop.enumValueIndex + 1;

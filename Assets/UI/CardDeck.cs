@@ -14,16 +14,29 @@ public class CardDeck : MonoBehaviour {
     void Awake()
     {
         CardsInDeck.Clear();
-        int[] CardsIndex = PlayerPrefsManager.ReturnDeck();
+        int[] CardsIndex = PlayerPrefsManager.ReturnDeckIndex();
+        string[] CardsType = PlayerPrefsManager.ReturnDeckType();
         cardLUT = FindObjectOfType<CardLUT>();
         for (int i = 0; i < CardsIndex.Length; i++)
         {
-            int CardIndex = CardsIndex[i];
-            AddCardtoDeck(cardLUT.Cards[CardIndex]);
+            if (CardsType[i] == "CardSummon")
+            {
+                int CardIndex = CardsIndex[i];
+                AddCardtoDeck(cardLUT.SummonCards[CardIndex]);
+            }
+            else if (CardsType[i] == "CardSpell")
+            {
+                int CardIndex = CardsIndex[i];
+                AddCardtoDeck(cardLUT.SpellCards[CardIndex]);
+            }
+            else
+            {
+                Debug.LogError("Card Stored neither Summon nor spell");
+            }
         }
 
 
-       
+
     }
 
     public void AddCardtoDeck(GameObject Card)

@@ -5,6 +5,7 @@ using UnityEngine;
 public class CardSpell : MonoBehaviour {
 
     public SpellType spellType;
+    public CardSpellName cardSpellName;
 
     public enum SpellAtribute
     {
