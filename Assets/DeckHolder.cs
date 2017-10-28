@@ -43,7 +43,6 @@ public class DeckHolder : MonoBehaviour {
                         CardFound = CardOut.gameObject;
                     }
                 }
-
                 AddCard(CardFound.GetComponent<Card>());
             }
         }
@@ -132,11 +131,28 @@ public class DeckHolder : MonoBehaviour {
         else
         {
             int[] CardNameArray = new int[20];
+            string[] cardType = new string[20];
             for (int i = 0; i < 20; i++)
             {
                 CardNameArray[i] = (int)DeckCards[i].cardName;
+                if (DeckCards[i].GetComponent<CardSummon>())
+                {
+                    cardType[i] = "CardSummon";
+                }
+                else if (DeckCards[i].GetComponent<CardSpell>())
+                {
+                    cardType[i] = "CardSpell";
+                }
+                else
+                {
+                    Debug.LogError("card is not a summon or spell");
+                }
+
+
             }
-            PlayerPrefsManager.SetDeck(CardNameArray);
+           
+
+            PlayerPrefsManager.SetDeck(CardNameArray, cardType);
             Debug.Log("Saved Deck");
         }
     }

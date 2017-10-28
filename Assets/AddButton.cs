@@ -7,18 +7,19 @@ public class AddButton : MonoBehaviour {
 
     // Use this for initialization
     Button button;
-    DeckHolder deckHolder;
 	void Awake () {
         button = GetComponent<Button>();
-        deckHolder = FindObjectOfType<DeckHolder>();
 
         //Button needs to be set up 
-        button.onClick.AddListener(() => { deckHolder.AddCard(GetComponentInParent<Card>()); });
+        button.onClick.AddListener(AddCard);
 
     }
 	
 	// Update is called once per frame
-	void Update () {
-		
-	}
+	void AddCard()
+    {
+
+        DeckHolder DH = FindObjectOfType<DeckHolder>();
+        DH.AddCard(GetComponentInParent<Card>());
+    }
 }

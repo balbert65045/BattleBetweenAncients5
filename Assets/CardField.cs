@@ -12,10 +12,11 @@ public class CardField : MonoBehaviour {
 
 	void Awake () {
         cardLut = FindObjectOfType<CardLUT>();
+        
         for (int i = 0; i < CardPositions.Length; i++)
         {
             GameObject card = Instantiate(cardLut.Cards[i], CardPositions[i].transform.position, Quaternion.identity);
-            card.transform.parent = CardPositions[i].transform;
+            card.transform.SetParent(CardPositions[i].transform);
             card.GetComponent<DeckBuildInterface>().SetUpCard();
             card.name = cardLut.Cards[i].name;
         }

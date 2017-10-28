@@ -45,13 +45,14 @@ public class PlayerPrefsManager : MonoBehaviour {
     }
 
 
-    public static void SetDeck(int[] CardIndex)
+    public static void SetDeck(int[] CardIndex, string[] CardType)
     {
         for (int i = 0; i < 20; i++)
         {
             string Key = "CARD" + (i + 1).ToString() + "_KEY";
             Debug.Log(Key);
             PlayerPrefs.SetInt(Key, CardIndex[i]);
+            PlayerPrefs.SetString(Key, CardType[i]);
         }
     }
 
@@ -94,7 +95,6 @@ public class PlayerPrefsManager : MonoBehaviour {
         for (int i = 0; i < 20; i++)
         {
             string Key = "CARD" + (i + 1).ToString() + "_KEY";
-            Debug.Log(Key);
             CardsIndex[i] = PlayerPrefs.GetInt(Key);
         }
         return CardsIndex;

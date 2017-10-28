@@ -17,7 +17,6 @@ public class DeckBuildingSelectionTool : MonoBehaviour {
 
 	void Start () {
         deckHolder = FindObjectOfType<DeckHolder>();
-
     }
 	
 	// Update is called once per frame

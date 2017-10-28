@@ -11,21 +11,15 @@ public class DeckBuildInterface : MonoBehaviour {
     int Qty = 0;
 
     public int GetQty { get { return Qty; } }
-    Button button;
+    public Button button;
     public Text QuantityText;
     Stats stats;
 
     // Use this for initialization
     public void SetUpCard () {
-        //if (GetComponentInChildren<Quantity>() != null)
-        //{
-        //    QuantityText = GetComponentInChildren<Quantity>().GetComponent<Text>();
-        //    QuantityText.text = Qty.ToString();
-        //}
 
         QuantityText.text = Qty.ToString();
 
-        button = GetComponentInChildren<Button>();
         if (GetComponentInChildren<Stats>())
         {
 
@@ -40,13 +34,16 @@ public class DeckBuildInterface : MonoBehaviour {
             QuantityText.gameObject.SetActive(false);
             button.gameObject.SetActive(false);
         }
+        else
+        {
+            QuantityText.gameObject.SetActive(true);
+            button.gameObject.SetActive(true);
+        }
 
     }
 	
     public void AdjustQuantity(int amount)
     {
-        Debug.Log(QuantityText);
-        Debug.Log(this.name);
         Qty += amount;
         QuantityText.text = Qty.ToString();
         if (Qty <= 0)
