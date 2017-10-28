@@ -10,9 +10,9 @@ public class DeckHolder : MonoBehaviour {
 
 
     public CardPosition[] CardPositionArray;
+    public List<Card> DeckCards;
 
     int Index = 0;
-    public List<Card> DeckCards;
     GraphicRaycaster myGraphicsRaycaster;
     TotalPowerCount totalPowerCount;
     CardLUT cardLUT;
@@ -20,16 +20,21 @@ public class DeckHolder : MonoBehaviour {
 
     private void Start()
     {
-        CardSummon[] summonCardsOut = FindObjectsOfType<CardSummon>();
-        CardSpell[] spellCardsOut = FindObjectsOfType<CardSpell>();
         totalPowerCount = FindObjectOfType<TotalPowerCount>();
         myGraphicsRaycaster = FindObjectOfType<GraphicRaycaster>();
         cardLUT = FindObjectOfType<CardLUT>();
 
+        LoadCards();
+    }
+
+    // Load the cards that are saved in PlayerPrefs and link them to the cards available 
+    void LoadCards()
+    {
         int[] CardsIndex = PlayerPrefsManager.ReturnDeckIndex();
         string[] CardsType = PlayerPrefsManager.ReturnDeckType();
+        CardSummon[] summonCardsOut = FindObjectsOfType<CardSummon>();
+        CardSpell[] spellCardsOut = FindObjectsOfType<CardSpell>();
 
-        //TO DO find way to load cards into Deck on start
 
         if (CardsIndex.Length == 20)
         {
@@ -73,11 +78,9 @@ public class DeckHolder : MonoBehaviour {
                 CP.GetComponent<Text>().text = "";
             }
         }
-
-
-
     }
 
+    // Check the position by graphic raycasting and returning if hit DeckHolder
     public bool CheckMousePositionOnButton()
     {
         PointerEventData ped = new PointerEventData(null);
@@ -95,13 +98,8 @@ public class DeckHolder : MonoBehaviour {
         return false;
     }
 
-    private void Update()
-    {
-        Debug.DrawLine(new Vector3(Input.mousePosition.x, Input.mousePosition.y, Input.mousePosition.z - 10), new Vector3(Input.mousePosition.x, Input.mousePosition.y, Input.mousePosition.z + 10));
-    }
 
-
-    // TO DO make stop if reached max card amount 
+    // Add Card to the Deck being built
     public void AddCard(Card card)
     {
         if (DeckCards.Count < CardPositionArray.Length)
@@ -116,6 +114,7 @@ public class DeckHolder : MonoBehaviour {
         }
     }
 
+    // Remove Card from the Deck being built
     public void RemoveCard(int indexR)
     {
         Debug.Log(DeckCards.Count);
@@ -125,11 +124,11 @@ public class DeckHolder : MonoBehaviour {
             DeckCards[indexR].GetComponent<DeckBuildInterface>().AdjustQuantity(1);
             DeckCards.Remove(DeckCards[indexR]);
             ResetCards();
-                Index--;
-           
+            Index--;
         }
     }
 
+    //Make sure that cards move up and power is adjusted for the deck 
     void ResetCards()
     {
         for (int i = 0; i < DeckCards.Count; i++)
@@ -142,6 +141,7 @@ public class DeckHolder : MonoBehaviour {
         totalPowerCount.UpdatePower();
     }
 
+    //Save Deck to Player Prefs
     public void SaveDeck()
     {
         if (DeckCards.Count < 20)
@@ -169,11 +169,7 @@ public class DeckHolder : MonoBehaviour {
                 {
                     Debug.LogError("card is not a summon or spell");
                 }
-
-
             }
-           
-
             PlayerPrefsManager.SetDeck(CardNameArray, cardType);
             Debug.Log("Saved Deck");
         }

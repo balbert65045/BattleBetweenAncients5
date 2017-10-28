@@ -11,6 +11,7 @@ public class CardField : MonoBehaviour {
     CardLUT cardLut;
 
 
+    // Place Objects from LUT on Screen in correct positions
 	void Awake () {
         cardLut = FindObjectOfType<CardLUT>();
         
@@ -32,8 +33,4 @@ public class CardField : MonoBehaviour {
 
     }
 	
-	// Update is called once per frame
-	void Update () {
-		
-	}
 }

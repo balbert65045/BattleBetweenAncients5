@@ -12,12 +12,13 @@ public class CardInspector : MonoBehaviour {
 
 	void Start () {
         dropdown = GetComponent<Dropdown>();
-       // CardFieldObjects.SetActive(false);
-       // CardFieldSpells.SetActive(false);
+        CardFieldObjects.SetActive(true);
+        CardFieldSpells.SetActive(false);
+        dropdown.onValueChanged.AddListener(delegate { CheckDropdownValue(); });
     }
-	
-	// Update is called once per frame
-	void Update () {
+
+    // Change whats being shown on change
+	void CheckDropdownValue () {
        if (dropdown.value == 0)
         {
             CardFieldObjects.SetActive(true);
