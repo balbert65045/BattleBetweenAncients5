@@ -216,7 +216,7 @@ public class CardObject : MonoBehaviour, IDamageable
         Component damageableComponent = ObjectAttacking.GetComponent(typeof(IDamageable));
         if (damageableComponent)
         {
-            int damage = Random.Range(AttackDamageMin, AttackDamageMax);
+            int damage = Random.Range(AttackDamageMin, AttackDamageMax + 1);
             (damageableComponent as IDamageable).TakeDamage(damage, this.transform);
         }
     }

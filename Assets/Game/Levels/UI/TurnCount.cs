@@ -6,7 +6,7 @@ using UnityEngine.UI;
 public class TurnCount : MonoBehaviour {
 
     // Use this for initialization
-    public TurnSystem turnSystem;
+    TurnSystem turnSystem;
     Text text;
 
 	void Start () {

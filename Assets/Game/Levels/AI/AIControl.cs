@@ -88,7 +88,7 @@ public class AIControl : MonoBehaviour {
             if (turnSystem.AITurn)
             {
                 index--;
-                SelectNextObject();
+                StartCoroutine(SelectNextObject());
             }
         }
     }
@@ -101,7 +101,7 @@ public class AIControl : MonoBehaviour {
             if (SelectedCardObject == cardObject)
             {
                 // Find Next Object after attacking
-                SelectNextObject();
+                StartCoroutine(SelectNextObject());
             }
         }
     }
@@ -149,7 +149,7 @@ public class AIControl : MonoBehaviour {
         }
 
         //Begin to Control all enemy Objects 
-        SelectNextObject();
+        StartCoroutine(SelectNextObject());
 
 
     }
@@ -190,7 +190,6 @@ public class AIControl : MonoBehaviour {
     void SelectObject(CardObject cardObject)
     {
         index++;
-        SelectedCardObject = cardObject;
         Debug.Log("Selected " + SelectedCardObject.name + " " + index);
         cardObject.MoveChangeObservers += SelectedObjectMoveStateChange;
         cardObject.CombatChangeObservers += SelectedObjectCombatChange;
@@ -266,7 +265,7 @@ public class AIControl : MonoBehaviour {
         // If no player is found then go for the spawner
         ClosestSpawnerTile = FindClosestTileforSpawner(cardObject, mageSpawner);
         if (ClosestSpawnerTile != null) { MoveToTile(cardObject, ClosestSpawnerTile); }
-        else { SelectNextObject(); }
+        else { StartCoroutine(SelectNextObject()); }
 
     }
 
@@ -348,13 +347,14 @@ public class AIControl : MonoBehaviour {
                 return;
             }
         }
-        SelectNextObject();
+        StartCoroutine(SelectNextObject());
     }
 
 
-    void SelectNextObject()
+    IEnumerator SelectNextObject()
     {
-      
+
+       
         if (SelectedCardObject != null)
         {
             SelectedCardObject.CombatChangeObservers -= SelectedObjectCombatChange;
@@ -364,6 +364,8 @@ public class AIControl : MonoBehaviour {
         // Select next object available 
         if (index + 1 <= enemyCardObjectsOut.Count)
         {
+            SelectedCardObject = enemyCardObjectsOut[index];
+            yield return new WaitForSeconds(1f);
             SelectObject(enemyCardObjectsOut[index]);
         }
         // If no next object available end turn 
