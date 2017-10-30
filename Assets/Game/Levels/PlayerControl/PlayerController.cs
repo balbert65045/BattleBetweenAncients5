@@ -9,6 +9,7 @@ public class PlayerController : MonoBehaviour
     // Use this for initialization
     SelectionTool selectionTool;
     CardObject selectedCardObject;
+    public CardObject getSelectedObject {get{return selectedCardObject;}}
     CardSelector cardCreator;
     public List<EnviromentTile> Path;
     public List<EnviromentTile> Range;

@@ -13,7 +13,9 @@ public class TurnSystem : MonoBehaviour {
     public Button button;
 
     public int TurnCount = 0;
-
+    public List<int> AiWavesTimes;
+    public int LastWaveTime = 0; 
+  
 
     public bool PlayerTurn = true;
     public bool AITurn = false;
@@ -25,12 +27,27 @@ public class TurnSystem : MonoBehaviour {
     PowerCounter powerCounter;
     WinScreen winScreen;
 
+    public delegate void IncrimentTurnListeners();
+    public event IncrimentTurnListeners TurnListenerObserver;
 
     public void EndTurn(int player)
     {
         if (player == 1)
         {
-            StartCoroutine(PlayerTurnOver());
+            CardObject[] cardObjects = FindObjectsOfType<CardObject>();
+
+            bool CombatHappening = false;
+            foreach (CardObject cardobject in cardObjects)
+            {
+                if (cardobject.CurrentCommbatState != CombatType.OutOfCombat)
+                {
+                    CombatHappening = true;
+                }
+            }
+            if (!CombatHappening)
+            {
+                StartCoroutine(PlayerTurnOver());
+            }
         }
         else if (player == 2)
         {
@@ -41,7 +58,9 @@ public class TurnSystem : MonoBehaviour {
 
     IEnumerator PlayerTurnOver()
     {
-        yield return new WaitForSeconds(.1f);
+        button.interactable = false;
+        buttonText.text = "Waiting for Enemy turn";
+        yield return new WaitForSeconds(.3f);
         PlayerTurn = false;
         playerController.DisableTools();
 
@@ -51,14 +70,22 @@ public class TurnSystem : MonoBehaviour {
 
         cardCreator.enabled = false;
 
-        button.interactable = false;
-        buttonText.text = "Waiting for Enemy turn";
+        
+
+        if (TurnCount > LastWaveTime)
+        {
+            if (aiControl.NumberOfEnemiesLeft() <= 0)
+            {
+                winScreen.gameObject.SetActive(true);
+            }
+        }
+
      
     }
 
         IEnumerator AITurnOver()
     {
-        yield return new WaitForSeconds(.1f);
+        yield return new WaitForSeconds(.3f);
         PlayerTurn = true;
         playerController.ResetTools();
 
@@ -75,13 +102,37 @@ public class TurnSystem : MonoBehaviour {
         AITurn = false;
 
         TurnCount += 1;
-        if (TurnCount >= MaxTurns)
+        if (TurnListenerObserver != null) { TurnListenerObserver(); }
+        if (TurnCount > LastWaveTime)
         {
-            winScreen.gameObject.SetActive(true);
+            if (aiControl.NumberOfEnemiesLeft() <= 0)
+            {
+                winScreen.gameObject.SetActive(true);
+            }
         }
+
+        //if (TurnCount >= MaxTurns)
+        //{
+        //    winScreen.gameObject.SetActive(true);
+        //}
        
     }
 
+
+    public void SetWaves(List<int> WaveTimes)
+    {
+        AiWavesTimes = WaveTimes;
+        // Makes the list from smallest to highest 
+        AiWavesTimes.Sort(delegate (int a, int b) { return a.CompareTo(b); });
+        foreach (int WaveTime in AiWavesTimes)
+        {
+          
+            if (WaveTime > LastWaveTime)
+            {
+                LastWaveTime = WaveTime;
+            }
+        }
+    }
 
     private void Awake()
     {

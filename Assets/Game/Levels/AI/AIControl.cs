@@ -35,7 +35,14 @@ public class AIControl : MonoBehaviour {
 
     public int index;
     bool spawn = false;
-    //TODO BUG find why turn does not end (Happened when object hit by one move then killed by the next and in attack distance..)
+    public List<int> waveTimes;
+
+    bool SelectedObjectAttacked = false;
+
+    public int NumberOfEnemiesLeft()
+    {
+        return enemyCardObjectsOut.Count;
+    }
 
     // Use this for initialization
     void Start () {
@@ -48,12 +55,30 @@ public class AIControl : MonoBehaviour {
           //  else if (spawner.cardType == CardType.Player) { playerSpawner = spawner; }
         }
 
-        mageSpawner = FindObjectOfType<Mage>();
-
         aiSpawnSystem = FindObjectsOfType<AISpawnSystem>();
 
-        TilesTotal = FindObjectsOfType<EnviromentTile>();
+        foreach (AISpawnSystem SpawnPoint in aiSpawnSystem)
+        {
+            for (int i = 0; i < SpawnPoint.Spawns.Length; i++)
+            {
+                if (!waveTimes.Contains(SpawnPoint.Spawns[i].Time))
+                {
+                    waveTimes.Add(SpawnPoint.Spawns[i].Time);
+                }
+            }
+        }
+
         turnSystem = FindObjectOfType<TurnSystem>();
+        turnSystem.SetWaves(waveTimes);
+
+
+
+        mageSpawner = FindObjectOfType<Mage>();
+
+       
+
+        TilesTotal = FindObjectsOfType<EnviromentTile>();
+        
         GridTiles = new EnviromentTile[xGridLength, zGridLength];
         foreach (EnviromentTile Tile in TilesTotal)
         {
@@ -343,6 +368,7 @@ public class AIControl : MonoBehaviour {
             if (TileToAttack != null)
             {
                 Debug.Log("InCombat");
+                SelectedObjectAttacked = true;
                 cardObject.EngageCombat(CombatType.Attack, TileToAttack.ObjectHeld);
                 return;
             }
@@ -364,8 +390,20 @@ public class AIControl : MonoBehaviour {
         // Select next object available 
         if (index + 1 <= enemyCardObjectsOut.Count)
         {
-            SelectedCardObject = enemyCardObjectsOut[index];
-            yield return new WaitForSeconds(1f);
+           
+            if (SelectedObjectAttacked)
+            {
+                // Wait for the combat scenes to end
+                yield return new WaitForSeconds(1.5f);
+                SelectedCardObject = enemyCardObjectsOut[index];
+            }
+            else
+            {
+                SelectedCardObject = enemyCardObjectsOut[index];
+                yield return new WaitForSeconds(.1f);
+            }
+          
+            SelectedObjectAttacked = false;
             SelectObject(enemyCardObjectsOut[index]);
         }
         // If no next object available end turn 
