@@ -142,6 +142,7 @@ public class CardUser : MonoBehaviour {
             case SpellType.Buff:
                 if (OldTileOver.cardType == CardType.Player && OldTileOver.ObjectHeld.GetComponent<CardObject>() != null)
                 {
+                    mageSpawner.Cast(OldTileOver.transform);
                     Spell.GiveBuff(OldTileOver.ObjectHeld.GetComponent<CardObject>());
                     powerCounter.RemovePower(cardHand.CardUsing.GetPowerAmount);
                     cardHand.DestroyCardUsed();
@@ -162,7 +163,7 @@ public class CardUser : MonoBehaviour {
             OldTileOver.DestroyImage();
             if (SpawnTiles.Contains(Tile))
             {
-
+                mageSpawner.Cast(OldTileOver.transform);
                 powerCounter.RemovePower(cardHand.CardUsing.GetPowerAmount);
                 GameObject newItem = cardHand.CardUsing.GetComponent<CardSummon>().SummonObject;
                 OldTileOver.OnItemMake(newItem);

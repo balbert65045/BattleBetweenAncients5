@@ -20,6 +20,7 @@ public enum CardState
 
 public enum GameType
 {
+    Survival = 0,
     Defense = 1,
     Attack = 2, 
 }

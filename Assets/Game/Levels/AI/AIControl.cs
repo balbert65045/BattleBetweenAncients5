@@ -408,7 +408,7 @@ public class AIControl : MonoBehaviour {
         // If no next object available end turn 
         else
         {
-            Debug.Log("TurnOver");
+           // Debug.Log("TurnOver");
             turnSystem.EndTurn(2);
         }
     }

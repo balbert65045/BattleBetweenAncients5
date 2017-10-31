@@ -40,6 +40,12 @@ namespace UnityStandardAssets.Characters.ThirdPerson
             m_Animator.SetTrigger("Attack1");
         }
 
+        public void Cast(Transform LookatTransform)
+        {
+            transform.LookAt(LookatTransform);
+            m_Animator.SetTrigger("Cast");
+        }
+
         public void Hit(Transform onjAttackingTransform)
         {
             transform.LookAt(onjAttackingTransform);

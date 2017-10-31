@@ -47,7 +47,10 @@ public class SelectionTool : MonoBehaviour {
             else
             {
                 //Unselect if click in the card area
-                gameController.deSelectObject();
+                if (gameController.getSelectedObject != null)
+                {
+                    gameController.deSelectObject();
+                }
             }     
         }
     }

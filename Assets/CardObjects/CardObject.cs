@@ -347,7 +347,7 @@ public class CardObject : MonoBehaviour, IDamageable
             RemainingDistance = (transform.position - CurrentTile.transform.position).magnitude;
             if (RemainingDistance < aiCharacterControl.agent.stoppingDistance)
             {
-                Debug.Log("Destination reached");
+               // Debug.Log("Destination reached");
                 int CurrentPathLength = pathTaking.Count - 1;
                 int CurrentTileIndex = terrainControl.CheckPathPosition(CurrentTile, pathTaking);
                 if (CurrentTileIndex == -1) { Debug.LogError("CurrentPathIndex not in Path of pathBuilder"); }

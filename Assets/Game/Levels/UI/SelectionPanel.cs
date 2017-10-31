@@ -81,7 +81,7 @@ public class SelectionPanel : MonoBehaviour {
         }
         else
         {
-            selectedCardObject.StateChangeObservers -= StateChange;
+            if (selectedCardObject != null) { selectedCardObject.StateChangeObservers -= StateChange; }
         }
     }
     public void StateChange(CardState state)

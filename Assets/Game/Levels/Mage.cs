@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityStandardAssets.Characters.ThirdPerson;
 
 public class Mage : MonoBehaviour
 {
@@ -14,6 +15,8 @@ public class Mage : MonoBehaviour
    
     LoseScreen loseScreen;
     WinScreen winScreen;
+
+    
 
     
     public void Death()
@@ -41,6 +44,12 @@ public class Mage : MonoBehaviour
     {
         EnviromentTile TileOn = cardObject.GetCurrentTile;
         return (terrainControl.FindTilesOpenAround(TileOn));
+    }
+
+    public void Cast(Transform LookTransform)
+    {
+        GetComponent<ThirdPersonCharacter>().Cast(LookTransform);
+
     }
 
 }

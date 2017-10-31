@@ -70,17 +70,11 @@ public class TurnSystem : MonoBehaviour {
 
         cardCreator.enabled = false;
 
-        
 
-        if (TurnCount > LastWaveTime)
-        {
-            if (aiControl.NumberOfEnemiesLeft() <= 0)
-            {
-                winScreen.gameObject.SetActive(true);
-            }
-        }
 
-     
+        CheckEndGame();
+
+
     }
 
         IEnumerator AITurnOver()
@@ -103,19 +97,34 @@ public class TurnSystem : MonoBehaviour {
 
         TurnCount += 1;
         if (TurnListenerObserver != null) { TurnListenerObserver(); }
-        if (TurnCount > LastWaveTime)
-        {
-            if (aiControl.NumberOfEnemiesLeft() <= 0)
-            {
-                winScreen.gameObject.SetActive(true);
-            }
-        }
 
-        //if (TurnCount >= MaxTurns)
-        //{
-        //    winScreen.gameObject.SetActive(true);
-        //}
-       
+        CheckEndGame();
+
+
+    }
+
+    void CheckEndGame()
+    {
+        switch (gameType)
+        {
+            case (GameType.Survival):
+                if (TurnCount > LastWaveTime)
+                {
+                    if (aiControl.NumberOfEnemiesLeft() <= 0)
+                    {
+                        winScreen.gameObject.SetActive(true);
+                    }
+                }
+                break;
+            case (GameType.Defense):
+                //if (TurnCount >= MaxTurns)
+                //{
+                //    winScreen.gameObject.SetActive(true);
+                //}
+                break;
+            case (GameType.Attack):
+                break;
+        }
     }
 
 
