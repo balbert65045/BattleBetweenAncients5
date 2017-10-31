@@ -145,7 +145,7 @@ public class TerrainControl : MonoBehaviour {
                 {
                     int X = Mathf.Clamp(TileStart.X, 0, xGridLength-1);
                     // find the distance it would take 
-                    int range = Mathf.Abs(X - TileStart.X) + Mathf.Abs(Y - TileStart.Z);
+                    //int range = Mathf.Abs(X - TileStart.X) + Mathf.Abs(Y - TileStart.Z);
                     RangePath.Clear();
                     // find how long Astar calculates a path 
                     RangePath = astar.FindPath(TileStart.GetComponent<Node>(), GridTiles[X, Y].GetComponent<Node>(), GridNodes);
@@ -168,7 +168,7 @@ public class TerrainControl : MonoBehaviour {
                 else
                 {
                     int X = Mathf.Clamp(TileStart.X + i, 0, xGridLength-1);
-                    int range = Mathf.Abs(X - TileStart.X) + Mathf.Abs(Y - TileStart.Z);
+                   // int range = Mathf.Abs(X - TileStart.X) + Mathf.Abs(Y - TileStart.Z);
                     RangePath.Clear();
                     RangePath = astar.FindPath(TileStart.GetComponent<Node>(), GridTiles[X, Y].GetComponent<Node>(), GridNodes);
                     foreach (Node node in RangePath)
@@ -182,7 +182,7 @@ public class TerrainControl : MonoBehaviour {
                        
 
                     X = Mathf.Clamp(TileStart.X - i, 0, xGridLength-1);
-                    range = Mathf.Abs(X - TileStart.X) + Mathf.Abs(Y - TileStart.Z);
+                    //range = Mathf.Abs(X - TileStart.X) + Mathf.Abs(Y - TileStart.Z);
                     RangePath.Clear();
                     RangePath = astar.FindPath(TileStart.GetComponent<Node>(), GridTiles[X, Y].GetComponent<Node>(), GridNodes);
                     foreach (Node node in RangePath)

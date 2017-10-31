@@ -53,7 +53,7 @@ public class CardUser : MonoBehaviour {
             {
                 if (OldTileOver != null)
                 {
-                    OldTileOver.DestroyImage();
+                    if (OldTileOver.cardType == CardType.Open) { OldTileOver.DestroyImage(); }
                     OldTileOver = null;
                 }
                 SpawnTiles = mageSpawner.CheckTilesAround();

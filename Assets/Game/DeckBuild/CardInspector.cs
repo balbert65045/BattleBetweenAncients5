@@ -10,7 +10,14 @@ public class CardInspector : MonoBehaviour {
     public GameObject CardFieldObjects;
     public GameObject CardFieldSpells;
 
-	void Start () {
+
+    private void Awake()
+    {
+        CardFieldObjects.SetActive(true);
+        CardFieldSpells.SetActive(true);
+    }
+
+    void Start () {
         dropdown = GetComponent<Dropdown>();
         CardFieldObjects.SetActive(true);
         CardFieldSpells.SetActive(false);

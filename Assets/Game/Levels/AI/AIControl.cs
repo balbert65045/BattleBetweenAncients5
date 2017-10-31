@@ -34,7 +34,6 @@ public class AIControl : MonoBehaviour {
     public List<EnviromentTile> Range;
 
     public int index;
-    bool spawn = false;
     public List<int> waveTimes;
 
     bool SelectedObjectAttacked = false;
@@ -203,7 +202,7 @@ public class AIControl : MonoBehaviour {
                     {
                         SpawnTiles = SpawnPoint.CheckTilesAround();
                         int randomTile = Random.Range(0, SpawnTiles.Count);
-                        int randomCard = Random.Range(0, enmyCardObjects.Length);
+                      //  int randomCard = Random.Range(0, enmyCardObjects.Length);
                         SpawnTiles[randomTile].OnItemMake(SpawnObject);
                     }
                 }

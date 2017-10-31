@@ -6,7 +6,6 @@ using UnityEngine.UI;
 public class DamageDisplay : MonoBehaviour {
 
     // Use this for initialization
-    CardObject cardObject;
     [SerializeField]
     float TextDuration = 1f;
 
@@ -17,7 +16,6 @@ public class DamageDisplay : MonoBehaviour {
     private Text text;
 
 	void Start () {
-        cardObject = GetComponentInParent<CardObject>();
         text = GetComponent<Text>();
         text.text = "";
     }

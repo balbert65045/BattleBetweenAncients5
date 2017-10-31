@@ -138,7 +138,7 @@ public class PlayerController : MonoBehaviour
     }
 
     //Method used to completely deslect the object (NOTE: may want to see if this can be refactored into fewer lines)
-    void deSelectObject()
+    public void deSelectObject()
     {
         selectionPanel.SetObject(null);
         selectionPanel.gameObject.SetActive(false);
@@ -252,7 +252,10 @@ public class PlayerController : MonoBehaviour
         }
         else if (CrossPlatformInputManager.GetButtonDown("AttackStateButton"))
         {
-            selectedCardObject.StateChange(CardState.Attack);
+            if (!selectedCardObject.Moving)
+            {
+                selectedCardObject.StateChange(CardState.Attack);
+            }
         }
     }
 

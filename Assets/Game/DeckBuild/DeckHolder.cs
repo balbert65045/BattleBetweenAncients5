@@ -20,21 +20,22 @@ public class DeckHolder : MonoBehaviour {
 
     private void Start()
     {
-        totalPowerCount = FindObjectOfType<TotalPowerCount>();
+       
         myGraphicsRaycaster = FindObjectOfType<GraphicRaycaster>();
-        cardLUT = FindObjectOfType<CardLUT>();
-
-        LoadCards();
+       
     }
 
     // Load the cards that are saved in PlayerPrefs and link them to the cards available 
-    void LoadCards()
+    // This is caused for the CardField to organize flow 
+    public void LoadCards()
     {
         int[] CardsIndex = PlayerPrefsManager.ReturnDeckIndex();
         string[] CardsType = PlayerPrefsManager.ReturnDeckType();
         CardSummon[] summonCardsOut = FindObjectsOfType<CardSummon>();
         CardSpell[] spellCardsOut = FindObjectsOfType<CardSpell>();
 
+        cardLUT = FindObjectOfType<CardLUT>();
+        totalPowerCount = FindObjectOfType<TotalPowerCount>();
 
         if (CardsIndex.Length == 20)
         {
@@ -48,6 +49,7 @@ public class DeckHolder : MonoBehaviour {
                     {
                         if (summonCardOut.cardSummonName == card.GetComponent<CardSummon>().cardSummonName)
                         {
+                            Debug.Log(summonCardOut);
                             CardFound = summonCardOut.gameObject;
                         }
                     }
@@ -59,6 +61,7 @@ public class DeckHolder : MonoBehaviour {
                     {
                         if (spellCardOut.cardSpellName == card.GetComponent<CardSpell>().cardSpellName)
                         {
+                            Debug.Log(spellCardOut);
                             CardFound = spellCardOut.gameObject;
                         }
                     }
@@ -68,6 +71,9 @@ public class DeckHolder : MonoBehaviour {
                     Debug.LogError("Card Stored neither Summon nor spell");
                 }
 
+                Debug.Log(CardsType[i]);
+                Debug.Log(CardsIndex[i]);
+                Debug.Log(CardFound);
                 AddCard(CardFound.GetComponent<Card>());
             }
         }

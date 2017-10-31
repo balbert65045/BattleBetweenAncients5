@@ -29,7 +29,6 @@ public class Mage : MonoBehaviour
         //currentHealthPoints = maxHealthPoints;
         cardObject = GetComponent<CardObject>();
         terrainControl = FindObjectOfType<TerrainControl>();
-        EnviromentTile[] Tiles = FindObjectsOfType<EnviromentTile>();
 
 
         loseScreen = FindObjectOfType<LoseScreen>();

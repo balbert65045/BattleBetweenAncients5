@@ -21,18 +21,12 @@ public class EnviromentTile : MonoBehaviour {
     //public int X { get; private set; }
     //public int Z { get; private set; }
 
-    private CardHand PlayerObjectHolder;
-    private Camera cam;
-    private CameraRaycaster cameraRaycaster;
 
    
 
 
 	// Use this for initialization
 	void Awake () {
-        PlayerObjectHolder = FindObjectOfType<CardHand>();
-        cam = FindObjectOfType<CameraControl>().GetComponent<Camera>();
-        cameraRaycaster = FindObjectOfType<CameraRaycaster>();
 
         //if (cardType == null) { cardType = CardType.Open; }
         MatColorOriginal = GetComponent<MeshRenderer>().material.color;

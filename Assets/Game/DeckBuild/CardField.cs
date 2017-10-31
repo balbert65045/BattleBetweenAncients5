@@ -9,12 +9,14 @@ public class CardField : MonoBehaviour {
     public GameObject[] CardSummonPositions;
     public GameObject[] CardSpellPositions;
     CardLUT cardLut;
+    DeckHolder deckHolder;
 
 
     // Place Objects from LUT on Screen in correct positions
 	void Awake () {
         cardLut = FindObjectOfType<CardLUT>();
-        
+        deckHolder = FindObjectOfType<DeckHolder>();
+
         for (int i = 0; i < CardSummonPositions.Length; i++)
         {
             GameObject card = Instantiate(cardLut.SummonCards[i], CardSummonPositions[i].transform.position, Quaternion.identity);
@@ -31,6 +33,7 @@ public class CardField : MonoBehaviour {
             card.name = cardLut.SpellCards[i].name;
         }
 
+        deckHolder.LoadCards();
     }
 	
 }

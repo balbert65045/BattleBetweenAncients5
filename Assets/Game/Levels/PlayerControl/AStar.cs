@@ -41,7 +41,6 @@ public class AStar : MonoBehaviour {
         }
         OpenNodes = new List<Node>();
         ClosedNodes = new List<Node>();
-        List<Node> path = new List<Node>();
 
         // Add Starting point into list to become closed
         OpenNodes.Add(startNode);

@@ -8,7 +8,7 @@ public class SelectionTool : MonoBehaviour {
 
     // Use this for initialization
     CameraRaycaster cameraRaycaster;
-    EnviromentTile playerObjectCreatorSelected;
+    //EnviromentTile playerObjectCreatorSelected;
     public CardObject cardObjectSelected;
     RaycastHit m_hit;
 
@@ -44,13 +44,11 @@ public class SelectionTool : MonoBehaviour {
                     return;
                 }
             }
-
-            if (playerObjectCreatorSelected != null)
+            else
             {
-                cardObjectSelected = null;
-                gameController.SelectObject(null);
-            }
-            
+                //Unselect if click in the card area
+                gameController.deSelectObject();
+            }     
         }
     }
 
