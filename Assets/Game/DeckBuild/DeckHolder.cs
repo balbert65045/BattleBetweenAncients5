@@ -113,7 +113,8 @@ public class DeckHolder : MonoBehaviour {
             DeckCards.Add(card);
             CardPositionArray[Index].GetComponent<Text>().text = card.name;
 
-            CardPositionArray[Index].GetComponentInChildren<PowerAmount>().SetPower(card);
+           // Debug.Log(card.GetPowerAmount);
+            CardPositionArray[Index].GetComponentInChildren<PowerAmount>().SetPower(card.GetPowerAmount);
             Index++;
             card.GetComponent<DeckBuildInterface>().AdjustQuantity(-1);
             totalPowerCount.UpdatePower();
@@ -140,7 +141,7 @@ public class DeckHolder : MonoBehaviour {
         for (int i = 0; i < DeckCards.Count; i++)
         {
             CardPositionArray[i].GetComponent<Text>().text = DeckCards[i].name;
-            CardPositionArray[i].GetComponentInChildren<PowerAmount>().SetPower(DeckCards[i]);
+            CardPositionArray[i].GetComponentInChildren<PowerAmount>().SetPower(DeckCards[i].GetPowerAmount);
         }
         CardPositionArray[DeckCards.Count].GetComponent<Text>().text = "";
         CardPositionArray[DeckCards.Count].GetComponentInChildren<PowerAmount>().ResetPower();

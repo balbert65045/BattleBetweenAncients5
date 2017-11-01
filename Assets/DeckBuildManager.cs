@@ -22,9 +22,16 @@ public class DeckBuildManager : MonoBehaviour {
         questionScreen.gameObject.SetActive(false);
 
         // TO DO may need to organize when to grab these cards in case they are disabled before reaching them 
+    }
+
+    public void LoadCards()
+    {
         summonCardsOut = FindObjectsOfType<CardSummon>();
         spellCardsOut = FindObjectsOfType<CardSpell>();
     }
+
+
+
 
     public void CheckForSave()
     {
