@@ -50,7 +50,7 @@ public class CardDeck : MonoBehaviour {
         int RandomNumber = Random.Range(0, CardsInDeck.Count - 1);
         GameObject CardPicked = CardsInDeck[RandomNumber];
         CardsInDeck.Remove(CardPicked);
-        CardPicked.GetComponent<DeckBuildInterface>().SetUpCard();
+       // CardPicked.GetComponent<DeckBuildInterface>().SetUpCard();
         return (CardPicked);
     }
 

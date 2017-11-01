@@ -17,13 +17,12 @@ public class CardSpell : MonoBehaviour {
 
     public SpellAtribute spellAtribute;
 
-    [SerializeField]
-    int Modifier = 0;
-    [SerializeField]
-    int ModifierDuration = 0;
-
-    [SerializeField]
-    int HealAmount = 0;
+    
+    public int Modifier = 0;
+    
+    public int ModifierDuration = 0;
+ 
+    public int HealAmount = 0;
 
 
     public void GiveBuff(CardObject cardObject)

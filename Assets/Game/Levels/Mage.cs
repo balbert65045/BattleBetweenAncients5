@@ -48,6 +48,7 @@ public class Mage : MonoBehaviour
 
     public void Cast(Transform LookTransform)
     {
+        GetComponent<Rigidbody>().constraints = RigidbodyConstraints.FreezeAll;
         GetComponent<ThirdPersonCharacter>().Cast(LookTransform);
 
     }

@@ -32,6 +32,7 @@ public class CardHand : MonoBehaviour {
                 {
                     GameObject newCard = cardDeck.PickCard();
                     GameObject CardinHand = Instantiate(newCard, cardPostion.transform);
+                    CardinHand.GetComponent<DeckBuildInterface>().SetUpCard();
                     CardinHand.transform.position = cardPostion.transform.position;
                 }
             }

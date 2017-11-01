@@ -13,7 +13,7 @@ public class DeckBuildInterface : MonoBehaviour {
     public int GetQty { get { return Qty; } }
     public Button button;
     public Text QuantityText;
-    Stats stats;
+
 
     // Use this for initialization
     public void SetUpCard () {
@@ -23,13 +23,19 @@ public class DeckBuildInterface : MonoBehaviour {
         if (GetComponentInChildren<Stats>())
         {
 
-            stats = GetComponentInChildren<Stats>();
+            Stats stats = GetComponentInChildren<Stats>();
             stats.SetStats(GetComponent<CardSummon>().SummonObject.GetComponent<CardObject>(), GetComponent<Card>().GetPowerAmount);
         }
 
+        else if (GetComponentInChildren<SpellStats>())
+        {
+            Debug.Log("LookingforStats");
+            SpellStats spellStats = GetComponentInChildren<SpellStats>();
+            spellStats.SetStats(GetComponent<CardSpell>(), GetComponent<Card>().GetPowerAmount);
+        }
 
-        //Determines if in Level Scene or deck building scene
-        if (FindObjectOfType<CardHand>() != null)
+            //Determines if in Level Scene or deck building scene
+            if (FindObjectOfType<CardHand>() != null)
         {
             QuantityText.gameObject.SetActive(false);
             button.gameObject.SetActive(false);
