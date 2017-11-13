@@ -13,6 +13,9 @@ public class PlayerController : MonoBehaviour
     CardSelector cardCreator;
     public List<EnviromentTile> Path;
     public List<EnviromentTile> Range;
+    EnviromentTile LastMoveTileOver;
+    EnviromentTile LastTargetTileOver;
+
     CameraRaycaster cameraRaycaster;
     SelectionPanel selectionPanel;
     RaycastHit m_hit;
@@ -63,12 +66,25 @@ public class PlayerController : MonoBehaviour
             //(Note: May want to keep object selected in order to do combat actions after move)
             // deSelectObject();
             //Enable ability to change path mid move and select different target
+
             selectedCardObject.SelectedObject();
             Range = selectedCardObject.FindMoveRange();
 
             allowPathChange = true;
             selectionTool.enabled = true;
             cardCreator.enabled = true;
+
+
+            if (LastTargetTileOver != null)
+            {
+                selectedCardObject.EngageCombat(CombatType.Attack, LastTargetTileOver.ObjectHeld);
+            }
+            else
+            {
+                selectedCardObject.StateChange(CardState.Attack);
+            }
+
+           
         }
 
     }
@@ -290,10 +306,10 @@ public class PlayerController : MonoBehaviour
             {
                 m_hit = hit.Value;
                 // Check if their is another object on the tile/ if the tile is open
-                if (m_hit.transform.GetComponent<EnviromentTile>().cardType == CardType.Open)
+                if (m_hit.transform.GetComponent<EnviromentTile>().cardType == CardType.Open || m_hit.transform.GetComponent<EnviromentTile>().cardType == CardType.Enemy)
                 {
                     //Tell Observers object moving
-                   
+
                     selectedCardObject.enableMovement(Path);
                     ResetTiles();
                 }
@@ -312,15 +328,49 @@ public class PlayerController : MonoBehaviour
                 switch (selectedCardObject.cardState)
                 {
                     case CardState.Move:
-                        if (Path != null) {
-                            foreach (EnviromentTile tile in Path)
+                        if (newTransform.GetComponent<EnviromentTile>().cardType == CardType.Open)
+                        {
+                            if (LastTargetTileOver != null)
                             {
-                                if (Range.Contains(tile)){ tile.ChangeColor(Color.cyan); }
-                                else { tile.ChangeColor(tile.MatColorOriginal); }
+                                LastTargetTileOver.ChangeColor(LastTargetTileOver.MatColorOriginal);
+                                LastTargetTileOver = null;
                             }
+
+                            if (Path != null)
+                            {
+                                foreach (EnviromentTile tile in Path)
+                                {
+                                    if (Range.Contains(tile)) { tile.ChangeColor(Color.cyan); }
+                                    else { tile.ChangeColor(tile.MatColorOriginal); }
+                                }
+                            }
+                            Path = selectedCardObject.MakePath(newTransform.GetComponent<EnviromentTile>());
+                            if (Path.Contains(newTransform.GetComponent<EnviromentTile>()))
+                            {
+                                foreach (EnviromentTile tile in Path) { tile.ChangeColor(Color.blue); }
+                                LastMoveTileOver = newTransform.GetComponent<EnviromentTile>();
+                            }
+                            else
+                            {
+                                selectedCardObject.GetCurrentTile.ChangeColor(Color.blue);
+                                LastMoveTileOver = null;
+                            }
+                                
+                          
                         }
-                        Path = selectedCardObject.MakePath(newTransform.GetComponent<EnviromentTile>());
-                        foreach (EnviromentTile tile in Path) { tile.ChangeColor(Color.blue); }
+                        else if (newTransform.GetComponent<EnviromentTile>().cardType == CardType.Enemy)
+                        {
+                            if (selectedCardObject.CapableOfAttacking(LastMoveTileOver, newTransform.GetComponent<EnviromentTile>()))
+                            {
+                                Debug.Log("In Range");
+                                if (LastTargetTileOver != null) { LastTargetTileOver.ChangeColor(LastTargetTileOver.MatColorOriginal); }
+                                newTransform.GetComponent<EnviromentTile>().ChangeColor(Color.red);
+                                LastTargetTileOver = newTransform.GetComponent<EnviromentTile>();
+                            }
+                            //newTransform.GetComponent<EnviromentTile>().ChangeColor(Color.red);
+                            
+                        }
+
                         break;
                     case CardState.Attack:
                         Range = selectedCardObject.FindAttackRange();

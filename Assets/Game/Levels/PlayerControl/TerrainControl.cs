@@ -201,6 +201,9 @@ public class TerrainControl : MonoBehaviour {
         return TileRange;
     }
 
+
+
+
     // Creates a path depending on a Start and end tile 
     //TODO return a path 
     public List<EnviromentTile> FindTilesBetween(EnviromentTile TileStart, EnviromentTile TileEnd, int MaxDistance)

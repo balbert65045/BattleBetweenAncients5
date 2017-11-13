@@ -284,6 +284,20 @@ public class CardObject : MonoBehaviour, IDamageable
         if (terrainControl.FindEnemyInAttackRange(AttackTile, AttackRange)) {return true;}
         return false;
     }
+    public bool CapableOfAttacking( EnviromentTile MoveTileEnd, EnviromentTile AttackTileEnd)
+    {
+        List<EnviromentTile> MoveRange = terrainControl.FindMoveRange(CurrentTile, MaxMoveDistance);
+        if (MoveRange.Contains(MoveTileEnd))
+        {
+            List<EnviromentTile> AttackRange = terrainControl.FindAttackRange(MoveTileEnd, MaxAttackDistance);
+            if (AttackRange.Contains(AttackTileEnd))
+            {
+                return true;
+            }
+        }
+        return false;
+    }
+
 
     public List<EnviromentTile> FindTilesAround( int distance) { return (terrainControl.FindMoveRange(CurrentTile, distance)); }
     public int FindTileDistance(EnviromentTile Endtile) { return (terrainControl.FindTileDistance(CurrentTile, Endtile).Count); }
