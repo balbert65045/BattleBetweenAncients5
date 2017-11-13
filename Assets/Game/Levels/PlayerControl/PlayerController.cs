@@ -67,24 +67,27 @@ public class PlayerController : MonoBehaviour
             // deSelectObject();
             //Enable ability to change path mid move and select different target
 
-            selectedCardObject.SelectedObject();
-            Range = selectedCardObject.FindMoveRange();
-
             allowPathChange = true;
             selectionTool.enabled = true;
             cardCreator.enabled = true;
 
-
+            selectedCardObject.SelectedObject();
+            Range = selectedCardObject.FindAttackRange();
+            // Attack if selected on attack card 
             if (LastTargetTileOver != null)
             {
                 selectedCardObject.EngageCombat(CombatType.Attack, LastTargetTileOver.ObjectHeld);
+                ResetTiles();
             }
+            // no attack card switch stats
             else
             {
                 selectedCardObject.StateChange(CardState.Attack);
             }
 
-           
+            //
+
+
         }
 
     }
@@ -114,15 +117,17 @@ public class PlayerController : MonoBehaviour
                         selectionPanel.SetObject(selectedCardObject);
 
                         selectedCardObject.SelectedObject();
-                        selectedCardObject.GetCurrentTile.ChangeColor(Color.blue);
-                        Range = selectedCardObject.FindMoveRange();
-                        foreach (EnviromentTile tile in Range)
-                        {
-                            tile.ChangeColor(Color.cyan);
-                        }
-
                         selectedCardObject.MoveChangeObservers += SelectedObjectMoveStateChange;
                         selectedCardObject.StateChangeObservers += OnCurrentObjectStateChange;
+
+                        if (selectedCardObject.MoveTurnUsed)
+                        {
+                            selectedCardObject.StateChange(CardState.Attack);
+                        }
+                        else
+                        {
+                            selectedCardObject.StateChange(CardState.Move);
+                        }
 
                         break;
                     }
