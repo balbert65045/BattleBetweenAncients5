@@ -16,6 +16,8 @@ public class PlayerController : MonoBehaviour
     EnviromentTile LastMoveTileOver;
     EnviromentTile LastTargetTileOver;
 
+    PauseScreen pauseScreen;
+
     CameraRaycaster cameraRaycaster;
     SelectionPanel selectionPanel;
     RaycastHit m_hit;
@@ -244,6 +246,8 @@ public class PlayerController : MonoBehaviour
         cameraRaycaster = FindObjectOfType<CameraRaycaster>();
         cameraRaycaster.layerChangeObservers += OnPathChange;
         Orange = new Color(1, 0.5f, 0, 1);
+        pauseScreen = FindObjectOfType<PauseScreen>();
+        pauseScreen.gameObject.SetActive(false);
     }
 
     private void Update()
@@ -263,6 +267,13 @@ public class PlayerController : MonoBehaviour
             }
             LookForStateChange();
         }
+
+        if (Input.GetButtonDown("Cancel"))
+        {
+            pauseScreen.gameObject.SetActive(true);
+            pauseScreen.Pause();
+        }
+
     }
 
     private void LookForStateChange()
