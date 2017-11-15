@@ -24,18 +24,33 @@ public class SelectionPanel : MonoBehaviour {
 
     public void SetObject(CardObject cardObject)
     {
+        Debug.Log("Setting " + cardObject);
         if (cardObject != null)
         {
-            if (selectedCardObject != null) { selectedCardObject.StateChangeObservers -= StateChange; }
-            selectedCardObject = cardObject;
-            selectedCardObject.StateChangeObservers += StateChange;
+            switch (cardObject.cardType)
+            {
+                case (CardType.Player):
+                    if (selectedCardObject != null) { selectedCardObject.StateChangeObservers -= StateChange; }
+                    selectedCardObject = cardObject;
+                    selectedCardObject.StateChangeObservers += StateChange;
+                    if (!MoveIcon.gameObject.activeSelf) { MoveIcon.gameObject.SetActive(true); }
+                    if (!AttackIcon.gameObject.activeSelf) { AttackIcon.gameObject.SetActive(true); }
+                    break;
+                case (CardType.Enemy):
+                    if (selectedCardObject != null) { selectedCardObject.StateChangeObservers -= StateChange; }
+                    selectedCardObject = cardObject;
+                    if (MoveIcon.gameObject.activeSelf) { MoveIcon.gameObject.SetActive(false); }
+                    if (AttackIcon.gameObject.activeSelf) { AttackIcon.gameObject.SetActive(false); }
+                    break;
+            }
             objectImage.sprite = cardObject.CardImage;
+            Debug.Log(cardObject.CardImage);
             objectName.GetComponent<Text>().text = cardObject.gameObject.name;
-          
+
             MoveofSelected.GetComponent<Text>().text = cardObject.GetMoveDistance.ToString();
             if (cardObject.GetMoveModifier > 0)
             {
-                MoveModifier.GetComponent<Text>().text = "(+" + cardObject.GetMoveModifier.ToString() +")";
+                MoveModifier.GetComponent<Text>().text = "(+" + cardObject.GetMoveModifier.ToString() + ")";
                 MoveModifier.GetComponent<Text>().color = Color.green;
             }
             else if (cardObject.GetMoveModifier < 0)
@@ -44,7 +59,7 @@ public class SelectionPanel : MonoBehaviour {
                 MoveModifier.GetComponent<Text>().color = Color.red;
             }
             else { MoveModifier.GetComponent<Text>().text = ""; }
-            
+
             RangeofSelected.GetComponent<Text>().text = cardObject.GetAttackDistance.ToString();
             if (cardObject.GetAttackDistanceModifier > 0)
             {
@@ -64,12 +79,12 @@ public class SelectionPanel : MonoBehaviour {
                 DamageModifier.GetComponent<Text>().text = "(+" + cardObject.GetDamageModifier.ToString() + ")";
                 DamageModifier.GetComponent<Text>().color = Color.green;
             }
-            else if(cardObject.GetDamageModifier < 0)
+            else if (cardObject.GetDamageModifier < 0)
             {
                 DamageModifier.GetComponent<Text>().text = "(" + cardObject.GetDamageModifier.ToString() + ")";
                 DamageModifier.GetComponent<Text>().color = Color.red;
             }
-            else { DamageModifier.GetComponent<Text>().text = "" ; }
+            else { DamageModifier.GetComponent<Text>().text = ""; }
 
 
             HealthofSelected.GetComponent<Text>().text = cardObject.getCurrentHealth.ToString();

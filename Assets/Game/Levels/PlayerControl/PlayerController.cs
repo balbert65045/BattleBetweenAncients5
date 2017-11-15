@@ -135,6 +135,12 @@ public class PlayerController : MonoBehaviour
                     }
                 case CardType.Enemy:
                     {
+                        Debug.Log("Selected Enenemy");
+                        // TODO figure out how to look at enemy 
+                        selectedCardObject = cardObject;
+                        cardObject.GetCurrentTile.ChangeColor(Color.gray);
+                        selectionPanel.gameObject.SetActive(true);
+                        selectionPanel.SetObject(cardObject);
                         break;
                     }
                 default:
@@ -339,7 +345,13 @@ public class PlayerController : MonoBehaviour
     {
         if (selectedCardObject != null)
         {
-            if (allowPathChange)
+            //Dont do anything if the selected object is an enemy
+            if (selectedCardObject.cardType == CardType.Enemy)
+            {
+
+            }
+
+            else if (allowPathChange)
             {
                 switch (selectedCardObject.cardState)
                 {

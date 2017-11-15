@@ -12,7 +12,7 @@ public class CardObject : MonoBehaviour, IDamageable
     //[SerializeField]
     //int initialMaxMoveDistance = 4;
     public int initialMaxMoveDistance = 4;
-    public int GetMoveDistance { get { return MaxMoveDistance; } }
+    public int GetMoveDistance { get { return initialMaxMoveDistance; } }
     int MoveModifier = 0;
     int MoveModifierDuration = 0;
     public int GetMoveModifier { get { return MoveModifier; } }
@@ -32,7 +32,7 @@ public class CardObject : MonoBehaviour, IDamageable
     //[SerializeField]
     //int initialMaxAttackDistance = 1;
     public int initialMaxAttackDistance = 1;
-    public int GetAttackDistance { get { return MaxAttackDistance; } }
+    public int GetAttackDistance { get { return initialMaxAttackDistance; } }
     int AttackDistanceModifier = 0;
     int AttackDistanceModifierDuration = 0;
     public int GetAttackDistanceModifier { get { return AttackDistanceModifier; } }
