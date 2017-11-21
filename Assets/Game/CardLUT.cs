@@ -7,6 +7,7 @@ public class CardLUT : MonoBehaviour {
     public GameObject[] SummonCards;
     public GameObject[] SpellCards;
 
+
     private void Awake()
     {
         CardLUT[] luts = FindObjectsOfType<CardLUT>();

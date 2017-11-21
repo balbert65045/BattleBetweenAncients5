@@ -24,7 +24,6 @@ public class SelectionPanel : MonoBehaviour {
 
     public void SetObject(CardObject cardObject)
     {
-        Debug.Log("Setting " + cardObject);
         if (cardObject != null)
         {
             switch (cardObject.cardType)
@@ -44,7 +43,6 @@ public class SelectionPanel : MonoBehaviour {
                     break;
             }
             objectImage.sprite = cardObject.CardImage;
-            Debug.Log(cardObject.CardImage);
             objectName.GetComponent<Text>().text = cardObject.gameObject.name;
 
             MoveofSelected.GetComponent<Text>().text = cardObject.GetMoveDistance.ToString();
