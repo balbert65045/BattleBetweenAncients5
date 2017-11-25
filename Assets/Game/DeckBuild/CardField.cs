@@ -19,20 +19,31 @@ public class CardField : MonoBehaviour {
         deckHolder = FindObjectOfType<DeckHolder>();
         deckBuildManager = FindObjectOfType<DeckBuildManager>();
 
+        int summonIndex = 0;
         for (int i = 0; i < CardSummonPositions.Length; i++)
         {
-            GameObject card = Instantiate(cardLut.SummonCards[i], CardSummonPositions[i].transform.position, Quaternion.identity);
-            card.transform.SetParent(CardSummonPositions[i].transform);
-            card.GetComponent<DeckBuildInterface>().SetUpCard();
-            card.name = cardLut.SummonCards[i].name;
+
+            if (cardLut.SummonCardsActive[i] && cardLut.SummonCards.Length > i)
+            {
+                GameObject card = Instantiate(cardLut.SummonCards[i], CardSummonPositions[summonIndex].transform.position, Quaternion.identity);
+                card.transform.SetParent(CardSummonPositions[summonIndex].transform);
+                card.GetComponent<DeckBuildInterface>().SetUpCard();
+                card.name = cardLut.SummonCards[i].name;
+                summonIndex++;
+            }
         }
 
+        int spellIndex = 0;
         for (int i = 0; i < CardSpellPositions.Length; i++)
         {
-            GameObject card = Instantiate(cardLut.SpellCards[i], CardSpellPositions[i].transform.position, Quaternion.identity);
-            card.transform.SetParent(CardSpellPositions[i].transform);
-            card.GetComponent<DeckBuildInterface>().SetUpCard();
-            card.name = cardLut.SpellCards[i].name;
+            if (cardLut.SpellCardsActive[i] && cardLut.SpellCards.Length > i)
+            {
+                GameObject card = Instantiate(cardLut.SpellCards[i], CardSpellPositions[spellIndex].transform.position, Quaternion.identity);
+                card.transform.SetParent(CardSpellPositions[spellIndex].transform);
+                card.GetComponent<DeckBuildInterface>().SetUpCard();
+                card.name = cardLut.SpellCards[i].name;
+                spellIndex++;
+            }
         }
 
         deckHolder.LoadCards();

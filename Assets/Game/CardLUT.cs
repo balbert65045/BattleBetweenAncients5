@@ -5,12 +5,16 @@ using UnityEngine;
 public class CardLUT : MonoBehaviour {
 
     public GameObject[] SummonCards;
-    public GameObject[] SpellCards;
+    public bool[] SummonCardsActive;
 
+    public GameObject[] SpellCards;
+    public bool[] SpellCardsActive;
 
     private void Awake()
     {
         CardLUT[] luts = FindObjectsOfType<CardLUT>();
+
+        
         if (luts.Length > 1)
         {
             Destroy(luts[1].gameObject);
